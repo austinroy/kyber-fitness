@@ -1,11 +1,11 @@
 import { getAuth } from '@clerk/tanstack-start/server';
-import { getEvent } from 'vinxi/http';
+import { getRequest } from '@tanstack/react-start/server';
 
 export async function getAuthUser() {
-  const event = getEvent();
-  if (!event) return null;
   try {
-    const auth = await getAuth(event.request);
+    const request = getRequest();
+    if (!request) return null;
+    const auth = await getAuth(request);
     return auth;
   } catch (error) {
     if (error instanceof Response) {
@@ -23,3 +23,4 @@ export async function requireAuthUser() {
   }
   return auth;
 }
+
