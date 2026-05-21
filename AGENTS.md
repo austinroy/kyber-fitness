@@ -1,3 +1,355 @@
+# Kyber Fitness — Agent Instruction & Codebase Guide
+
+Welcome, Agent! This document serves as the single source of truth for the **Kyber Fitness** codebase, architecture, design system, and key implementation rules. Refer to this guide to onboard rapidly, preserve architectural constraints, and avoid common full-stack gotchas (especially regarding Clerk SSR and server functions).
+
+---
+
+## 1. Project Overview & Architecture
+
+**Kyber Fitness** is a premium, full-stack fitness and athletic coaching platform designed to bridge the gap between individual athletes and professional personal trainers. The application allows:
+- **Individuals** to track workout sessions, exercises, sets, reps, weights, cardio metrics, and chronological health metrics.
+- **Trainers** to track their own workouts, invite/manage clients, and request secure consent to view dashboard progress or log sessions on behalf of active, consented athletes.
+- **Visuals** to feel like a modern, clean, high-performance SaaS dashboard with rich aesthetics.
+
+### Technical Stack & Configuration
+
+Kyber Fitness utilizes a highly optimized typescript stack:
+
+| Layer | Technology | Configuration Details |
+|---|---|---|
+| **Framework** | **TanStack Start** (React 19 + Vinxi + Vite) | High-performance isomorphic rendering. |
+| **Routing** | **TanStack Router** | File-system-based routing with automatic code splitting and typesafe links. |
+| **Authentication** | **Clerk** (`@clerk/tanstack-start`) | Secure, robust, multi-tenant session management. |
+| **Database** | **Drizzle ORM** + **SQLite** (`better-sqlite3`) | Local file database (`fitness.db`) with lightweight Drizzle driver. |
+| **Styles** | **Tailwind CSS v4** + **Vanilla CSS** | Performance-first custom styling with dynamic dark mode and custom animations. |
+| **Icons** | **Lucide React** | Sleek and minimal iconography. |
+| **Charts** | **Recharts** / Inline SVGs | Clean trend lines for health metric tracking. |
+
+---
+
+## 2. Core Principles
+
+1. **Separation of Concerns**: Keep authentication (Clerk) and application persistence (SQLite) separate.
+2. **Identity Source of Truth**: Clerk is the absolute source of truth for user identity.
+3. **Application Persistence Source of Truth**: SQLite via Drizzle ORM acts as the secure, local database of record.
+4. **Clerk User IDs**: Store Clerk user IDs as `text` in the SQLite database to avoid relational mapping overhead.
+5. **Server-Side Boundaries**: Keep all Drizzle/database access server-side.
+6. **Isomorphic Server Functions**: Use TanStack Start server functions (`createServerFn`) for protected mutations and sensitive reads.
+7. **Permission Enforcement**: Enforce server-side permissions before executing any client or trainer action.
+8. **UI Modularity**: Keep React components highly reusable and composable.
+9. **Robust Aesthetics First**: Build UI elements that WOW the user, relying on mock data first if necessary, before wiring server functions.
+10. **Incremental Development**: Write and verify logic in small, highly testable increments.
+
+---
+
+## 3. Environment Variables
+
+Define the following environment variables inside the `.env` configuration at the application root:
+
+```env
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+VITE_CLERK_SIGN_IN_URL=/sign-in
+VITE_CLERK_SIGN_UP_URL=/sign-up
+```
+
+### Rules:
+- `VITE_CLERK_PUBLISHABLE_KEY` and redirect URLs may be used on the client-side.
+- `CLERK_SECRET_KEY` is highly sensitive and must only be accessed in server-side blocks.
+- **No Database URL Required**: The local SQLite database resolves dynamically to the file `fitness.db` in the workspace root. Do not commit secrets.
+
+---
+
+## 4. Current Folder Structure
+
+The project implements a flat, route-driven structure using isomorphic actions:
+
+```txt
+kyber-fitness/
+  drizzle/              # Drizzle SQL migration output files
+  public/               # Static assets
+  src/
+    components/         # Reusable UI components
+      Footer.tsx        # Standard footer
+      Header.tsx        # Responsive navigation header
+      ThemeToggle.tsx   # Glassmorphic light/dark mode switch
+
+    lib/
+      db/               # Database files
+        index.ts        # Database connection instantiation
+        schema.ts       # Database Drizzle schema
+        seed.ts         # Seeding script for exercises and trainers
+      actions.ts        # Isomorphic server functions (CRUD, permissions)
+      auth-server.ts    # Secure Clerk server authentication helpers
+
+    routes/             # File-system router
+      __root.tsx        # Document structure, ClerkProvider, ThemeProvider, global errors
+      index.tsx         # Premium visual landing page
+      onboarding.tsx    # Multi-step profile and role registration
+      dashboard.tsx     # Dashboard for individual athletes and coaches
+      clients/          # Trainer client network administration
+      health/           # Health metric visualization and charting
+      my-trainers/      # Individual athlete trainer request pages
+      sign-in/          # Splat folder ($) for path-based Clerk login
+      sign-up/          # Splat folder ($) for path-based Clerk registration
+      workouts/         # Workout log logs and custom set/exercise builders
+
+  drizzle.config.ts     # Drizzle Kit migration configuration
+  fitness.db            # SQLite database file (Local)
+  package.json          # Dependency configurations
+  tsconfig.json         # TypeScript configuration
+  vite.config.ts        # Vite/Vinxi packaging configuration
+```
+
+---
+
+## 5. Stitch Kinetic Aesthetic System
+
+Kyber Fitness features a highly responsive, modern dark-themed dashboard. Agents must strictly adhere to the following visual design guidelines:
+
+### Theme Palette (Stitch Kinetic)
+- **Backgrounds**: Deep Charcoal (`#0a0a0a` / `#121212` / `#131313`) for container cards and base frames, generating a sleek, premium contrast.
+- **Accents**:
+  - **Electric Lime (`#c3f400`)**: Core high-energy highlight used for CTA buttons, success rings, active tabs, and primary metrics.
+  - **Cyan (`#00eefc`)**: Tech highlight used for secondary interactions, data nodes, chart lines, and informative borders.
+- **Surfaces**: Semi-transparent overlays using **Glassmorphism** and backdrop-filters (`rgba(255, 255, 255, 0.03)` with `backdrop-filter: blur(12px)`).
+
+### CSS Styling & Tailwind CSS v4 Configuration
+Tailwind CSS v4 is configured dynamically using a hybrid approach. The theme token values are declared as standard CSS custom variables in the `@theme` block inside `src/styles.css`:
+
+```css
+/* src/styles.css */
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Lexend", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --background: #131313;
+  --surface: #131313;
+  --primary-container: #c3f400; /* Electric Lime */
+  --secondary-container: #00eefc; /* Cyan */
+  /* Glassmorphism template properties... */
+}
+```
+
+---
+
+## 6. Database Schema Reference
+
+The database engine is SQLite, mapped via Drizzle ORM inside `src/lib/db/schema.ts`. Here is the relational mapping:
+
+```mermaid
+erDiagram
+    users ||--|| profiles : "has profile"
+    users ||--|| trainer_profiles : "has professional profile"
+    users ||--o{ trainer_clients : "participates in"
+    users ||--o{ workout_sessions : "performs / logs"
+    users ||--o{ health_metrics : "logs metrics"
+    workout_sessions ||--o{ session_exercises : "contains"
+    exercises ||--o{ session_exercises : "is added to"
+    session_exercises ||--o{ exercise_sets : "has sets"
+
+    users {
+        text id PK "Clerk User ID"
+        text email
+        text name
+        text role "individual | trainer"
+        text createdAt
+        text updatedAt
+    }
+
+    profiles {
+        text id PK
+        text userId FK "Cascade references users.id"
+        text dateOfBirth
+        text gender
+        real height
+        text activityLevel
+        text fitnessGoal
+        text notes
+    }
+
+    trainer_profiles {
+        text id PK
+        text userId FK "Cascade references users.id"
+        text businessName
+        text bio
+        text specialization
+        integer yearsExperience
+    }
+
+    trainer_clients {
+        text id PK
+        text trainerId FK "References users.id"
+        text clientId FK "References users.id"
+        text status "pending | active | declined | removed"
+        text permissions "JSON string (permissions vector)"
+        text createdAt
+        text updatedAt
+    }
+
+    workout_sessions {
+        text id PK
+        text userId FK "References users.id"
+        text recordedByUserId FK "References users.id"
+        text title
+        text sessionDate
+        integer durationMinutes
+        text location
+        text notes
+        text createdAt
+        text updatedAt
+    }
+
+    exercises {
+        text id PK
+        text name
+        text category "strength | cardio | bodyweight | mobility"
+        text defaultUnit "kg | lbs | km | miles"
+        text createdByUserId FK "References users.id"
+        integer isGlobal "1 (global) | 0 (custom)"
+    }
+
+    session_exercises {
+        text id PK
+        text workoutSessionId FK "Cascade references workout_sessions.id"
+        text exerciseId FK "Cascade references exercises.id"
+        integer orderIndex
+        text notes
+    }
+
+    exercise_sets {
+        text id PK
+        text sessionExerciseId FK "Cascade references session_exercises.id"
+        integer setNumber
+        integer reps
+        real weight
+        integer durationSeconds
+        real distance
+        integer restSeconds
+        text intensity "RPE/pace"
+        text notes
+    }
+
+    health_metrics {
+        text id PK
+        text userId FK "Cascade references users.id"
+        text metricType "weight | body_fat"
+        real value
+        text unit
+        text recordedAt
+        text recordedByUserId FK "References users.id"
+        text notes
+    }
+```
+
+---
+
+## 7. Critical Development Gotchas for Agents
+
+Working with TanStack Start, server functions, and Clerk requires strict adherence to these technical constraints:
+
+### ⚠️ Gotcha #1: Clerk Context Loss inside Vinxi (SSR)
+- **Symptom**: Unhandled HTTP Errors or `Context is not available` on initial server-side render.
+- **Cause**: Clerk and TanStack Start run in Vinxi, which uses separate instances of the `unctx` library for async context. If `@clerk/tanstack-start` is bundled as an external dependency, the request context is lost.
+- **Rule**: `@clerk/tanstack-start` **MUST** be placed in Vite's `ssr.noExternal` configuration in `vite.config.ts`. Do not remove it!
+```typescript
+// vite.config.ts
+export default defineConfig({
+  ssr: {
+    noExternal: ['@clerk/tanstack-start'],
+  },
+  // ...
+});
+```
+
+### ⚠️ Gotcha #2: Swallow Redirect Handshakes in Server Functions
+- **Symptom**: User logins trigger infinite loops or fail to sign in, throwing generic `500 Internal Server Errors`.
+- **Cause**: During authentication state initialization, Clerk throws redirection headers as a raw `Response` object inside `getAuth()`. If this error is wrapped in a standard `try/catch` block and swallowed (or transformed into a generic JSON error), Clerk's routing bubble-up fails.
+- **Rule**: Whenever you write or wrap code checking auth context (e.g. `getAuthUser` or `requireAuthUser`), **YOU MUST check if the caught error is a `Response` and rethrow it immediately**:
+```typescript
+// Example from src/lib/auth-server.ts
+export async function getAuthUser(opts?: { shouldRedirect?: boolean }) {
+  try {
+    const auth = await getAuth(getRequest());
+    // ... logic to query user ...
+  } catch (error) {
+    if (error instanceof Response) {
+      throw error; // CRITICAL: Let Clerk's Redirect Bubble Up!
+    }
+    // Handle actual runtime errors
+  }
+}
+```
+
+### ⚠️ Gotcha #3: Clerk Auth Routing Splats
+- **Symptom**: Custom paths like `/sign-in/factor-one` return 404 errors.
+- **Cause**: Clerk's login components use path-based multi-step routing (`routing="path"`). When using TanStack Start's router, nested files won't capture these dynamic paths automatically.
+- **Rule**: Authentication routes must use splat/wildcard paths (`$.tsx`) to ensure Clerk resolves intermediate screens.
+  - Sign In file: `src/routes/sign-in/$.tsx`
+  - Sign Up file: `src/routes/sign-up/$.tsx`
+
+### ⚠️ Gotcha #4: Hydration Mismatches & Browser Extension Conflicts
+- **Symptom**: React Hydration warnings trigger in the console.
+- **Cause**: Clerk dynamically injects script payloads, and browser extensions inject elements, differing from server-rendered HTML.
+- **Rule**: Always preserve the `suppressHydrationWarning` tag on the HTML and Body root nodes in `src/routes/__root.tsx`.
+
+---
+
+## 8. Access Control & Permission Matrix
+
+Kyber Fitness enforces a secure Trainer-Client permission system inside `src/lib/actions.ts`. 
+
+- **Self-Access**: Individuals can always read, write, and update their own workouts and profiles.
+- **Trainer-Client Relationship**:
+  - A trainer can only view data or log sessions for an athlete if there is an active contract inside `trainerClients` with `status = 'active'`.
+  - Permissions are serialized inside a JSON column in `trainer_clients.permissions` (e.g., `{"canViewHealthData": true, "canAddSessions": true}`).
+  - Before performing any trainer actions, agents must execute the server-side validation hook `verifyTrainerClientAccess(trainerId, clientId)`.
+
+```typescript
+// Active permission check helper inside actions.ts
+async function verifyTrainerClientAccess(trainerId: string, clientId: string) {
+  const rel = await db.select().from(trainerClients).where(
+    and(
+      eq(trainerClients.trainerId, trainerId),
+      eq(trainerClients.clientId, clientId),
+      eq(trainerClients.status, 'active')
+    )
+  ).limit(1);
+  return rel.length > 0;
+}
+```
+
+---
+
+## 9. Operational Runbook
+
+### Running the App Locally
+```bash
+# Navigate to the workspace subfolder
+cd kyber-fitness
+
+# Run the Vinxi development server
+npm run dev
+```
+The server will boot on `http://localhost:3000`.
+
+### Database Operations
+If you edit `schema.ts`, you need to sync the SQLite file:
+```bash
+# Push changes to SQLite DB
+npx drizzle-kit push
+
+# Re-run seed script to load exercises and demo trainers
+npm run db:seed
+```
+
+Always double-check that your work preserves visual beauty, follows hydration standards, and honors the Clerk rethrow policies! Keep building the ultimate athletic hub.
+
+---
+
 <!-- intent-skills:start -->
 # Skill mappings - load `use` with `npx @tanstack/intent@latest load <use>`.
 skills:
