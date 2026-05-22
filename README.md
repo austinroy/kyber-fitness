@@ -1,193 +1,120 @@
-Welcome to your new TanStack Start app! 
+# Kyber Fitness — High-Performance Biometric Portal
 
-# Getting Started
+Kyber Fitness is a premium, full-stack fitness and athletic coaching dashboard built for high-performance individual athletes and professional personal trainers. Designed with the high-voltage Stitch Kinetic aesthetic system, it provides a unified platform to log workouts, track health trends, and coordinate secure trainer-client collaborations.
 
-To run this application:
+---
 
-```bash
-npm install
-npm run dev
+## Architectural Core & Stack
+
+Kyber Fitness utilizes an isomorphic, typesafe React 19 stack built on the edge:
+
+*   **App Framework:** [TanStack Start](https://tanstack.com/start) (React 19 + Vinxi SSR) for high-performance isomorphic rendering and server functions.
+*   **Routing System:** [TanStack Router](https://tanstack.com/router) for typesafe, file-system-based navigation and automatic code splitting.
+*   **Identity & Authentication:** [Clerk](https://clerk.com) (`@clerk/tanstack-start`) for seamless user sessions and multi-tenant portal gates.
+*   **Database & Persistence:** [Drizzle ORM](https://orm.drizzle.team) + local **SQLite** (`better-sqlite3`) resolving directly to the local database file `fitness.db`.
+*   **Design & Layout:** [Tailwind CSS v4](https://tailwindcss.com) + custom **Vanilla CSS** tokens providing glassmorphic bento blocks, dynamic grid layouts, and custom micro-animations.
+*   **Telemetry Visuals:** Glowing custom **SVG trendlines** and Lucide React icons for advanced biometric charting.
+
+---
+
+## Stitch Kinetic Aesthetic Guidelines
+
+The application strictly implements the Kinetic design principles to create a visual-first SaaS dashboard:
+
+*   **Contrast Base:** Deep, low-fatigue charcoal surfaces (`#0a0a0a` / `#131313`) generating premium modern depth.
+*   **CTA Highlighters:** **Electric Lime** (`#c3f400`) primary markers for success nodes, action triggers, and primary biometric progress.
+*   **Tech Accents:** **Cyan** (`#00eefc`) secondary lines for charting trends, diagnostic metrics, and structural borders.
+*   **Glassmorphic Surfaces:** Backdrop-filtered translucent panels (`rgba(255, 255, 255, 0.03)` with `backdrop-filter: blur(12px)`) that let glowing background meshes bleed through.
+
+---
+
+## Relational Database Schema
+
+The database uses a lightweight SQLite store mapped with Drizzle. The structural architecture resolves user records directly to Clerk identities via the unique `userId` key:
+
+```mermaid
+erDiagram
+    users ||--|| profiles : "has profile"
+    users ||--|| trainer_profiles : "has professional profile"
+    users ||--o{ trainer_clients : "participates in"
+    users ||--o{ workout_sessions : "performs / logs"
+    users ||--o{ health_metrics : "logs metrics"
+    workout_sessions ||--o{ session_exercises : "contains"
+    exercises ||--o{ session_exercises : "is added to"
+    session_exercises ||--o{ exercise_sets : "has sets"
 ```
 
-# Building For Production
+1.  **`users`:** Secure credentials container syncing Clerk auth ids with role specifications (`individual` or `trainer`).
+2.  **`profiles`:** Bio metrics (Date of Birth, gender, height, activity coefficient, fitness goals).
+3.  **`trainer_profiles`:** Pro coach directory listing studio business titles, specialty fields, bios, and experience durations.
+4.  **`trainer_clients`:** Network mapping between trainers and athletes with status flags (`pending`, `active`, `declined`) and granular reading/writing permissions.
+5.  **`workout_sessions`:** Workout containers cataloging date, title, duration, and notes.
+6.  **`exercises` & `exercise_sets`:** Logged movements preloaded with 15 global standard routines (strength, cardio, bodyweight) plus custom client-created sets tracking reps, weights, distances, durations, and intensity (RPE).
+7.  **`health_metrics`:** Historical timelines of athlete tracking (body weight, body fat %, heart rate indices).
 
-To build this application for production:
+---
 
+## Key Architectural Resolutions & Optimization
+
+During the development process, we implemented several critical configurations to resolve SSR and server function limitations under Vinxi and Clerk:
+
+### 1. Clerk SSR Context Externalization Bypass
+*   **Symptom:** Vinxi threw fatal `Error: Context is not available` on initial server renders during `getAuth` evaluations.
+*   **Cause:** Clerk's `@clerk/tanstack-start` package was being loaded as an external module, running in a isolated scope that did not share H3's `AsyncLocalStorage` instance.
+*   **Resolution:** Configured `ssr.noExternal: ['@clerk/tanstack-start']` inside `vite.config.ts` to force Vite to bundle Clerk inline, syncing the isomorphic request context perfectly.
+
+### 2. Stream Lock & Disturbed Request Stream Bypass
+*   **Symptom:** Submitting POST server functions (such as profile onboarding or workout logging) threw `TypeError: Response body object should not be disturbed or locked` and returned `401 Unauthorized` states.
+*   **Cause:** TanStack Start consumes the incoming request body stream to validate form input. Passing this same stream to Clerk's `getAuth` middleware triggers stream conflicts since the body stream has already been read.
+*   **Resolution:** Built a request-sanitizing utility `createAuthRequest` in `auth-server.ts` that clones the request headers but forces the HTTP method to `'GET'`. Because GET requests carry no body streams, Clerk retrieves auth signatures seamlessly without stream collisions.
+
+### 3. Server-Side Access Validation Hook
+*   **Symptom:** Protecting database transactions against unauthorized clients.
+*   **Resolution:** Enforced `verifyTrainerClientAccess(trainerId, clientId)` inside server actions. A trainer can only query or log biometric details for an athlete if an active relationship (`trainerClients.status = 'active'`) exists with the correct permissions.
+
+---
+
+## Local Development Runbook
+
+Follow these steps to run the application in your local development environment:
+
+### 1. Prepare Environment Variables
+Create a `.env` file in the repository root:
+```env
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+VITE_CLERK_SIGN_IN_URL=/sign-in
+VITE_CLERK_SIGN_UP_URL=/sign-up
+```
+*Note: SQLite database points directly to `fitness.db` in the workspace root. No database URL configuration is needed.*
+
+### 2. Install Dependencies & Build
 ```bash
+# Install packages
+npm install
+
+# Compile the routing tree and verify TS type-safety
 npm run build
 ```
 
-## Testing
-
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
-
+### 3. Database Initialization & Seeding
 ```bash
-npm run test
+# Push schema migrations to the local SQLite database file
+npx drizzle-kit push
+
+# Populate database with standard exercise sets and mock trainers
+npm run db:seed
 ```
 
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `npm install @tailwindcss/vite tailwindcss -D`
-
-
-
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
+### 4. Run the Dev Server
+```bash
+# Spin up the Vinxi server (runs on http://localhost:3000)
+npm run dev
 ```
 
-Then anywhere in your JSX you can use it like so:
+---
 
-```tsx
-<Link to="/about">About</Link>
-```
+## Security & Permissive Operations Matrix
 
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+*   **Athletes:** Complete control over personal biometric inputs, weight history, and private logging. Athletes have explicit authority to revoke trainer access at any time from the `/my-trainers` console.
+*   **Trainers:** Access is strictly read-only for metrics unless the client grants explicit write permissions (`canAddSessions = true`). All database writes are signed with `recordedByUserId` for full accountability.
