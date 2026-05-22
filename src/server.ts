@@ -21,7 +21,7 @@ const isClerkConfigured = !!(
 );
 
 // We define a standard handler as fallback
-const standardHandler = createStartHandler()(defaultStreamHandler);
+const standardHandler = createStartHandler(defaultStreamHandler);
 const clerkWrappedHandler = isClerkConfigured 
   ? createClerkHandler(createStartHandler)(defaultStreamHandler)
   : null;
