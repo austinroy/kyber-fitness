@@ -90,6 +90,7 @@ kyber-fitness/
       clients/          # Trainer client network administration
       health/           # Health metric visualization and charting
       my-trainers/      # Individual athlete trainer request pages
+      programs/         # Workout program templates and client assignment builder
       sign-in/          # Splat folder ($) for path-based Clerk login
       sign-up/          # Splat folder ($) for path-based Clerk registration
       settings.tsx      # Unified settings dashboard for athletes and coaches
@@ -148,9 +149,15 @@ erDiagram
     users ||--o{ trainer_clients : "participates in"
     users ||--o{ workout_sessions : "performs / logs"
     users ||--o{ health_metrics : "logs metrics"
+    users ||--o{ workout_programs : "creates"
+    users ||--o{ program_assignments : "assigns / receives"
     workout_sessions ||--o{ session_exercises : "contains"
     exercises ||--o{ session_exercises : "is added to"
     session_exercises ||--o{ exercise_sets : "has sets"
+    workout_programs ||--o{ workout_program_exercises : "contains"
+    exercises ||--o{ workout_program_exercises : "is added to"
+    workout_program_exercises ||--o{ workout_program_sets : "has sets"
+    workout_programs ||--o{ program_assignments : "is mapped to"
 
     users {
         text id PK "Clerk User ID"
@@ -244,6 +251,47 @@ erDiagram
         text recordedByUserId FK "References users.id"
         text notes
     }
+
+    workout_programs {
+        text id PK
+        text createdByUserId FK "References users.id"
+        text title
+        text notes
+        text createdAt
+        text updatedAt
+    }
+
+    workout_program_exercises {
+        text id PK
+        text programId FK "Cascade references workout_programs.id"
+        text exerciseId FK "Cascade references exercises.id"
+        integer orderIndex
+        text notes
+    }
+
+    workout_program_sets {
+        text id PK
+        text programExerciseId FK "Cascade references workout_program_exercises.id"
+        integer setNumber
+        integer reps
+        real weight
+        integer durationSeconds
+        real distance
+        integer restSeconds
+        text intensity "RPE/pace"
+        text notes
+    }
+
+    program_assignments {
+        text id PK
+        text programId FK "Cascade references workout_programs.id"
+        text clientId FK "Cascade references users.id"
+        text assignedByUserId FK "Cascade references users.id"
+        text status "pending | completed"
+        text notes
+        text assignedAt
+        text completedAt
+    }
 ```
 
 ---
@@ -310,9 +358,12 @@ Kyber Fitness enforces a secure Trainer-Client permission system inside `src/lib
 
 - **Self-Access**: Individuals can always read, write, and update their own workouts and profiles. Profile / biometric and coaching credential updates are securely mapped through the `updateUserProfile` action under transaction safety.
 - **Trainer-Client Relationship**:
-  - A trainer can only view data or log sessions for an athlete if there is an active contract inside `trainerClients` with `status = 'active'`.
+  - A trainer can only view data, assign workout programs, or log sessions for an athlete if there is an active contract inside `trainerClients` with `status = 'active'`.
   - Permissions are serialized inside a JSON column in `trainer_clients.permissions` (e.g., `{"canViewHealthData": true, "canAddSessions": true}`).
-  - Before performing any trainer actions, agents must execute the server-side validation hook `verifyTrainerClientAccess(trainerId, clientId)`.
+  - Before performing any trainer actions (including logging sessions or assigning program templates), agents must execute the server-side validation hook `verifyTrainerClientAccess(trainerId, clientId)`.
+- **Workout Program Assignments**:
+  - Trainers can only assign workout programs (`assignProgramToClient`) to active, consented clients.
+  - Clients can only access their assigned program templates (`getClientAssignedPrograms`) that have been explicitly assigned to them by their active trainers.
 
 ```typescript
 // Active permission check helper inside actions.ts
