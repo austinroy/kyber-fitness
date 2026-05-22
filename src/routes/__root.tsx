@@ -8,7 +8,7 @@ import { getCurrentUserProfile } from '../lib/actions'
 import appCss from '../styles.css?url'
 
 // Fetch the Clerk publishable key
-const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_placeholder';
+const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_placeholder'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -16,14 +16,20 @@ export const Route = createRootRoute({
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { title: 'Kyber Fitness — Kinetic Performance System' },
-      { name: 'description', content: 'Track workouts, health data, and manage client-trainer relationships.' }
+      {
+        name: 'description',
+        content: 'Track workouts, health data, and manage client-trainer relationships.',
+      },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
       { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
-      { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0' }
-    ]
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0',
+      },
+    ],
   }),
   shellComponent: RootDocument,
   notFoundComponent: NotFoundComponent,
@@ -33,14 +39,17 @@ function NotFoundComponent() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4 max-w-md mx-auto relative">
       <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[var(--primary-container)]/5 rounded-full filter blur-[80px] pointer-events-none"></div>
-      
-      <span className="material-symbols-outlined text-[var(--primary-container)] text-6xl mb-6 animate-bounce">explore_off</span>
-      
+
+      <span className="material-symbols-outlined text-[var(--primary-container)] text-6xl mb-6 animate-bounce">
+        explore_off
+      </span>
+
       <h1 className="headline-lg font-black tracking-tight text-white mb-2">ROUTE NOT FOUND</h1>
       <p className="body-md text-[var(--on-surface-variant)] mb-8">
-        The coordinates you entered do not exist on the Kyber grid. Let's redirect your training session back to base.
+        The coordinates you entered do not exist on the Kyber grid. Let's redirect your training
+        session back to base.
       </p>
-      
+
       <Link to="/" className="btn btn-primary px-8 py-3 flex items-center justify-center gap-2">
         <span className="material-symbols-outlined text-sm">home</span>
         <span>Return to Base</span>
@@ -50,7 +59,7 @@ function NotFoundComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const isClerkConfigured = publishableKey && publishableKey !== 'pk_test_placeholder';
+  const isClerkConfigured = publishableKey && publishableKey !== 'pk_test_placeholder'
 
   if (!isClerkConfigured) {
     return (
@@ -58,18 +67,25 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <head>
           <HeadContent />
         </head>
-        <body className="font-sans antialiased selection:bg-[rgba(195,244,0,0.2)] selection:text-white bg-[#0a0a0a]" suppressHydrationWarning>
+        <body
+          className="font-sans antialiased selection:bg-[rgba(195,244,0,0.2)] selection:text-white bg-[#0a0a0a]"
+          suppressHydrationWarning
+        >
           <div className="flex flex-col items-center justify-center min-h-screen text-center px-4 max-w-lg mx-auto relative">
             <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[var(--primary-container)]/5 rounded-full filter blur-[80px] pointer-events-none"></div>
-            
+
             <div className="chip mb-6 flex items-center gap-1.5 bg-red-950/40 border border-red-900/30 text-red-400">
               <span className="material-symbols-outlined text-sm">warning</span>
               <span>Sync Offline</span>
             </div>
-            
-            <h1 className="headline-lg font-black tracking-tight text-white mb-4">PORTAL KEYS MISSING</h1>
+
+            <h1 className="headline-lg font-black tracking-tight text-white mb-4">
+              PORTAL KEYS MISSING
+            </h1>
             <p className="body-md text-[var(--on-surface-variant)] mb-8">
-              The Kyber portal cannot establish client synchronization because the Clerk Publishable Key is missing or set to placeholder. Please configure <strong>VITE_CLERK_PUBLISHABLE_KEY</strong> in your hosting environment.
+              The Kyber portal cannot establish client synchronization because the Clerk Publishable
+              Key is missing or set to placeholder. Please configure{' '}
+              <strong>VITE_CLERK_PUBLISHABLE_KEY</strong> in your hosting environment.
             </p>
           </div>
           <Scripts />
@@ -84,7 +100,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <head>
           <HeadContent />
         </head>
-        <body className="font-sans antialiased selection:bg-[rgba(195,244,0,0.2)] selection:text-white" suppressHydrationWarning>
+        <body
+          className="font-sans antialiased selection:bg-[rgba(195,244,0,0.2)] selection:text-white"
+          suppressHydrationWarning
+        >
           <AppLayout>{children}</AppLayout>
           <TanStackDevtools
             config={{ position: 'bottom-right' }}
@@ -132,10 +151,16 @@ function AppLayout({ children }: { children: React.ReactNode }) {
       <SignedIn>
         <aside className="sidebar">
           <div className="sidebar-header">
-            <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">bolt</span>
+            <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
+              bolt
+            </span>
             <div>
-              <h1 className="headline-md font-extrabold tracking-tight m-0 text-white leading-none">KYBER</h1>
-              <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0 tracking-wider">KINETIC PERFORMANCE</p>
+              <h1 className="headline-md font-extrabold tracking-tight m-0 text-white leading-none">
+                KYBER
+              </h1>
+              <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0 tracking-wider">
+                KINETIC PERFORMANCE
+              </p>
             </div>
           </div>
 
@@ -168,7 +193,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             )}
 
             {dbUser && dbUser.role === 'individual' && (
-              <Link to="/my-trainers" className="sidebar-link" activeProps={{ className: 'active' }}>
+              <Link
+                to="/my-trainers"
+                className="sidebar-link"
+                activeProps={{ className: 'active' }}
+              >
                 <span className="material-symbols-outlined">badge</span>
                 <span>My Trainers</span>
               </Link>
@@ -180,7 +209,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 <span>Settings</span>
               </Link>
             )}
-            
+
             {!loading && !dbUser && (
               <Link to="/onboarding" className="sidebar-link" activeProps={{ className: 'active' }}>
                 <span className="material-symbols-outlined">assignment_ind</span>
@@ -194,8 +223,12 @@ function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-3">
               <UserButton afterSignOutUrl="/" />
               <div className="text-left">
-                <p className="text-xs font-semibold text-white truncate max-w-[150px] m-0">{dbUser?.name || 'Kyber Athlete'}</p>
-                <p className="text-[10px] text-[var(--on-surface-variant)] capitalize m-0">{dbUser?.role || 'Onboarding'}</p>
+                <p className="text-xs font-semibold text-white truncate max-w-[150px] m-0">
+                  {dbUser?.name || 'Kyber Athlete'}
+                </p>
+                <p className="text-[10px] text-[var(--on-surface-variant)] capitalize m-0">
+                  {dbUser?.role || 'Onboarding'}
+                </p>
               </div>
             </div>
           </div>
@@ -208,12 +241,20 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         <SignedOut>
           <header className="flex justify-between items-center py-4 px-6 border-b border-white/5 bg-[var(--surface-container-lowest)] mb-6 rounded-[var(--rounded-lg)]">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl">bolt</span>
-              <span className="headline-md font-bold tracking-tight text-white m-0">KYBER FITNESS</span>
+              <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl">
+                bolt
+              </span>
+              <span className="headline-md font-bold tracking-tight text-white m-0">
+                KYBER FITNESS
+              </span>
             </div>
             <div className="flex items-center gap-4">
-              <Link to="/sign-in" className="btn btn-secondary py-1.5 px-4 text-xs">Sign In</Link>
-              <Link to="/sign-up" className="btn btn-primary py-1.5 px-4 text-xs">Sign Up</Link>
+              <Link to="/sign-in" className="btn btn-secondary py-1.5 px-4 text-xs">
+                Sign In
+              </Link>
+              <Link to="/sign-up" className="btn btn-primary py-1.5 px-4 text-xs">
+                Sign Up
+              </Link>
             </div>
           </header>
         </SignedOut>

@@ -13,7 +13,9 @@ function SignInPage() {
 
       <div className="w-full max-w-md flex flex-col items-center gap-6 z-10">
         <div className="flex items-center gap-2 mb-2">
-          <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">bolt</span>
+          <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
+            bolt
+          </span>
           <span className="headline-lg font-black tracking-tight text-white m-0">KYBER PORTAL</span>
         </div>
 

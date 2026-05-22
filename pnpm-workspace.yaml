@@ -1,7 +1,7 @@
 allowBuilds:
-  "@clerk/shared": true
-  "@parcel/watcher": true
-  "better-sqlite3": true
-  "esbuild": true
-  "lightningcss": true
-  "sharp": true
+  '@clerk/shared': true
+  '@parcel/watcher': true
+  'better-sqlite3': true
+  'esbuild': true
+  'lightningcss': true
+  'sharp': true

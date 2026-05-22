@@ -18,7 +18,7 @@ function OnboardingPage() {
   const [role, setRole] = useState<'individual' | 'trainer'>('individual')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  
+
   // Individual fields
   const [dob, setDob] = useState('')
   const [gender, setGender] = useState('')
@@ -50,11 +50,11 @@ function OnboardingPage() {
             if (res && res.onboarded) {
               navigate({ to: '/dashboard' })
             } else {
-              setChecking(false);
+              setChecking(false)
             }
           })
           .catch(() => {
-            setChecking(false);
+            setChecking(false)
           })
       }
     }
@@ -98,7 +98,9 @@ function OnboardingPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">Securing connection to portal...</p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">
+          Securing connection to portal...
+        </p>
       </div>
     )
   }
@@ -108,7 +110,8 @@ function OnboardingPage() {
       <div className="chip mb-4">PORTAL REGISTRATION</div>
       <h1 className="headline-lg font-black text-white mb-2">COMPLETE YOUR BIO PROFILE</h1>
       <p className="body-md text-[var(--on-surface-variant)] mb-8">
-        Welcome to Kyber, {name}. Please configure your performance role and initial metrics to sync your biometric logs.
+        Welcome to Kyber, {name}. Please configure your performance role and initial metrics to sync
+        your biometric logs.
       </p>
 
       {error && (
@@ -129,9 +132,13 @@ function OnboardingPage() {
                 : 'bg-transparent border border-white/5 opacity-60 hover:opacity-100'
             }`}
           >
-            <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">fitness_center</span>
+            <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
+              fitness_center
+            </span>
             <span className="font-bold text-white text-base">Individual Athlete</span>
-            <span className="text-xs text-[var(--on-surface-variant)]">I want to log my personal workouts and track my health data.</span>
+            <span className="text-xs text-[var(--on-surface-variant)]">
+              I want to log my personal workouts and track my health data.
+            </span>
           </button>
 
           <button
@@ -143,16 +150,22 @@ function OnboardingPage() {
                 : 'bg-transparent border border-white/5 opacity-60 hover:opacity-100'
             }`}
           >
-            <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl">sports</span>
+            <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl">
+              sports
+            </span>
             <span className="font-bold text-white text-base">Professional Trainer</span>
-            <span className="text-xs text-[var(--on-surface-variant)]">I want to manage client files, assign workouts, and track progress.</span>
+            <span className="text-xs text-[var(--on-surface-variant)]">
+              I want to manage client files, assign workouts, and track progress.
+            </span>
           </button>
         </div>
 
         {/* Base Details Card */}
         <div className="card space-y-4">
-          <h3 className="headline-md text-lg font-bold border-b border-white/5 pb-2">Base Information</h3>
-          
+          <h3 className="headline-md text-lg font-bold border-b border-white/5 pb-2">
+            Base Information
+          </h3>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="input-group">
               <label className="label-md text-[var(--on-surface-variant)]">Full Name</label>
@@ -182,15 +195,14 @@ function OnboardingPage() {
         {/* Conditional Cards */}
         {role === 'individual' ? (
           <div className="card space-y-4">
-            <h3 className="headline-md text-lg font-bold border-b border-white/5 pb-2 text-[var(--primary-container)]">Athlete Metrics</h3>
-            
+            <h3 className="headline-md text-lg font-bold border-b border-white/5 pb-2 text-[var(--primary-container)]">
+              Athlete Metrics
+            </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="input-group">
                 <label className="label-md text-[var(--on-surface-variant)]">Date of Birth</label>
-                <DatePicker
-                  value={dob}
-                  onChange={setDob}
-                />
+                <DatePicker value={dob} onChange={setDob} />
               </div>
               <div className="input-group">
                 <label className="label-md text-[var(--on-surface-variant)]">Gender</label>
@@ -247,7 +259,9 @@ function OnboardingPage() {
             </div>
 
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">Medical/Injury Notes</label>
+              <label className="label-md text-[var(--on-surface-variant)]">
+                Medical/Injury Notes
+              </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -258,11 +272,15 @@ function OnboardingPage() {
           </div>
         ) : (
           <div className="card space-y-4">
-            <h3 className="headline-md text-lg font-bold border-b border-white/5 pb-2 text-[var(--secondary-container)]">Coaching Credentials</h3>
-            
+            <h3 className="headline-md text-lg font-bold border-b border-white/5 pb-2 text-[var(--secondary-container)]">
+              Coaching Credentials
+            </h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="input-group">
-                <label className="label-md text-[var(--on-surface-variant)]">Business / Studio Name</label>
+                <label className="label-md text-[var(--on-surface-variant)]">
+                  Business / Studio Name
+                </label>
                 <input
                   type="text"
                   value={businessName}
@@ -272,7 +290,9 @@ function OnboardingPage() {
                 />
               </div>
               <div className="input-group">
-                <label className="label-md text-[var(--on-surface-variant)]">Years of Experience</label>
+                <label className="label-md text-[var(--on-surface-variant)]">
+                  Years of Experience
+                </label>
                 <input
                   type="number"
                   value={experience}
@@ -284,7 +304,9 @@ function OnboardingPage() {
             </div>
 
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">Specialization Areas</label>
+              <label className="label-md text-[var(--on-surface-variant)]">
+                Specialization Areas
+              </label>
               <input
                 type="text"
                 value={specialization}

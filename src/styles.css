@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --font-sans: "Lexend", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Lexend', ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -121,7 +121,7 @@ body {
   color: var(--on-background);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  background-image: 
+  background-image:
     radial-gradient(circle at 10% 10%, rgba(195, 244, 0, 0.04) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(0, 238, 252, 0.04) 0%, transparent 40%),
     linear-gradient(180deg, #131313 0%, #0e0e0e 100%);
@@ -215,7 +215,8 @@ body {
   color: var(--on-primary-container);
 }
 
-.btn-primary:hover, .btn-primary:focus {
+.btn-primary:hover,
+.btn-primary:focus {
   box-shadow: 0 0 16px rgba(195, 244, 0, 0.4);
   background-color: var(--primary-fixed);
 }
@@ -226,7 +227,8 @@ body {
   border: 1px solid var(--secondary-container);
 }
 
-.btn-secondary:hover, .btn-secondary:focus {
+.btn-secondary:hover,
+.btn-secondary:focus {
   box-shadow: 0 0 16px rgba(0, 238, 252, 0.4);
   background-color: rgba(0, 238, 252, 0.05);
 }
@@ -261,7 +263,10 @@ body {
 .card-featured::before {
   content: '';
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: radial-gradient(circle at top left, rgba(0, 238, 252, 0.05), transparent 70%);
   pointer-events: none;
 }

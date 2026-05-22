@@ -9,13 +9,33 @@ interface DatePickerProps {
 }
 
 const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ]
 
 const SHORT_MONTHS = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ]
 
 function parseDateString(dateStr: string) {
@@ -45,7 +65,7 @@ export default function DatePicker({
   onChange,
   placeholder = 'Select Date',
   disabled = false,
-  className = ''
+  className = '',
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -124,10 +144,14 @@ export default function DatePicker({
           className={`w-full flex items-center justify-between px-4 py-2 bg-[#201f1f] text-white/40 border border-white/10 rounded-xl cursor-not-allowed ${className}`}
         >
           <span className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#c4c9ac] opacity-50 text-lg">calendar_today</span>
+            <span className="material-symbols-outlined text-[#c4c9ac] opacity-50 text-lg">
+              calendar_today
+            </span>
             <span>{value ? formatDateDisplay(value) : placeholder}</span>
           </span>
-          <span className="material-symbols-outlined text-[#c4c9ac] opacity-50 text-lg">expand_more</span>
+          <span className="material-symbols-outlined text-[#c4c9ac] opacity-50 text-lg">
+            expand_more
+          </span>
         </button>
       </div>
     )
@@ -191,18 +215,21 @@ export default function DatePicker({
         className={`w-full flex items-center justify-between px-4 py-2.5 bg-[#201f1f] text-on-surface border border-white/10 rounded-xl hover:border-[#c3f400]/50 transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
       >
         <span className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[#abd600] text-lg select-none">calendar_today</span>
+          <span className="material-symbols-outlined text-[#abd600] text-lg select-none">
+            calendar_today
+          </span>
           <span className={value ? 'text-white font-medium' : 'text-white/40'}>
             {value ? formatDateDisplay(value) : placeholder}
           </span>
         </span>
-        <span className="material-symbols-outlined text-[#c4c9ac] text-lg select-none">expand_more</span>
+        <span className="material-symbols-outlined text-[#c4c9ac] text-lg select-none">
+          expand_more
+        </span>
       </button>
 
       {/* Desktop Calendar Dropdown */}
       {isOpen && !isMobile && (
         <div className="absolute left-0 md:right-0 mt-2 w-[320px] bg-[#1e1e1ec0] backdrop-blur-md border border-white/10 rounded-xl shadow-2xl z-[60] p-4 transition-all duration-200">
-          
           {/* Summary Display */}
           <div className="text-center py-2 bg-white/5 rounded-xl border border-white/5 mb-3 flex justify-center items-center gap-1.5 font-bold text-white text-sm tracking-wide">
             <span className="text-[#c3f400]">{SHORT_MONTHS[selectedMonth]}</span>
@@ -277,7 +304,10 @@ export default function DatePicker({
               {daysArray.map((d) => {
                 const isSelected = selectedDay === d
                 const today = new Date()
-                const isToday = today.getDate() === d && today.getMonth() === selectedMonth && today.getFullYear() === selectedYear
+                const isToday =
+                  today.getDate() === d &&
+                  today.getMonth() === selectedMonth &&
+                  today.getFullYear() === selectedYear
                 return (
                   <button
                     key={d}
@@ -363,7 +393,11 @@ export default function DatePicker({
           <div className="fixed bottom-0 left-0 w-full z-[9999] bg-[#1e1e1e] rounded-t-[32px] overflow-hidden flex flex-col border-t border-white/10 max-h-[90vh]">
             {/* Modal Header */}
             <div className="flex justify-between items-center w-full px-6 h-16 border-b border-white/10 bg-[#131313]">
-              <button type="button" className="p-2 active:scale-95 transition-transform" onClick={() => setIsOpen(false)}>
+              <button
+                type="button"
+                className="p-2 active:scale-95 transition-transform"
+                onClick={() => setIsOpen(false)}
+              >
                 <span className="material-symbols-outlined text-white">close</span>
               </button>
               <h2 className="text-lg font-bold text-white">Select Date</h2>
@@ -378,7 +412,6 @@ export default function DatePicker({
 
             {/* Datepicker Content */}
             <div className="overflow-y-auto p-6 space-y-4">
-              
               {/* Summary Display */}
               <div className="text-center py-2.5 bg-white/5 rounded-xl border border-white/5 flex justify-center items-center gap-1.5 font-bold text-white text-md tracking-wide">
                 <span className="text-[#c3f400]">{MONTHS[selectedMonth]}</span>
@@ -453,7 +486,10 @@ export default function DatePicker({
                   {daysArray.map((d) => {
                     const isSelected = selectedDay === d
                     const today = new Date()
-                    const isToday = today.getDate() === d && today.getMonth() === selectedMonth && today.getFullYear() === selectedYear
+                    const isToday =
+                      today.getDate() === d &&
+                      today.getMonth() === selectedMonth &&
+                      today.getFullYear() === selectedYear
                     return (
                       <button
                         key={d}
