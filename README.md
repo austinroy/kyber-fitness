@@ -163,6 +163,9 @@ To complete the build and runtime pipeline, navigate to **Site configuration > E
 *   `VITE_CLERK_SIGN_IN_URL`: `/sign-in`
 *   `VITE_CLERK_SIGN_UP_URL`: `/sign-up`
 
+### 5. Strict Dependency Resolution (`unctx`)
+To resolve Rolldown/Vite compilation errors under pnpm's strict dependency model, `unctx` was added as a direct dependency in `package.json`. This guarantees that our Nitro context-retrieval shims inside `src/shim.ts` resolve perfectly during production bundler compilation on Netlify.
+
 ---
 ---
 
