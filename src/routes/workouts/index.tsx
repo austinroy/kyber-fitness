@@ -1,7 +1,7 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
-import { getWorkoutSessionsHistory } from '../../lib/actions'
+import { getWorkoutSessionsHistory, getCurrentUserProfile } from '../../lib/actions'
 
 export const Route = createFileRoute('/workouts/')({
   component: WorkoutsPage,
@@ -9,21 +9,38 @@ export const Route = createFileRoute('/workouts/')({
 
 function WorkoutsPage() {
   const { isLoaded, isSignedIn } = useUser()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [sessions, setSessions] = useState<any[]>([])
   const [selectedSession, setSelectedSession] = useState<any | null>(null)
 
   useEffect(() => {
-    if (isLoaded && isSignedIn) {
-      getWorkoutSessionsHistory()
-        .then((hist) => {
-          setSessions(hist || [])
-          if (hist && hist.length > 0) {
-            setSelectedSession(hist[0])
-          }
-          setLoading(false)
-        })
-        .catch(() => setLoading(false))
+    if (isLoaded) {
+      if (!isSignedIn) {
+        navigate({ to: '/sign-in' })
+      } else {
+        getCurrentUserProfile()
+          .then((res) => {
+            if (res && res.authenticated) {
+              if (!res.onboarded) {
+                navigate({ to: '/onboarding' })
+              } else {
+                getWorkoutSessionsHistory()
+                  .then((hist) => {
+                    setSessions(hist || [])
+                    if (hist && hist.length > 0) {
+                      setSelectedSession(hist[0])
+                    }
+                    setLoading(false)
+                  })
+                  .catch(() => setLoading(false))
+              }
+            } else {
+              navigate({ to: '/onboarding' })
+            }
+          })
+          .catch(() => setLoading(false))
+      }
     }
   }, [isLoaded, isSignedIn])
 

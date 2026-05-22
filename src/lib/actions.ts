@@ -111,6 +111,76 @@ export const onboardUser = createServerFn({ method: 'POST' })
     return { success: true };
   });
 
+// 2b. Update User Profile & Health Data / Credentials
+export const updateUserProfile = createServerFn({ method: 'POST' })
+  .inputValidator((data: {
+    name: string;
+    // Shared profile details
+    dateOfBirth?: string;
+    gender?: string;
+    height?: number;
+    activityLevel?: string;
+    fitnessGoal?: string;
+    notes?: string;
+    // Trainer profile details
+    businessName?: string;
+    bio?: string;
+    specialization?: string;
+    yearsExperience?: number;
+  }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser();
+    const userId = auth.userId;
+    const now = new Date().toISOString();
+
+    // 1. Get current user to check their role
+    const dbUsers = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    if (dbUsers.length === 0) {
+      throw new Error('User record not found in the database. Please complete onboarding first.');
+    }
+    const user = dbUsers[0];
+
+    // 2. Perform updates inside a transaction
+    db.transaction((tx) => {
+      // Update name and updatedAt on the users table
+      tx.update(users)
+        .set({
+          name: data.name,
+          updatedAt: now
+        })
+        .where(eq(users.id, userId))
+        .run();
+
+      if (user.role === 'individual') {
+        // Update profiles table
+        tx.update(profiles)
+          .set({
+            dateOfBirth: data.dateOfBirth || null,
+            gender: data.gender || null,
+            height: data.height || null,
+            activityLevel: data.activityLevel || null,
+            fitnessGoal: data.fitnessGoal || null,
+            notes: data.notes || null,
+          })
+          .where(eq(profiles.userId, userId))
+          .run();
+      } else if (user.role === 'trainer') {
+        // Update trainerProfiles table
+        tx.update(trainerProfiles)
+          .set({
+            businessName: data.businessName || null,
+            bio: data.bio || null,
+            specialization: data.specialization || null,
+            yearsExperience: data.yearsExperience || null,
+          })
+          .where(eq(trainerProfiles.userId, userId))
+          .run();
+      }
+    });
+
+    return { success: true };
+  });
+
 // 3. Get Exercises (Global defaults + custom ones for the user)
 export const getExercisesList = createServerFn({ method: 'GET' })
   .handler(async () => {
@@ -202,9 +272,9 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
     const sessionId = generateId('sess');
 
     // Run within a transaction to maintain integrity
-    await db.transaction(async (tx) => {
+    db.transaction((tx) => {
       // 1. Insert Workout Session
-      await tx.insert(workoutSessions).values({
+      tx.insert(workoutSessions).values({
         id: sessionId,
         userId: targetUserId,
         recordedByUserId: currentUserId,
@@ -215,22 +285,22 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
         notes: data.notes || null,
         createdAt: now,
         updatedAt: now,
-      });
+      }).run();
 
       // 2. Insert Exercises and their Sets
       for (const ex of data.exercises) {
         const sessExId = generateId('sexex');
-        await tx.insert(sessionExercises).values({
+        tx.insert(sessionExercises).values({
           id: sessExId,
           workoutSessionId: sessionId,
           exerciseId: ex.exerciseId,
           orderIndex: ex.orderIndex,
           notes: ex.notes || null,
-        });
+        }).run();
 
         for (const set of ex.sets) {
           const setId = generateId('set');
-          await tx.insert(exerciseSets).values({
+          tx.insert(exerciseSets).values({
             id: setId,
             sessionExerciseId: sessExId,
             setNumber: set.setNumber,
@@ -241,7 +311,7 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
             restSeconds: set.restSeconds || null,
             intensity: set.intensity || null,
             notes: set.notes || null,
-          });
+          }).run();
         }
       }
     });
