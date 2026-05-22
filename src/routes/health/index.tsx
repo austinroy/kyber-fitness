@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { getCurrentUserProfile, getHealthMetricsHistory, logHealthMetric, getTrainerClientsList } from '../../lib/actions'
 
 export const Route = createFileRoute('/health/')({
+  ssr: false,
   component: HealthDashboardPage,
 })
 

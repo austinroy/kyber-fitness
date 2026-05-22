@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { SignIn } from '@clerk/tanstack-start'
 
 export const Route = createFileRoute('/sign-in/$')({
+  ssr: false,
   component: SignInPage,
 })
 

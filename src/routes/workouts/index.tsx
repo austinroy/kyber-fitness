@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { getWorkoutSessionsHistory, getCurrentUserProfile } from '../../lib/actions'
 
 export const Route = createFileRoute('/workouts/')({
+  ssr: false,
   component: WorkoutsPage,
 })
 

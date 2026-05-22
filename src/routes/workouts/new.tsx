@@ -5,6 +5,7 @@ import { getCurrentUserProfile, getExercisesList, createCustomExercise, getTrain
 import DatePicker from '../../components/DatePicker'
 
 export const Route = createFileRoute('/workouts/new')({
+  ssr: false,
   component: LogWorkoutPage,
 })
 

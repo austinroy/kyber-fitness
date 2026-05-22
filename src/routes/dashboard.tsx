@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { getCurrentUserProfile, getWorkoutSessionsHistory, logHealthMetric } from '../lib/actions'
 
 export const Route = createFileRoute('/dashboard')({
+  ssr: false,
   component: DashboardPage,
 })
 

@@ -5,6 +5,7 @@ import { getCurrentUserProfile, onboardUser } from '../lib/actions'
 import DatePicker from '../components/DatePicker'
 
 export const Route = createFileRoute('/onboarding')({
+  ssr: false,
   component: OnboardingPage,
 })
 
