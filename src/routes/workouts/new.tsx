@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
 import { getCurrentUserProfile, getExercisesList, createCustomExercise, getTrainerClientsList, saveWorkoutSession } from '../../lib/actions'
+import DatePicker from '../../components/DatePicker'
 
 export const Route = createFileRoute('/workouts/new')({
   component: LogWorkoutPage,
@@ -318,11 +319,9 @@ function LogWorkoutPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="input-group">
                 <label className="label-md text-xs text-[var(--on-surface-variant)]">Date</label>
-                <input
-                  type="date"
+                <DatePicker
                   value={sessionDate}
-                  onChange={(e) => setSessionDate(e.target.value)}
-                  className="input-field"
+                  onChange={setSessionDate}
                 />
               </div>
               <div className="input-group">
