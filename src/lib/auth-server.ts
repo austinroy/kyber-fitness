@@ -1,15 +1,6 @@
 import { getAuth } from '@clerk/tanstack-start/server';
 import { getRequest } from '@tanstack/react-start/server';
 
-function createAuthRequest(request: Request) {
-  return new Request(request.url, {
-    headers: request.headers,
-    method: request.method,
-    redirect: request.redirect,
-    cache: request.cache,
-  });
-}
-
 export async function getAuthUser() {
   try {
     const request = getRequest();
@@ -17,7 +8,7 @@ export async function getAuthUser() {
       return null;
     }
 
-    return await getAuth(createAuthRequest(request));
+    return await getAuth(request);
   } catch (error) {
     if (error instanceof Response) {
       throw error;
