@@ -155,10 +155,16 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 
             {/* Role-based navigation */}
             {dbUser && dbUser.role === 'trainer' && (
-              <Link to="/clients" className="sidebar-link" activeProps={{ className: 'active' }}>
-                <span className="material-symbols-outlined">groups</span>
-                <span>My Clients</span>
-              </Link>
+              <>
+                <Link to="/clients" className="sidebar-link" activeProps={{ className: 'active' }}>
+                  <span className="material-symbols-outlined">groups</span>
+                  <span>My Clients</span>
+                </Link>
+                <Link to="/programs" className="sidebar-link" activeProps={{ className: 'active' }}>
+                  <span className="material-symbols-outlined">edit_note</span>
+                  <span>Program Builder</span>
+                </Link>
+              </>
             )}
 
             {dbUser && dbUser.role === 'individual' && (

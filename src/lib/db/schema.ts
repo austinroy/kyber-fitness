@@ -101,3 +101,49 @@ export const healthMetrics = sqliteTable('health_metrics', {
   recordedByUserId: text('recorded_by_user_id').references(() => users.id).notNull(),
   notes: text('notes'),
 });
+
+// 10. Workout Program Templates (Routines designed by trainers)
+export const workoutPrograms = sqliteTable('workout_programs', {
+  id: text('id').primaryKey(),
+  createdByUserId: text('created_by_user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(), // Trainer ID
+  title: text('title').notNull(),
+  notes: text('notes'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// 11. Program Exercises (Junction between Program & Exercises)
+export const workoutProgramExercises = sqliteTable('workout_program_exercises', {
+  id: text('id').primaryKey(),
+  programId: text('program_id').references(() => workoutPrograms.id, { onDelete: 'cascade' }).notNull(),
+  exerciseId: text('exercise_id').references(() => exercises.id, { onDelete: 'cascade' }).notNull(),
+  orderIndex: integer('order_index').notNull(),
+  notes: text('notes'),
+});
+
+// 12. Program Sets (Default reps / weights for program templates)
+export const workoutProgramSets = sqliteTable('workout_program_sets', {
+  id: text('id').primaryKey(),
+  programExerciseId: text('program_exercise_id').references(() => workoutProgramExercises.id, { onDelete: 'cascade' }).notNull(),
+  setNumber: integer('set_number').notNull(),
+  reps: integer('reps'),
+  weight: real('weight'),
+  durationSeconds: integer('duration_seconds'),
+  distance: real('distance'),
+  restSeconds: integer('rest_seconds'),
+  intensity: text('intensity'), // e.g., RPE/pace
+  notes: text('notes'),
+});
+
+// 13. Program Direct Client Assignments
+export const programAssignments = sqliteTable('program_assignments', {
+  id: text('id').primaryKey(),
+  programId: text('program_id').references(() => workoutPrograms.id, { onDelete: 'cascade' }).notNull(),
+  clientId: text('client_id').references(() => users.id, { onDelete: 'cascade' }).notNull(), // Athlete client ID
+  assignedByUserId: text('assigned_by_user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(), // Trainer ID
+  status: text('status').notNull(), // "pending" | "completed"
+  notes: text('notes'), // Custom instructions from trainer to client
+  assignedAt: text('assigned_at').notNull(),
+  completedAt: text('completed_at'),
+});
+

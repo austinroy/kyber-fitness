@@ -11,6 +11,7 @@ import {
 } from '../../lib/actions'
 
 export const Route = createFileRoute('/clients/')({
+  ssr: false,
   component: TrainerClientsPage,
 })
 

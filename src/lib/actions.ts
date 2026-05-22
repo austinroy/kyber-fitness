@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { db } from './db';
-import { users, profiles, trainerProfiles, trainerClients, workoutSessions, exercises, sessionExercises, exerciseSets, healthMetrics } from './db/schema';
+import { users, profiles, trainerProfiles, trainerClients, workoutSessions, exercises, sessionExercises, exerciseSets, healthMetrics, workoutPrograms, workoutProgramExercises, workoutProgramSets, programAssignments } from './db/schema';
 import { eq, and, or, desc, sql } from 'drizzle-orm';
 import { getAuthUser, requireAuthUser } from './auth-server';
 
@@ -237,6 +237,7 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
     location?: string;
     notes?: string;
     clientId?: string; // Optional client log by trainer
+    assignmentId?: string; // Optional program assignment completed
     exercises: Array<{
       exerciseId: string;
       notes?: string;
@@ -313,6 +314,14 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
             notes: set.notes || null,
           }).run();
         }
+      }
+
+      // 3. Mark program assignment as completed if assignmentId is present
+      if (data.assignmentId) {
+        tx.update(programAssignments)
+          .set({ status: 'completed', completedAt: now })
+          .where(eq(programAssignments.id, data.assignmentId))
+          .run();
       }
     });
 
@@ -611,6 +620,279 @@ export const getHealthMetricsHistory = createServerFn({ method: 'GET' })
         )
       )
       .orderBy(desc(healthMetrics.recordedAt));
+
+    return list;
+  });
+
+// 13. Get Workout Programs created by Trainer
+export const getWorkoutPrograms = createServerFn({ method: 'GET' })
+  .handler(async () => {
+    const auth = await requireAuthUser();
+    const trainerId = auth.userId;
+
+    const list = await db.select().from(workoutPrograms)
+      .where(eq(workoutPrograms.createdByUserId, trainerId))
+      .orderBy(desc(workoutPrograms.createdAt));
+
+    const enrichedList = [];
+    for (const prog of list) {
+      // Get number of exercises in the template
+      const countRes = await db.select({ count: sql<number>`count(*)` })
+        .from(workoutProgramExercises)
+        .where(eq(workoutProgramExercises.programId, prog.id));
+      
+      // Get assignment count
+      const assignCount = await db.select({ count: sql<number>`count(*)` })
+        .from(programAssignments)
+        .where(eq(programAssignments.programId, prog.id));
+
+      enrichedList.push({
+        ...prog,
+        exerciseCount: countRes[0]?.count || 0,
+        assignmentCount: assignCount[0]?.count || 0,
+      });
+    }
+
+    return enrichedList;
+  });
+
+// 14. Get Program details (exercises + sets)
+export const getWorkoutProgramDetails = createServerFn({ method: 'GET' })
+  .inputValidator((data: { programId: string }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser();
+
+    const progs = await db.select().from(workoutPrograms).where(eq(workoutPrograms.id, data.programId)).limit(1);
+    if (progs.length === 0) {
+      throw new Error('Program template not found.');
+    }
+    const program = progs[0];
+
+    // Fetch exercises
+    const exercisesList = await db.select({
+      id: workoutProgramExercises.id,
+      orderIndex: workoutProgramExercises.orderIndex,
+      notes: workoutProgramExercises.notes,
+      exerciseId: exercises.id,
+      name: exercises.name,
+      category: exercises.category,
+      defaultUnit: exercises.defaultUnit,
+    })
+    .from(workoutProgramExercises)
+    .innerJoin(exercises, eq(workoutProgramExercises.exerciseId, exercises.id))
+    .where(eq(workoutProgramExercises.programId, data.programId))
+    .orderBy(workoutProgramExercises.orderIndex);
+
+    const fullExercises = [];
+    for (const ex of exercisesList) {
+      const sets = await db.select().from(workoutProgramSets)
+        .where(eq(workoutProgramSets.programExerciseId, ex.id))
+        .orderBy(workoutProgramSets.setNumber);
+
+      fullExercises.push({
+        ...ex,
+        sets,
+      });
+    }
+
+    return {
+      ...program,
+      exercises: fullExercises,
+    };
+  });
+
+// 15. Create or Edit a Workout Program Template
+export const saveWorkoutProgram = createServerFn({ method: 'POST' })
+  .inputValidator((data: {
+    programId?: string; // If editing
+    title: string;
+    notes?: string;
+    exercises: Array<{
+      exerciseId: string;
+      notes?: string;
+      orderIndex: number;
+      sets: Array<{
+        setNumber: number;
+        reps?: number;
+        weight?: number;
+        durationSeconds?: number;
+        distance?: number;
+        restSeconds?: number;
+        intensity?: string;
+        notes?: string;
+      }>;
+    }>;
+  }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser();
+    const trainerId = auth.userId;
+    const now = new Date().toISOString();
+
+    const isEdit = !!data.programId;
+    const programId = data.programId || generateId('prog');
+
+    db.transaction((tx) => {
+      if (isEdit) {
+        // 1. Update program header
+        tx.update(workoutPrograms)
+          .set({
+            title: data.title,
+            notes: data.notes || null,
+            updatedAt: now,
+          })
+          .where(eq(workoutPrograms.id, programId))
+          .run();
+
+        // 2. Delete existing exercises and sets
+        const oldExs = tx.select().from(workoutProgramExercises).where(eq(workoutProgramExercises.programId, programId)).all();
+        for (const ex of oldExs) {
+          tx.delete(workoutProgramSets).where(eq(workoutProgramSets.programExerciseId, ex.id)).run();
+        }
+        tx.delete(workoutProgramExercises).where(eq(workoutProgramExercises.programId, programId)).run();
+      } else {
+        // Create program header
+        tx.insert(workoutPrograms).values({
+          id: programId,
+          createdByUserId: trainerId,
+          title: data.title,
+          notes: data.notes || null,
+          createdAt: now,
+          updatedAt: now,
+        }).run();
+      }
+
+      // 3. Insert new exercises and sets
+      for (const ex of data.exercises) {
+        const progExId = generateId('progex');
+        tx.insert(workoutProgramExercises).values({
+          id: progExId,
+          programId: programId,
+          exerciseId: ex.exerciseId,
+          orderIndex: ex.orderIndex,
+          notes: ex.notes || null,
+        }).run();
+
+        for (const set of ex.sets) {
+          const setId = generateId('progset');
+          tx.insert(workoutProgramSets).values({
+            id: setId,
+            programExerciseId: progExId,
+            setNumber: set.setNumber,
+            reps: set.reps || null,
+            weight: set.weight || null,
+            durationSeconds: set.durationSeconds || null,
+            distance: set.distance || null,
+            restSeconds: set.restSeconds || null,
+            intensity: set.intensity || null,
+            notes: set.notes || null,
+          }).run();
+        }
+      }
+    });
+
+    return { success: true, programId };
+  });
+
+// 16. Delete Workout Program Template
+export const deleteWorkoutProgram = createServerFn({ method: 'POST' })
+  .inputValidator((data: { programId: string }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser();
+    const trainerId = auth.userId;
+
+    // Verify program belongs to trainer
+    const progs = await db.select().from(workoutPrograms)
+      .where(
+        and(
+          eq(workoutPrograms.id, data.programId),
+          eq(workoutPrograms.createdByUserId, trainerId)
+        )
+      ).limit(1);
+
+    if (progs.length === 0) {
+      throw new Error('Unauthorized or program not found.');
+    }
+
+    db.transaction((tx) => {
+      tx.delete(workoutPrograms).where(eq(workoutPrograms.id, data.programId)).run();
+    });
+
+    return { success: true };
+  });
+
+// 17. Direct Assignment of Program to Client
+export const assignProgramToClient = createServerFn({ method: 'POST' })
+  .inputValidator((data: { programId: string; clientId: string; notes?: string }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser();
+    const trainerId = auth.userId;
+    const now = new Date().toISOString();
+
+    // 1. Verify trainer-client partnership
+    const isPermitted = await verifyTrainerClientAccess(trainerId, data.clientId);
+    if (!isPermitted) {
+      throw new Error('Trainer does not have an active partnership with this client.');
+    }
+
+    // 2. Verify program belongs to trainer
+    const progs = await db.select().from(workoutPrograms)
+      .where(
+        and(
+          eq(workoutPrograms.id, data.programId),
+          eq(workoutPrograms.createdByUserId, trainerId)
+        )
+      ).limit(1);
+
+    if (progs.length === 0) {
+      throw new Error('Program template not found or unauthorized.');
+    }
+
+    // 3. Assign
+    const assignmentId = generateId('asgn');
+    await db.insert(programAssignments).values({
+      id: assignmentId,
+      programId: data.programId,
+      clientId: data.clientId,
+      assignedByUserId: trainerId,
+      status: 'pending',
+      notes: data.notes || null,
+      assignedAt: now,
+    });
+
+    return { success: true, assignmentId };
+  });
+
+// 18. Get Athlete Client's Assigned Programs
+export const getClientAssignedPrograms = createServerFn({ method: 'GET' })
+  .inputValidator((data?: { status?: 'pending' | 'completed' }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser();
+    const clientId = auth.userId;
+
+    const queryStatus = data?.status || 'pending';
+
+    // Query assignments join users (trainer details) join programs
+    const list = await db.select({
+      id: programAssignments.id,
+      status: programAssignments.status,
+      notes: programAssignments.notes,
+      assignedAt: programAssignments.assignedAt,
+      completedAt: programAssignments.completedAt,
+      programId: workoutPrograms.id,
+      programTitle: workoutPrograms.title,
+      programNotes: workoutPrograms.notes,
+      trainerName: users.name,
+    })
+    .from(programAssignments)
+    .innerJoin(workoutPrograms, eq(programAssignments.programId, workoutPrograms.id))
+    .innerJoin(users, eq(programAssignments.assignedByUserId, users.id))
+    .where(
+      and(
+        eq(programAssignments.clientId, clientId),
+        eq(programAssignments.status, queryStatus)
+      )
+    )
+    .orderBy(desc(programAssignments.assignedAt));
 
     return list;
   });

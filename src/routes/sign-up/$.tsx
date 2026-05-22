@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { SignUp } from '@clerk/tanstack-start'
 
 export const Route = createFileRoute('/sign-up/$')({
+  ssr: false,
   component: SignUpPage,
 })
 

@@ -5,6 +5,7 @@ import { getCurrentUserProfile, updateUserProfile } from '../lib/actions'
 import DatePicker from '../components/DatePicker'
 
 export const Route = createFileRoute('/settings')({
+  ssr: false,
   component: SettingsPage,
 })
 

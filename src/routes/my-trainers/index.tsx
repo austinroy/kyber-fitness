@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { getCurrentUserProfile, getIndividualTrainersList, respondToTrainerInvitation } from '../../lib/actions'
 
 export const Route = createFileRoute('/my-trainers/')({
+  ssr: false,
   component: MyTrainersPage,
 })
 
