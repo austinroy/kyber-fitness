@@ -50,6 +50,34 @@ function NotFoundComponent() {
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const isClerkConfigured = publishableKey && publishableKey !== 'pk_test_placeholder';
+
+  if (!isClerkConfigured) {
+    return (
+      <html lang="en" className="dark" suppressHydrationWarning>
+        <head>
+          <HeadContent />
+        </head>
+        <body className="font-sans antialiased selection:bg-[rgba(195,244,0,0.2)] selection:text-white bg-[#0a0a0a]" suppressHydrationWarning>
+          <div className="flex flex-col items-center justify-center min-h-screen text-center px-4 max-w-lg mx-auto relative">
+            <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[var(--primary-container)]/5 rounded-full filter blur-[80px] pointer-events-none"></div>
+            
+            <div className="chip mb-6 flex items-center gap-1.5 bg-red-950/40 border border-red-900/30 text-red-400">
+              <span className="material-symbols-outlined text-sm">warning</span>
+              <span>Sync Offline</span>
+            </div>
+            
+            <h1 className="headline-lg font-black tracking-tight text-white mb-4">PORTAL KEYS MISSING</h1>
+            <p className="body-md text-[var(--on-surface-variant)] mb-8">
+              The Kyber portal cannot establish client synchronization because the Clerk Publishable Key is missing or set to placeholder. Please configure <strong>VITE_CLERK_PUBLISHABLE_KEY</strong> in your hosting environment.
+            </p>
+          </div>
+          <Scripts />
+        </body>
+      </html>
+    )
+  }
+
   return (
     <ClerkProvider publishableKey={publishableKey}>
       <html lang="en" className="dark" suppressHydrationWarning>

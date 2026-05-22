@@ -72,6 +72,13 @@ During the development process, we implemented several critical configurations t
 *   **Symptom:** Protecting database transactions against unauthorized clients.
 *   **Resolution:** Enforced `verifyTrainerClientAccess(trainerId, clientId)` inside server actions. A trainer can only query or log biometric details for an athlete if an active relationship (`trainerClients.status = 'active'`) exists with the correct permissions.
 
+### 4. Client and Server Diagnostics Guards (ERR_TOO_MANY_REDIRECTS Bypass)
+*   **Symptom:** In live serverless environments like Netlify, if Clerk API keys are missing, unconfigured, or set to standard placeholders (`pk_test_placeholder`), the Clerk SSR middleware repeatedly redirects the browser to authenticate, producing a fatal browser `ERR_TOO_MANY_REDIRECTS` loop.
+*   **Cause:** Clerk's SSR wrapper forces authentication handshakes and throws redirection headers. Without valid keys, it gets stuck in an infinite redirect cascade.
+*   **Resolution:** Implemented robust diagnostic overrides in the application lifecycle:
+    *   **Server-Side Guard (`src/server.ts`):** Before initializing Vinxi's `createClerkHandler`, the server checks for the presence and validity of `CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`. If keys are invalid or missing, it bypasses Clerk completely and intercepts document requests to serve a gorgeous, dark-themed diagnostic page outlining the required environment variables.
+    *   **Client-Side Guard (`src/routes/__root.tsx`):** If the publishable key is missing or set to a placeholder, the `<ClerkProvider>` wrap is bypassed entirely on the client, rendering a unified "Sync Offline" diagnostic viewport to guide configuration.
+
 ---
 
 ## Local Development Runbook

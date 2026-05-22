@@ -296,6 +296,11 @@ export async function getAuthUser(opts?: { shouldRedirect?: boolean }) {
 - **Cause**: Clerk dynamically injects script payloads, and browser extensions inject elements, differing from server-rendered HTML.
 - **Rule**: Always preserve the `suppressHydrationWarning` tag on the HTML and Body root nodes in `src/routes/__root.tsx`.
 
+### ⚠️ Gotcha #5: Clerk Redirect Loops under Missing/Unconfigured Keys (Live Netlify/SSR)
+- **Symptom**: The site returns `ERR_TOO_MANY_REDIRECTS` on the live environment because Clerk's middleware is triggered on document requests without valid credentials, failing context validation repeatedly.
+- **Cause**: Clerk's SSR wrapper forces authentication handshakes and throws redirection headers. Without valid keys, it gets stuck in an infinite redirect cascade.
+- **Rule**: Conditionally wrap `createStartHandler` with `createClerkHandler` in `src/server.ts` only when valid credentials are present. If keys are missing, bypass Clerk completely and serve a custom glassmorphic diagnostic screen for HTML document requests. Similarly, conditionally bypass `<ClerkProvider>` in `src/routes/__root.tsx` to display a beautiful "Sync Offline" notification instead of letting the application crash or loop.
+
 ---
 
 ## 8. Access Control & Permission Matrix
