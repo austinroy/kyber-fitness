@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
-import { getCurrentUserProfile, getWorkoutSessionsHistory, logHealthMetric } from '../lib/actions'
+import { getCurrentUserProfile, getWorkoutSessionsHistory, logHealthMetric, getClientAssignedPrograms } from '../lib/actions'
 
 export const Route = createFileRoute('/dashboard')({
   ssr: false,
@@ -18,6 +18,7 @@ function DashboardPage() {
   const [profile, setProfile] = useState<any>(null)
   const [trainerProfile, setTrainerProfile] = useState<any>(null)
   const [workouts, setWorkouts] = useState<any[]>([])
+  const [assignedPrograms, setAssignedPrograms] = useState<any[]>([])
   
   // Quick log states
   const [weight, setWeight] = useState('')
@@ -41,10 +42,16 @@ function DashboardPage() {
                 setProfile(res.profile)
                 setTrainerProfile(res.trainerProfile)
                 
-                // Fetch recent workouts
-                getWorkoutSessionsHistory()
-                  .then((hist) => {
+                const isAthlete = res.user.role === 'individual'
+                const workoutFetch = getWorkoutSessionsHistory()
+                const assignFetch = isAthlete 
+                  ? getClientAssignedPrograms({ data: { status: 'pending' } })
+                  : Promise.resolve([])
+
+                Promise.all([workoutFetch, assignFetch])
+                  .then(([hist, assigned]) => {
                     setWorkouts(hist || [])
+                    setAssignedPrograms(assigned || [])
                     setProfileLoading(false)
                   })
                   .catch(() => setProfileLoading(false))
@@ -115,6 +122,51 @@ function DashboardPage() {
           </Link>
         </div>
       </div>
+
+      {/* Pending Coach Assignments Banner */}
+      {!isTrainer && assignedPrograms.length > 0 && (
+        <div className="space-y-4">
+          {assignedPrograms.map((assign) => (
+            <div 
+              key={assign.id}
+              className="card relative overflow-hidden p-6 border border-[var(--secondary-container)] bg-gradient-to-r from-black/60 to-[rgba(0,238,252,0.03)] shadow-[0_0_20px_rgba(0,238,252,0.08)] flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
+            >
+              {/* Left design glow border overlay */}
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-[var(--secondary-container)]"></div>
+              
+              <div className="space-y-2 flex-1 pl-2">
+                <div className="flex items-center gap-2">
+                  <span className="chip chip-cyan text-[9px] uppercase font-black tracking-widest">ASSIGNED BY COACH {assign.trainerName}</span>
+                  <span className="text-[10px] text-[var(--on-surface-variant)]">
+                    Received {new Date(assign.assignedAt).toLocaleDateString()}
+                  </span>
+                </div>
+                
+                <h3 className="headline-md text-white font-black text-xl tracking-tight uppercase m-0">
+                  {assign.programTitle}
+                </h3>
+                
+                {assign.notes && (
+                  <p className="body-md text-[var(--on-surface-variant)] text-xs m-0 italic bg-white/[0.02] p-3 rounded border border-white/5 max-w-2xl">
+                    Coaching Note: "{assign.notes}"
+                  </p>
+                )}
+              </div>
+
+              <div className="flex gap-3 w-full md:w-auto">
+                <Link 
+                  to="/workouts/new" 
+                  search={{ assignmentId: assign.id }}
+                  className="btn py-2 px-6 w-full md:w-auto text-sm font-black bg-[var(--secondary-container)] hover:bg-[var(--secondary-container)]/95 text-black flex items-center justify-center gap-2 rounded-md shadow-[0_0_15px_rgba(0,238,252,0.25)] transition-all"
+                >
+                  <span className="material-symbols-outlined text-sm font-bold animate-bounce">fitness_center</span>
+                  <span>Record Routine</span>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Profile Overview Widgets */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

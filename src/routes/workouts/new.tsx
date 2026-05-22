@@ -1,11 +1,16 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
-import { getCurrentUserProfile, getExercisesList, createCustomExercise, getTrainerClientsList, saveWorkoutSession } from '../../lib/actions'
+import { getCurrentUserProfile, getExercisesList, createCustomExercise, getTrainerClientsList, saveWorkoutSession, getClientAssignedPrograms, getWorkoutProgramDetails } from '../../lib/actions'
 import DatePicker from '../../components/DatePicker'
 
 export const Route = createFileRoute('/workouts/new')({
   ssr: false,
+  validateSearch: (search: Record<string, unknown>) => {
+    return {
+      assignmentId: (search.assignmentId as string) || undefined,
+    }
+  },
   component: LogWorkoutPage,
 })
 
@@ -33,6 +38,8 @@ interface ExerciseInput {
 function LogWorkoutPage() {
   const { isLoaded, isSignedIn } = useUser()
   const navigate = useNavigate()
+  const search = Route.useSearch()
+  const assignmentId = search.assignmentId
 
   // App & Load States
   const [loading, setLoading] = useState(true)
@@ -42,6 +49,8 @@ function LogWorkoutPage() {
 
   // Selection states
   const [selectedClientId, setSelectedClientId] = useState('')
+  const [coachName, setCoachName] = useState('')
+  const [programTitle, setProgramTitle] = useState('')
 
   // Form State
   const [title, setTitle] = useState('Daily Training Session')
@@ -85,12 +94,53 @@ function LogWorkoutPage() {
                 })
                 .catch(() => {})
             }
+
+            // 4. If assignmentId is present, fetch and pre-populate
+            if (assignmentId && res.user.role === 'individual') {
+              getClientAssignedPrograms({ data: { status: 'pending' } })
+                .then((assignedList) => {
+                  const matchingAssign = assignedList?.find((a: any) => a.id === assignmentId)
+                  if (matchingAssign) {
+                    setCoachName(matchingAssign.trainerName)
+                    setProgramTitle(matchingAssign.programTitle)
+                    
+                    getWorkoutProgramDetails({ data: { programId: matchingAssign.programId } })
+                      .then((details: any) => {
+                        setTitle(details.title)
+                        setSessionNotes(`Assigned by Coach ${matchingAssign.trainerName}: ${matchingAssign.notes || ''}`)
+                        
+                        const prefilled = details.exercises.map((ex: any) => ({
+                          exerciseId: ex.exerciseId,
+                          name: ex.name,
+                          category: ex.category,
+                          defaultUnit: ex.defaultUnit || 'kg',
+                          notes: ex.notes || '',
+                          orderIndex: ex.orderIndex,
+                          sets: ex.sets.map((s: any) => ({
+                            setNumber: s.setNumber,
+                            reps: s.reps?.toString() || '',
+                            weight: s.weight?.toString() || '',
+                            durationSeconds: s.durationSeconds?.toString() || '',
+                            distance: s.distance?.toString() || '',
+                            restSeconds: s.restSeconds?.toString() || '',
+                            intensity: s.intensity || '',
+                            notes: s.notes || '',
+                          }))
+                        }))
+                        setAddedExercises(prefilled)
+                      })
+                      .catch(() => {})
+                  }
+                })
+                .catch(() => {})
+            }
+
             setLoading(false)
           }
         })
         .catch(() => setLoading(false))
     }
-  }, [isLoaded, isSignedIn])
+  }, [isLoaded, isSignedIn, assignmentId])
 
   const handleAddExercise = (ex: any) => {
     const newEx: ExerciseInput = {
@@ -208,6 +258,7 @@ function LogWorkoutPage() {
         location: location || undefined,
         notes: sessionNotes || undefined,
         clientId: selectedClientId || undefined,
+        assignmentId: assignmentId || undefined,
         exercises: addedExercises.map(ex => ({
           exerciseId: ex.exerciseId,
           notes: ex.notes || undefined,
@@ -263,6 +314,18 @@ function LogWorkoutPage() {
           </button>
         </div>
       </div>
+
+      {coachName && programTitle && (
+        <div className="card border border-[var(--secondary-container)] bg-[rgba(0,238,252,0.02)] p-4 rounded-md flex items-center gap-3 animate-pulse">
+          <span className="material-symbols-outlined text-[var(--secondary-container)]">sports</span>
+          <div>
+            <p className="body-md font-bold text-white text-sm m-0">LOGGING COACH ASSIGNMENT</p>
+            <p className="body-md text-[var(--on-surface-variant)] text-xs m-0">
+              You are tracking <strong className="text-white">"{programTitle}"</strong>, custom designed by Coach <strong className="text-white">{coachName}</strong>.
+            </p>
+          </div>
+        </div>
+      )}
 
       {error && (
         <div className="p-4 rounded-md bg-red-950/40 border border-red-900 text-red-300 body-md">
