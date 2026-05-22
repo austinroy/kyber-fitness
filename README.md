@@ -90,11 +90,11 @@ VITE_CLERK_SIGN_UP_URL=/sign-up
 
 ### 2. Install Dependencies & Build
 ```bash
-# Install packages
-npm install
+# Install packages using pnpm
+pnpm install
 
 # Compile the routing tree and verify TS type-safety
-npm run build
+pnpm run build
 ```
 
 ### 3. Database Initialization & Seeding
@@ -103,15 +103,67 @@ npm run build
 npx drizzle-kit push
 
 # Populate database with standard exercise sets and mock trainers
-npm run db:seed
+pnpm run db:seed
 ```
 
 ### 4. Run the Dev Server
 ```bash
 # Spin up the Vinxi server (runs on http://localhost:3000)
-npm run dev
+pnpm run dev
 ```
 
+---
+
+## Netlify Serverless Deployment & Hosting Setup
+
+Kyber Fitness is fully configured for deployment on **Netlify** using TanStack Start's official Netlify adapter.
+
+### 1. Adapter and Bundler Configuration
+We installed `@netlify/vite-plugin-tanstack-start` and integrated it into the plugins array of `vite.config.ts`:
+```typescript
+import netlify from '@netlify/vite-plugin-tanstack-start'
+
+export default defineConfig({
+  plugins: [
+    // ... other plugins
+    netlify(),
+  ],
+})
+```
+This allows Netlify to seamlessly intercept the build process, generating the edge and serverless runtime files inside `.netlify/v1/functions/server.mjs`.
+
+### 2. Build Settings (`netlify.toml`)
+Build settings are declared inside `netlify.toml` in the project root:
+```toml
+[build]
+  command = "pnpm run build"
+  publish = "dist/client"
+
+[dev]
+  command = "pnpm run dev"
+  port = 3000
+```
+
+### 3. pnpm Workspace Build Permissions
+To support **pnpm v11+** workspace security controls, we configured `pnpm-workspace.yaml` to explicitly permit local script builds for key packages (like `better-sqlite3`, `lightningcss`, `esbuild`, and `sharp`):
+```yaml
+allowBuilds:
+  "@clerk/shared": true
+  "@parcel/watcher": true
+  "better-sqlite3": true
+  "esbuild": true
+  "lightningcss": true
+  "sharp": true
+```
+
+### 4. Netlify Dashboard Environment Variables
+To complete the build and runtime pipeline, navigate to **Site configuration > Environment variables** in your Netlify Dashboard and define the following variables:
+*   `VITE_CLERK_PUBLISHABLE_KEY`: Clerk's public key.
+*   `CLERK_SECRET_KEY`: Clerk's private API key.
+*   `VITE_CLERK_SIGN_IN_URL`: `/sign-in`
+*   `VITE_CLERK_SIGN_UP_URL`: `/sign-up`
+
+---
 ---
 
 ## Security & Permissive Operations Matrix

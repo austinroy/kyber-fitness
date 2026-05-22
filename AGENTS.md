@@ -326,13 +326,28 @@ async function verifyTrainerClientAccess(trainerId: string, clientId: string) {
 
 ## 9. Operational Runbook
 
+### Package Manager Setup
+We use `pnpm` as the package manager for the workspace. Due to security restrictions on workspace packages in pnpm v11+, any scripts of external packages must be allowed inside `pnpm-workspace.yaml` under `allowBuilds` key:
+```yaml
+allowBuilds:
+  "@clerk/shared": true
+  "@parcel/watcher": true
+  "better-sqlite3": true
+  "esbuild": true
+  "lightningcss": true
+  "sharp": true
+```
+
 ### Running the App Locally
 ```bash
 # Navigate to the workspace subfolder
 cd kyber-fitness
 
+# Install dependencies
+pnpm install
+
 # Run the Vinxi development server
-npm run dev
+pnpm run dev
 ```
 The server will boot on `http://localhost:3000`.
 
@@ -343,8 +358,21 @@ If you edit `schema.ts`, you need to sync the SQLite file:
 npx drizzle-kit push
 
 # Re-run seed script to load exercises and demo trainers
-npm run db:seed
+pnpm run db:seed
 ```
+
+---
+
+## 10. Netlify Deployment Strategy
+
+Kyber Fitness is configured for serverless hosting on **Netlify** using `@netlify/vite-plugin-tanstack-start`.
+
+### Key Elements:
+1. **Plugin Integration**: We added `netlify()` plugin inside `vite.config.ts`.
+2. **Settings**: Configured build steps inside `netlify.toml` targeting `pnpm run build` and publishing `dist/client`.
+3. **Environment Configuration**: You MUST supply the Clerk credentials (`CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`, `VITE_CLERK_SIGN_IN_URL`, `VITE_CLERK_SIGN_UP_URL`) as Site environment variables on Netlify.
+
+---
 
 Always double-check that your work preserves visual beauty, follows hydration standards, and honors the Clerk rethrow policies! Keep building the ultimate athletic hub.
 
