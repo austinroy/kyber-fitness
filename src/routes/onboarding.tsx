@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
 import { getCurrentUserProfile, onboardUser } from '../lib/actions'
+import DatePicker from '../components/DatePicker'
 
 export const Route = createFileRoute('/onboarding')({
   component: OnboardingPage,
@@ -185,11 +186,9 @@ function OnboardingPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="input-group">
                 <label className="label-md text-[var(--on-surface-variant)]">Date of Birth</label>
-                <input
-                  type="date"
+                <DatePicker
                   value={dob}
-                  onChange={(e) => setDob(e.target.value)}
-                  className="input-field"
+                  onChange={setDob}
                 />
               </div>
               <div className="input-group">
