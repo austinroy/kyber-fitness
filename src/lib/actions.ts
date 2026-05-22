@@ -111,6 +111,73 @@ export const onboardUser = createServerFn({ method: 'POST' })
     return { success: true };
   });
 
+// 2b. Update User Profile & Health Data / Credentials
+export const updateUserProfile = createServerFn({ method: 'POST' })
+  .inputValidator((data: {
+    name: string;
+    // Shared profile details
+    dateOfBirth?: string;
+    gender?: string;
+    height?: number;
+    activityLevel?: string;
+    fitnessGoal?: string;
+    notes?: string;
+    // Trainer profile details
+    businessName?: string;
+    bio?: string;
+    specialization?: string;
+    yearsExperience?: number;
+  }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser();
+    const userId = auth.userId;
+    const now = new Date().toISOString();
+
+    // 1. Get current user to check their role
+    const dbUsers = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    if (dbUsers.length === 0) {
+      throw new Error('User record not found in the database. Please complete onboarding first.');
+    }
+    const user = dbUsers[0];
+
+    // 2. Perform updates inside a transaction
+    await db.transaction(async (tx) => {
+      // Update name and updatedAt on the users table
+      await tx.update(users)
+        .set({
+          name: data.name,
+          updatedAt: now
+        })
+        .where(eq(users.id, userId));
+
+      if (user.role === 'individual') {
+        // Update profiles table
+        await tx.update(profiles)
+          .set({
+            dateOfBirth: data.dateOfBirth || null,
+            gender: data.gender || null,
+            height: data.height || null,
+            activityLevel: data.activityLevel || null,
+            fitnessGoal: data.fitnessGoal || null,
+            notes: data.notes || null,
+          })
+          .where(eq(profiles.userId, userId));
+      } else if (user.role === 'trainer') {
+        // Update trainerProfiles table
+        await tx.update(trainerProfiles)
+          .set({
+            businessName: data.businessName || null,
+            bio: data.bio || null,
+            specialization: data.specialization || null,
+            yearsExperience: data.yearsExperience || null,
+          })
+          .where(eq(trainerProfiles.userId, userId));
+      }
+    });
+
+    return { success: true };
+  });
+
 // 3. Get Exercises (Global defaults + custom ones for the user)
 export const getExercisesList = createServerFn({ method: 'GET' })
   .handler(async () => {

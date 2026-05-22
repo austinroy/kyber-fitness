@@ -92,6 +92,7 @@ kyber-fitness/
       my-trainers/      # Individual athlete trainer request pages
       sign-in/          # Splat folder ($) for path-based Clerk login
       sign-up/          # Splat folder ($) for path-based Clerk registration
+      settings.tsx      # Unified settings dashboard for athletes and coaches
       workouts/         # Workout log logs and custom set/exercise builders
 
   drizzle.config.ts     # Drizzle Kit migration configuration
@@ -307,7 +308,7 @@ export async function getAuthUser(opts?: { shouldRedirect?: boolean }) {
 
 Kyber Fitness enforces a secure Trainer-Client permission system inside `src/lib/actions.ts`. 
 
-- **Self-Access**: Individuals can always read, write, and update their own workouts and profiles.
+- **Self-Access**: Individuals can always read, write, and update their own workouts and profiles. Profile / biometric and coaching credential updates are securely mapped through the `updateUserProfile` action under transaction safety.
 - **Trainer-Client Relationship**:
   - A trainer can only view data or log sessions for an athlete if there is an active contract inside `trainerClients` with `status = 'active'`.
   - Permissions are serialized inside a JSON column in `trainer_clients.permissions` (e.g., `{"canViewHealthData": true, "canAddSessions": true}`).

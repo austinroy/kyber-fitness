@@ -178,5 +178,6 @@ To resolve Rolldown/Vite compilation errors under pnpm's strict dependency model
 
 ## Security & Permissive Operations Matrix
 
+*   **Profile Settings:** Both athletes and trainers have access to the `/settings` interface to dynamically manage their registration variables, biometrics ledger (height, goal, activity level), or coaching credentials (specialization, studio business title, experience).
 *   **Athletes:** Complete control over personal biometric inputs, weight history, and private logging. Athletes have explicit authority to revoke trainer access at any time from the `/my-trainers` console.
 *   **Trainers:** Access is strictly read-only for metrics unless the client grants explicit write permissions (`canAddSessions = true`). All database writes are signed with `recordedByUserId` for full accountability.

@@ -167,6 +167,13 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 <span>My Trainers</span>
               </Link>
             )}
+
+            {dbUser && (
+              <Link to="/settings" className="sidebar-link" activeProps={{ className: 'active' }}>
+                <span className="material-symbols-outlined">settings</span>
+                <span>Settings</span>
+              </Link>
+            )}
             
             {!loading && !dbUser && (
               <Link to="/onboarding" className="sidebar-link" activeProps={{ className: 'active' }}>
