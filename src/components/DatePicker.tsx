@@ -18,8 +18,6 @@ const SHORT_MONTHS = [
   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
 ]
 
-const DAYS_HEADER = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-
 function parseDateString(dateStr: string) {
   if (!dateStr) return null
   const parts = dateStr.split('-')
@@ -53,13 +51,12 @@ export default function DatePicker({
   const [isMobile, setIsMobile] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
-  // Calendar navigation state
-  const [currentYear, setCurrentYear] = useState(() => new Date().getFullYear())
-  const [currentMonth, setCurrentMonth] = useState(() => new Date().getMonth())
-
   // Selection states
-  const [tempDate, setTempDate] = useState<string | null>(null)
-  const [showMonthYearPicker, setShowMonthYearPicker] = useState(false)
+  const [selectedYear, setSelectedYear] = useState(() => new Date().getFullYear())
+  const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth())
+  const [selectedDay, setSelectedDay] = useState(() => new Date().getDate())
+
+  const [activeTab, setActiveTab] = useState<'month' | 'date' | 'year'>('date')
 
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -72,20 +69,21 @@ export default function DatePicker({
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  // Sync tempDate state when dialog opens
+  // Sync state when dialog opens
   useEffect(() => {
     if (isOpen) {
-      setTempDate(value || null)
       const parsed = parseDateString(value)
       if (parsed) {
-        setCurrentYear(parsed.year)
-        setCurrentMonth(parsed.month)
+        setSelectedYear(parsed.year)
+        setSelectedMonth(parsed.month)
+        setSelectedDay(parsed.day)
       } else {
         const now = new Date()
-        setCurrentYear(now.getFullYear())
-        setCurrentMonth(now.getMonth())
+        setSelectedYear(now.getFullYear())
+        setSelectedMonth(now.getMonth())
+        setSelectedDay(now.getDate())
       }
-      setShowMonthYearPicker(false)
+      setActiveTab('date')
     }
   }, [isOpen, value])
 
@@ -135,81 +133,40 @@ export default function DatePicker({
     )
   }
 
-  // Calendar Math
-  const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay()
-  const daysInCurrentMonth = new Date(currentYear, currentMonth + 1, 0).getDate()
-  const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate()
-
-  const calendarDays: Array<{ day: number; isCurrentMonth: boolean; dateString: string }> = []
-
-  // Prev Month trailing days
-  for (let i = firstDayIndex - 1; i >= 0; i--) {
-    const day = daysInPrevMonth - i
-    const prevMonthIdx = currentMonth === 0 ? 11 : currentMonth - 1
-    const prevYear = currentMonth === 0 ? currentYear - 1 : currentYear
-    calendarDays.push({
-      day,
-      isCurrentMonth: false,
-      dateString: formatDateString(prevYear, prevMonthIdx, day)
-    })
-  }
-
-  // Current Month days
-  for (let i = 1; i <= daysInCurrentMonth; i++) {
-    calendarDays.push({
-      day: i,
-      isCurrentMonth: true,
-      dateString: formatDateString(currentYear, currentMonth, i)
-    })
-  }
-
-  // Next Month leading days to fill grid cells (pad to multiples of 7)
-  const remainingCells = 42 - calendarDays.length
-  for (let i = 1; i <= remainingCells; i++) {
-    const nextMonthIdx = currentMonth === 11 ? 0 : currentMonth + 1
-    const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear
-    calendarDays.push({
-      day: i,
-      isCurrentMonth: false,
-      dateString: formatDateString(nextYear, nextMonthIdx, i)
-    })
-  }
-
-  const handlePrevMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11)
-      setCurrentYear(currentYear - 1)
-    } else {
-      setCurrentMonth(currentMonth - 1)
+  const handleSelectMonth = (idx: number) => {
+    setSelectedMonth(idx)
+    const maxDays = new Date(selectedYear, idx + 1, 0).getDate()
+    if (selectedDay > maxDays) {
+      setSelectedDay(maxDays)
     }
+    setActiveTab('date')
   }
 
-  const handleNextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0)
-      setCurrentYear(currentYear + 1)
-    } else {
-      setCurrentMonth(currentMonth + 1)
+  const handleSelectYear = (year: number) => {
+    setSelectedYear(year)
+    const maxDays = new Date(year, selectedMonth + 1, 0).getDate()
+    if (selectedDay > maxDays) {
+      setSelectedDay(maxDays)
     }
-  }
-
-  const handleSelectDay = (dateString: string) => {
-    setTempDate(dateString)
+    setActiveTab('month')
   }
 
   const handleApply = () => {
-    if (tempDate) {
-      onChange(tempDate)
-    }
+    onChange(formatDateString(selectedYear, selectedMonth, selectedDay))
     setIsOpen(false)
   }
 
   const handleReset = () => {
-    setTempDate(value || null)
     const parsed = parseDateString(value)
     if (parsed) {
-      setCurrentYear(parsed.year)
-      setCurrentMonth(parsed.month)
+      setSelectedYear(parsed.year)
+      setSelectedMonth(parsed.month)
+      setSelectedDay(parsed.day)
+    } else {
+      const now = new Date()
+      setSelectedYear(now.getFullYear())
+      setSelectedMonth(now.getMonth())
+      setSelectedDay(now.getDate())
     }
   }
 
@@ -219,6 +176,10 @@ export default function DatePicker({
   for (let y = todayYear + 5; y >= todayYear - 90; y--) {
     yearsRange.push(y)
   }
+
+  // Days in month calculation
+  const daysInMonth = new Date(selectedYear, selectedMonth + 1, 0).getDate()
+  const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1)
 
   return (
     <div className="relative w-full" ref={containerRef}>
@@ -240,173 +201,152 @@ export default function DatePicker({
 
       {/* Desktop Calendar Dropdown */}
       {isOpen && !isMobile && (
-        <div className="absolute left-0 md:right-0 mt-2 w-[340px] bg-[#1e1e1ec0] backdrop-blur-md border border-white/10 rounded-xl shadow-2xl z-[60] p-4 transition-all duration-200">
-          {/* Enhanced Month & Year Selection Layer */}
-          {showMonthYearPicker ? (
-            <div className="flex flex-col h-[280px]">
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-xs font-bold text-white uppercase tracking-widest">Select Month & Year</span>
-                <button
-                  type="button"
-                  onClick={() => setShowMonthYearPicker(false)}
-                  className="material-symbols-outlined p-1 text-[#c4c9ac] hover:text-[#c3f400] transition-colors"
-                >
-                  close
-                </button>
-              </div>
+        <div className="absolute left-0 md:right-0 mt-2 w-[320px] bg-[#1e1e1ec0] backdrop-blur-md border border-white/10 rounded-xl shadow-2xl z-[60] p-4 transition-all duration-200">
+          
+          {/* Summary Display */}
+          <div className="text-center py-2 bg-white/5 rounded-xl border border-white/5 mb-3 flex justify-center items-center gap-1.5 font-bold text-white text-sm tracking-wide">
+            <span className="text-[#c3f400]">{SHORT_MONTHS[selectedMonth]}</span>
+            <span className="text-[#00eefc]">{selectedDay}</span>
+            <span className="text-white/60">,</span>
+            <span className="text-[#c3f400]">{selectedYear}</span>
+          </div>
 
-              {/* Month Selection Grid */}
-              <div className="grid grid-cols-3 gap-1 mb-3">
-                {SHORT_MONTHS.map((m, idx) => (
+          {/* Tab Selector Bar */}
+          <div className="flex bg-[#131313] p-1 rounded-xl border border-white/5 mb-3">
+            <button
+              type="button"
+              onClick={() => setActiveTab('month')}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                activeTab === 'month'
+                  ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                  : 'text-[#e5e2e1] hover:bg-white/5'
+              }`}
+            >
+              Month
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('date')}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                activeTab === 'date'
+                  ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                  : 'text-[#e5e2e1] hover:bg-white/5'
+              }`}
+            >
+              Date
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('year')}
+              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                activeTab === 'year'
+                  ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                  : 'text-[#e5e2e1] hover:bg-white/5'
+              }`}
+            >
+              Year
+            </button>
+          </div>
+
+          {/* Month Screen */}
+          {activeTab === 'month' && (
+            <div className="grid grid-cols-3 gap-1.5 py-1">
+              {SHORT_MONTHS.map((m, idx) => {
+                const isSelected = selectedMonth === idx
+                return (
                   <button
                     key={m}
                     type="button"
-                    onClick={() => {
-                      setCurrentMonth(idx)
-                    }}
-                    className={`py-1 text-xs rounded-lg transition-colors font-medium ${
-                      currentMonth === idx
+                    onClick={() => handleSelectMonth(idx)}
+                    className={`py-2 text-xs rounded-lg font-semibold transition-all ${
+                      isSelected
                         ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                        : 'text-[#e5e2e1] hover:bg-white/5'
+                        : 'text-[#e5e2e1] bg-white/5 hover:bg-white/10'
                     }`}
                   >
                     {m}
                   </button>
-                ))}
-              </div>
+                )
+              })}
+            </div>
+          )}
 
-              <div className="h-px bg-white/10 mb-3" />
+          {/* Date Screen (No days header label) */}
+          {activeTab === 'date' && (
+            <div className="grid grid-cols-7 gap-1 py-1">
+              {daysArray.map((d) => {
+                const isSelected = selectedDay === d
+                const today = new Date()
+                const isToday = today.getDate() === d && today.getMonth() === selectedMonth && today.getFullYear() === selectedYear
+                return (
+                  <button
+                    key={d}
+                    type="button"
+                    onClick={() => setSelectedDay(d)}
+                    className={`py-1.5 text-xs rounded-lg font-semibold transition-all ${
+                      isSelected
+                        ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                        : isToday
+                          ? 'border border-[#c3f400] text-[#c3f400] bg-[#c3f400]/5'
+                          : 'text-[#e5e2e1] bg-white/5 hover:bg-white/10'
+                    }`}
+                  >
+                    {d}
+                  </button>
+                )
+              })}
+            </div>
+          )}
 
-              {/* Scrollable Year Selection Grid */}
-              <div className="grid grid-cols-4 gap-1 overflow-y-auto max-h-24 pr-1 custom-scrollbar">
-                {yearsRange.map((y) => (
+          {/* Year Screen */}
+          {activeTab === 'year' && (
+            <div className="grid grid-cols-4 gap-1 py-1 overflow-y-auto max-h-48 pr-1 custom-scrollbar">
+              {yearsRange.map((y) => {
+                const isSelected = selectedYear === y
+                return (
                   <button
                     key={y}
                     type="button"
-                    onClick={() => {
-                      setCurrentYear(y)
-                    }}
-                    className={`py-1 text-xs rounded-lg transition-colors ${
-                      currentYear === y
+                    onClick={() => handleSelectYear(y)}
+                    className={`py-1.5 text-xs rounded-lg font-semibold transition-all ${
+                      isSelected
                         ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                        : 'text-[#e5e2e1] hover:bg-white/5'
+                        : 'text-[#e5e2e1] bg-white/5 hover:bg-white/10'
                     }`}
                   >
                     {y}
                   </button>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowMonthYearPicker(false)}
-                className="mt-auto w-full py-1.5 border border-[#c3f400]/40 text-[#c3f400] text-xs font-semibold rounded-lg hover:bg-[#c3f400]/10 transition-colors"
-              >
-                Back to Calendar
-              </button>
-            </div>
-          ) : (
-            /* Standard Grid Calendar */
-            <div>
-              {/* Header Navigation */}
-              <div className="flex items-center justify-between mb-4">
-                <button
-                  type="button"
-                  onClick={handlePrevMonth}
-                  className="material-symbols-outlined p-1 text-[#c4c9ac] hover:text-[#c3f400] hover:bg-white/5 rounded-full transition-all"
-                >
-                  chevron_left
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowMonthYearPicker(true)}
-                  className="flex items-center gap-1 px-3 py-1 hover:bg-white/5 rounded-full transition-all group"
-                >
-                  <span className="text-xs font-bold text-[#e5e2e1] uppercase tracking-widest">
-                    {MONTHS[currentMonth]} {currentYear}
-                  </span>
-                  <span className="material-symbols-outlined text-[#c4c9ac] group-hover:text-[#c3f400] text-sm transition-colors">
-                    expand_more
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleNextMonth}
-                  className="material-symbols-outlined p-1 text-[#c4c9ac] hover:text-[#c3f400] hover:bg-white/5 rounded-full transition-all"
-                >
-                  chevron_right
-                </button>
-              </div>
-
-              {/* Days Header */}
-              <div className="grid grid-cols-7 gap-1 mb-2 text-center">
-                {DAYS_HEADER.map((d) => (
-                  <span key={d} className="text-xs font-bold text-[#c4c9ac] opacity-50 uppercase select-none">
-                    {d}
-                  </span>
-                ))}
-              </div>
-
-              {/* Days Grid */}
-              <div className="grid grid-cols-7 gap-1 text-center">
-                {calendarDays.map((cell, idx) => {
-                  const isSelected = tempDate === cell.dateString
-                  const todayStr = formatDateString(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate()
-                  )
-                  const isToday = cell.dateString === todayStr
-
-                  return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => handleSelectDay(cell.dateString)}
-                      className={`py-1 text-xs rounded-lg transition-all font-medium ${
-                        !cell.isCurrentMonth
-                          ? 'text-[#c4c9ac]/30 hover:bg-white/5 hover:text-white'
-                          : isSelected
-                            ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                            : isToday
-                              ? 'border border-[#c3f400] text-[#c3f400]'
-                              : 'text-[#e5e2e1] hover:bg-white/5'
-                      }`}
-                    >
-                      {cell.day}
-                    </button>
-                  )
-                })}
-              </div>
-
-              {/* Action Footer */}
-              <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="text-xs font-medium text-[#c4c9ac] hover:text-white transition-colors"
-                >
-                  Reset
-                </button>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsOpen(false)}
-                    className="text-xs font-medium px-3 py-1.5 border border-white/10 hover:bg-white/5 rounded-lg text-white transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleApply}
-                    className="text-xs px-3 py-1.5 bg-[#c3f400] text-[#161e00] rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </div>
+                )
+              })}
             </div>
           )}
+
+          {/* Action Footer */}
+          <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={handleReset}
+              className="text-xs font-semibold text-[#c4c9ac] hover:text-white transition-colors"
+            >
+              Reset
+            </button>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="text-xs font-semibold px-3 py-1.5 border border-white/10 hover:bg-white/5 rounded-lg text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleApply}
+                className="text-xs px-3 py-1.5 bg-[#c3f400] text-[#161e00] rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -437,139 +377,143 @@ export default function DatePicker({
             </div>
 
             {/* Datepicker Content */}
-            <div className="overflow-y-auto p-6 space-y-6">
-              {/* Header Navigation with Toggler */}
-              <div className="flex items-center justify-between">
-                <button
-                  type="button"
-                  className="flex items-center gap-2 text-md font-bold text-white hover:text-[#c3f400] transition-colors"
-                  onClick={() => setShowMonthYearPicker(!showMonthYearPicker)}
-                >
-                  {MONTHS[currentMonth]} {currentYear}
-                  <span className="material-symbols-outlined text-sm">
-                    {showMonthYearPicker ? 'expand_less' : 'expand_more'}
-                  </span>
-                </button>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={handlePrevMonth}
-                    className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 active:scale-90 transition-all"
-                  >
-                    <span className="material-symbols-outlined text-white">chevron_left</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleNextMonth}
-                    className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 active:scale-90 transition-all"
-                  >
-                    <span className="material-symbols-outlined text-white">chevron_right</span>
-                  </button>
-                </div>
+            <div className="overflow-y-auto p-6 space-y-4">
+              
+              {/* Summary Display */}
+              <div className="text-center py-2.5 bg-white/5 rounded-xl border border-white/5 flex justify-center items-center gap-1.5 font-bold text-white text-md tracking-wide">
+                <span className="text-[#c3f400]">{MONTHS[selectedMonth]}</span>
+                <span className="text-[#00eefc]">{selectedDay}</span>
+                <span className="text-white/60">,</span>
+                <span className="text-[#c3f400]">{selectedYear}</span>
               </div>
 
-              {/* Inset lists for Month & Year Picker */}
-              {showMonthYearPicker ? (
-                <div className="space-y-4">
-                  <div className="flex gap-4">
-                    {/* Months scroll */}
-                    <div className="flex-1 h-64 overflow-y-auto space-y-2 border-r border-white/5 pr-2 custom-scrollbar">
-                      {SHORT_MONTHS.map((m, idx) => (
-                        <button
-                          key={m}
-                          type="button"
-                          onClick={() => setCurrentMonth(idx)}
-                          className={`w-full p-3 text-center rounded-xl font-medium transition-all ${
-                            currentMonth === idx
-                              ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                              : 'text-white hover:bg-white/5'
-                          }`}
-                        >
-                          {MONTHS[idx]}
-                        </button>
-                      ))}
-                    </div>
+              {/* Tab Selector Bar */}
+              <div className="flex bg-[#131313] p-1 rounded-xl border border-white/5">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('month')}
+                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                    activeTab === 'month'
+                      ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                      : 'text-[#e5e2e1] hover:bg-white/5'
+                  }`}
+                >
+                  Month
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('date')}
+                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                    activeTab === 'date'
+                      ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                      : 'text-[#e5e2e1] hover:bg-white/5'
+                  }`}
+                >
+                  Date
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('year')}
+                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                    activeTab === 'year'
+                      ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                      : 'text-[#e5e2e1] hover:bg-white/5'
+                  }`}
+                >
+                  Year
+                </button>
+              </div>
 
-                    {/* Years scroll */}
-                    <div className="flex-1 h-64 overflow-y-auto space-y-2 custom-scrollbar pr-2">
-                      {yearsRange.map((y) => (
-                        <button
-                          key={y}
-                          type="button"
-                          onClick={() => setCurrentYear(y)}
-                          className={`w-full p-3 text-center rounded-xl font-medium transition-all ${
-                            currentYear === y
-                              ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                              : 'text-white hover:bg-white/5'
-                          }`}
-                        >
-                          {y}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowMonthYearPicker(false)}
-                    className="w-full py-3 border border-[#c3f400] text-[#c3f400] font-semibold rounded-xl hover:bg-[#c3f400]/10 active:scale-[0.98] transition-all"
-                  >
-                    Back to Calendar
-                  </button>
-                </div>
-              ) : (
-                /* Calendar Grid */
-                <div>
-                  <div className="grid grid-cols-7 gap-y-2 text-center mb-4">
-                    {/* Days Header */}
-                    {DAYS_HEADER.map((d) => (
-                      <div key={d} className="font-semibold text-xs text-[#c4c9ac] py-2 uppercase select-none">
-                        {d}
-                      </div>
-                    ))}
-
-                    {/* Days Grid */}
-                    {calendarDays.map((cell, idx) => {
-                      const isSelected = tempDate === cell.dateString
-                      const todayStr = formatDateString(
-                        new Date().getFullYear(),
-                        new Date().getMonth(),
-                        new Date().getDate()
-                      )
-                      const isToday = cell.dateString === todayStr
-
-                      return (
-                        <div key={idx} className="p-1">
-                          <button
-                            type="button"
-                            onClick={() => handleSelectDay(cell.dateString)}
-                            className={`h-12 w-full flex items-center justify-center rounded-xl font-medium text-sm transition-all ${
-                              !cell.isCurrentMonth
-                                ? 'text-[#c4c9ac]/30 hover:bg-white/5'
-                                : isSelected
-                                  ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_12px_rgba(195,244,0,0.4)] active:scale-95'
-                                  : isToday
-                                    ? 'border border-[#c3f400] text-[#c3f400]'
-                                    : 'text-white hover:bg-white/5'
-                            }`}
-                          >
-                            {cell.day}
-                          </button>
-                        </div>
-                      )
-                    })}
-                  </div>
-
-                  {/* Commit Action Button */}
-                  <button
-                    type="button"
-                    onClick={handleApply}
-                    className="w-full py-4 bg-[#c3f400] text-[#161e00] font-bold rounded-xl shadow-[0_0_20px_rgba(195,244,0,0.3)] hover:opacity-90 active:scale-[0.98] transition-all"
-                  >
-                    Apply Changes
-                  </button>
+              {/* Month Screen */}
+              {activeTab === 'month' && (
+                <div className="grid grid-cols-3 gap-2.5 py-2">
+                  {SHORT_MONTHS.map((m, idx) => {
+                    const isSelected = selectedMonth === idx
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => handleSelectMonth(idx)}
+                        className={`py-3 text-sm rounded-xl font-semibold transition-all ${
+                          isSelected
+                            ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                            : 'text-[#e5e2e1] bg-white/5 hover:bg-white/10 active:scale-95'
+                        }`}
+                      >
+                        {MONTHS[idx]}
+                      </button>
+                    )
+                  })}
                 </div>
               )}
+
+              {/* Date Screen (No days header label) */}
+              {activeTab === 'date' && (
+                <div className="grid grid-cols-7 gap-1.5 py-2">
+                  {daysArray.map((d) => {
+                    const isSelected = selectedDay === d
+                    const today = new Date()
+                    const isToday = today.getDate() === d && today.getMonth() === selectedMonth && today.getFullYear() === selectedYear
+                    return (
+                      <button
+                        key={d}
+                        type="button"
+                        onClick={() => setSelectedDay(d)}
+                        className={`h-11 flex items-center justify-center text-sm rounded-xl font-semibold transition-all ${
+                          isSelected
+                            ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)] active:scale-95'
+                            : isToday
+                              ? 'border border-[#c3f400] text-[#c3f400] bg-[#c3f400]/5'
+                              : 'text-white bg-white/5 hover:bg-white/10'
+                        }`}
+                      >
+                        {d}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+
+              {/* Year Screen */}
+              {activeTab === 'year' && (
+                <div className="grid grid-cols-4 gap-2 py-2 overflow-y-auto max-h-[30vh] pr-1 custom-scrollbar">
+                  {yearsRange.map((y) => {
+                    const isSelected = selectedYear === y
+                    return (
+                      <button
+                        key={y}
+                        type="button"
+                        onClick={() => handleSelectYear(y)}
+                        className={`py-3 text-sm rounded-xl font-semibold transition-all ${
+                          isSelected
+                            ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                            : 'text-white bg-white/5 hover:bg-white/10 active:scale-95'
+                        }`}
+                      >
+                        {y}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+
+              {/* Commit Action Button */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="flex-1 py-3 bg-white/5 text-white font-semibold rounded-xl border border-white/10 active:scale-95 transition-transform"
+                >
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={handleApply}
+                  className="flex-1 py-3 bg-[#c3f400] text-[#161e00] font-bold rounded-xl shadow-[0_0_20px_rgba(195,244,0,0.3)] hover:opacity-90 active:scale-95 transition-transform"
+                >
+                  Apply
+                </button>
+              </div>
             </div>
             {/* Bottom safe area padding */}
             <div className="h-8 bg-[#1e1e1e]" />
