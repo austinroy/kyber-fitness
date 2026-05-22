@@ -141,18 +141,19 @@ export const updateUserProfile = createServerFn({ method: 'POST' })
     const user = dbUsers[0];
 
     // 2. Perform updates inside a transaction
-    await db.transaction(async (tx) => {
+    db.transaction((tx) => {
       // Update name and updatedAt on the users table
-      await tx.update(users)
+      tx.update(users)
         .set({
           name: data.name,
           updatedAt: now
         })
-        .where(eq(users.id, userId));
+        .where(eq(users.id, userId))
+        .run();
 
       if (user.role === 'individual') {
         // Update profiles table
-        await tx.update(profiles)
+        tx.update(profiles)
           .set({
             dateOfBirth: data.dateOfBirth || null,
             gender: data.gender || null,
@@ -161,17 +162,19 @@ export const updateUserProfile = createServerFn({ method: 'POST' })
             fitnessGoal: data.fitnessGoal || null,
             notes: data.notes || null,
           })
-          .where(eq(profiles.userId, userId));
+          .where(eq(profiles.userId, userId))
+          .run();
       } else if (user.role === 'trainer') {
         // Update trainerProfiles table
-        await tx.update(trainerProfiles)
+        tx.update(trainerProfiles)
           .set({
             businessName: data.businessName || null,
             bio: data.bio || null,
             specialization: data.specialization || null,
             yearsExperience: data.yearsExperience || null,
           })
-          .where(eq(trainerProfiles.userId, userId));
+          .where(eq(trainerProfiles.userId, userId))
+          .run();
       }
     });
 
@@ -269,9 +272,9 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
     const sessionId = generateId('sess');
 
     // Run within a transaction to maintain integrity
-    await db.transaction(async (tx) => {
+    db.transaction((tx) => {
       // 1. Insert Workout Session
-      await tx.insert(workoutSessions).values({
+      tx.insert(workoutSessions).values({
         id: sessionId,
         userId: targetUserId,
         recordedByUserId: currentUserId,
@@ -282,22 +285,22 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
         notes: data.notes || null,
         createdAt: now,
         updatedAt: now,
-      });
+      }).run();
 
       // 2. Insert Exercises and their Sets
       for (const ex of data.exercises) {
         const sessExId = generateId('sexex');
-        await tx.insert(sessionExercises).values({
+        tx.insert(sessionExercises).values({
           id: sessExId,
           workoutSessionId: sessionId,
           exerciseId: ex.exerciseId,
           orderIndex: ex.orderIndex,
           notes: ex.notes || null,
-        });
+        }).run();
 
         for (const set of ex.sets) {
           const setId = generateId('set');
-          await tx.insert(exerciseSets).values({
+          tx.insert(exerciseSets).values({
             id: setId,
             sessionExerciseId: sessExId,
             setNumber: set.setNumber,
@@ -308,7 +311,7 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
             restSeconds: set.restSeconds || null,
             intensity: set.intensity || null,
             notes: set.notes || null,
-          });
+          }).run();
         }
       }
     });
