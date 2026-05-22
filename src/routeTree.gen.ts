@@ -14,6 +14,8 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkoutsIndexRouteImport } from './routes/workouts/index'
+import { Route as SignUpIndexRouteImport } from './routes/sign-up/index'
+import { Route as SignInIndexRouteImport } from './routes/sign-in/index'
 import { Route as ProgramsIndexRouteImport } from './routes/programs/index'
 import { Route as MyTrainersIndexRouteImport } from './routes/my-trainers/index'
 import { Route as HealthIndexRouteImport } from './routes/health/index'
@@ -46,6 +48,16 @@ const IndexRoute = IndexRouteImport.update({
 const WorkoutsIndexRoute = WorkoutsIndexRouteImport.update({
   id: '/workouts/',
   path: '/workouts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignUpIndexRoute = SignUpIndexRouteImport.update({
+  id: '/sign-up/',
+  path: '/sign-up/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignInIndexRoute = SignInIndexRouteImport.update({
+  id: '/sign-in/',
+  path: '/sign-in/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProgramsIndexRoute = ProgramsIndexRouteImport.update({
@@ -102,6 +114,8 @@ export interface FileRoutesByFullPath {
   '/health/': typeof HealthIndexRoute
   '/my-trainers/': typeof MyTrainersIndexRoute
   '/programs/': typeof ProgramsIndexRoute
+  '/sign-in/': typeof SignInIndexRoute
+  '/sign-up/': typeof SignUpIndexRoute
   '/workouts/': typeof WorkoutsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -117,6 +131,8 @@ export interface FileRoutesByTo {
   '/health': typeof HealthIndexRoute
   '/my-trainers': typeof MyTrainersIndexRoute
   '/programs': typeof ProgramsIndexRoute
+  '/sign-in': typeof SignInIndexRoute
+  '/sign-up': typeof SignUpIndexRoute
   '/workouts': typeof WorkoutsIndexRoute
 }
 export interface FileRoutesById {
@@ -133,6 +149,8 @@ export interface FileRoutesById {
   '/health/': typeof HealthIndexRoute
   '/my-trainers/': typeof MyTrainersIndexRoute
   '/programs/': typeof ProgramsIndexRoute
+  '/sign-in/': typeof SignInIndexRoute
+  '/sign-up/': typeof SignUpIndexRoute
   '/workouts/': typeof WorkoutsIndexRoute
 }
 export interface FileRouteTypes {
@@ -150,6 +168,8 @@ export interface FileRouteTypes {
     | '/health/'
     | '/my-trainers/'
     | '/programs/'
+    | '/sign-in/'
+    | '/sign-up/'
     | '/workouts/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -165,6 +185,8 @@ export interface FileRouteTypes {
     | '/health'
     | '/my-trainers'
     | '/programs'
+    | '/sign-in'
+    | '/sign-up'
     | '/workouts'
   id:
     | '__root__'
@@ -180,6 +202,8 @@ export interface FileRouteTypes {
     | '/health/'
     | '/my-trainers/'
     | '/programs/'
+    | '/sign-in/'
+    | '/sign-up/'
     | '/workouts/'
   fileRoutesById: FileRoutesById
 }
@@ -196,6 +220,8 @@ export interface RootRouteChildren {
   HealthIndexRoute: typeof HealthIndexRoute
   MyTrainersIndexRoute: typeof MyTrainersIndexRoute
   ProgramsIndexRoute: typeof ProgramsIndexRoute
+  SignInIndexRoute: typeof SignInIndexRoute
+  SignUpIndexRoute: typeof SignUpIndexRoute
   WorkoutsIndexRoute: typeof WorkoutsIndexRoute
 }
 
@@ -234,6 +260,20 @@ declare module '@tanstack/react-router' {
       path: '/workouts'
       fullPath: '/workouts/'
       preLoaderRoute: typeof WorkoutsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-up/': {
+      id: '/sign-up/'
+      path: '/sign-up'
+      fullPath: '/sign-up/'
+      preLoaderRoute: typeof SignUpIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in/': {
+      id: '/sign-in/'
+      path: '/sign-in'
+      fullPath: '/sign-in/'
+      preLoaderRoute: typeof SignInIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/programs/': {
@@ -308,6 +348,8 @@ const rootRouteChildren: RootRouteChildren = {
   HealthIndexRoute: HealthIndexRoute,
   MyTrainersIndexRoute: MyTrainersIndexRoute,
   ProgramsIndexRoute: ProgramsIndexRoute,
+  SignInIndexRoute: SignInIndexRoute,
+  SignUpIndexRoute: SignUpIndexRoute,
   WorkoutsIndexRoute: WorkoutsIndexRoute,
 }
 export const routeTree = rootRouteImport
