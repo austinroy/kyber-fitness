@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
-import { getCurrentUserProfile, getExercisesList, createCustomExercise, getTrainerClientsList, saveWorkoutSession, getClientAssignedPrograms, getWorkoutProgramDetails } from '../../lib/actions'
+import { getCurrentUserProfile, getExercisesList, createCustomExercise, getTrainerClientsList, saveWorkoutSession, getAssignedWorkoutProgramDetails } from '../../lib/actions'
 import DatePicker from '../../components/DatePicker'
 
 export const Route = createFileRoute('/workouts/new')({
@@ -46,6 +46,7 @@ function LogWorkoutPage() {
   const [role, setRole] = useState<'individual' | 'trainer'>('individual')
   const [exercisesList, setExercisesList] = useState<any[]>([])
   const [clientsList, setClientsList] = useState<any[]>([])
+  const [assignmentLoading, setAssignmentLoading] = useState(false)
 
   // Selection states
   const [selectedClientId, setSelectedClientId] = useState('')
@@ -78,7 +79,15 @@ function LogWorkoutPage() {
       getCurrentUserProfile()
         .then((res) => {
           if (res && res.authenticated) {
-            setRole(res.user.role)
+            if (!res.user) {
+              navigate({ to: '/onboarding/' })
+              return
+            }
+
+            const user = res.user
+            const userRole = user.role === 'trainer' ? 'trainer' : 'individual'
+
+            setRole(userRole)
             
             // 2. Fetch exercises
             getExercisesList()
@@ -86,7 +95,7 @@ function LogWorkoutPage() {
               .catch(() => {})
 
             // 3. If trainer, fetch clients
-            if (res.user.role === 'trainer') {
+            if (userRole === 'trainer') {
               getTrainerClientsList()
                 .then((clients) => {
                   const active = clients?.filter((c: any) => c.status === 'active') || []
@@ -95,44 +104,43 @@ function LogWorkoutPage() {
                 .catch(() => {})
             }
 
-            // 4. If assignmentId is present, fetch and pre-populate
-            if (assignmentId && res.user.role === 'individual') {
-              getClientAssignedPrograms({ data: { status: 'pending' } })
-                .then((assignedList) => {
-                  const matchingAssign = assignedList?.find((a: any) => a.id === assignmentId)
-                  if (matchingAssign) {
-                    setCoachName(matchingAssign.trainerName)
-                    setProgramTitle(matchingAssign.programTitle)
-                    
-                    getWorkoutProgramDetails({ data: { programId: matchingAssign.programId } })
-                      .then((details: any) => {
-                        setTitle(details.title)
-                        setSessionNotes(`Assigned by Coach ${matchingAssign.trainerName}: ${matchingAssign.notes || ''}`)
-                        
-                        const prefilled = details.exercises.map((ex: any) => ({
-                          exerciseId: ex.exerciseId,
-                          name: ex.name,
-                          category: ex.category,
-                          defaultUnit: ex.defaultUnit || 'kg',
-                          notes: ex.notes || '',
-                          orderIndex: ex.orderIndex,
-                          sets: ex.sets.map((s: any) => ({
-                            setNumber: s.setNumber,
-                            reps: s.reps?.toString() || '',
-                            weight: s.weight?.toString() || '',
-                            durationSeconds: s.durationSeconds?.toString() || '',
-                            distance: s.distance?.toString() || '',
-                            restSeconds: s.restSeconds?.toString() || '',
-                            intensity: s.intensity || '',
-                            notes: s.notes || '',
-                          }))
-                        }))
-                        setAddedExercises(prefilled)
-                      })
-                      .catch(() => {})
-                  }
+            // 4. If assignmentId is present, fetch authorized assignment details and pre-populate
+            if (assignmentId && userRole === 'individual') {
+              setAssignmentLoading(true)
+              getAssignedWorkoutProgramDetails({ data: { assignmentId } })
+                .then(({ assignment, program }: any) => {
+                  setCoachName(assignment.trainerName)
+                  setProgramTitle(program.title)
+                  setTitle(program.title)
+                  setSessionNotes(`Assigned by Coach ${assignment.trainerName}: ${assignment.notes || program.notes || ''}`)
+
+                  const prefilled = program.exercises.map((ex: any) => ({
+                    exerciseId: ex.exerciseId,
+                    name: ex.name,
+                    category: ex.category,
+                    defaultUnit: ex.defaultUnit || 'kg',
+                    notes: ex.notes || '',
+                    orderIndex: ex.orderIndex,
+                    sets: ex.sets.map((s: any) => ({
+                      setNumber: s.setNumber,
+                      reps: s.reps?.toString() || '',
+                      weight: s.weight?.toString() || '',
+                      durationSeconds: s.durationSeconds?.toString() || '',
+                      distance: s.distance?.toString() || '',
+                      restSeconds: s.restSeconds?.toString() || '',
+                      intensity: s.intensity || '',
+                      notes: s.notes || '',
+                    }))
+                  }))
+                  setAddedExercises(prefilled)
                 })
-                .catch(() => {})
+                .catch((err: any) => {
+                  console.error(err)
+                  setError(err?.message || 'Could not load this assigned routine.')
+                })
+                .finally(() => setAssignmentLoading(false))
+            } else if (assignmentId && userRole === 'trainer') {
+              setError('Coach accounts cannot complete athlete program assignments from this screen.')
             }
 
             setLoading(false)
@@ -277,7 +285,7 @@ function LogWorkoutPage() {
       }
 
       await saveWorkoutSession({ data: payload })
-      navigate({ to: '/workouts' })
+      navigate({ to: '/workouts/' })
     } catch (err: any) {
       console.error(err)
       setError(err?.message || 'Failed to save workout session.')
@@ -285,11 +293,13 @@ function LogWorkoutPage() {
     }
   }
 
-  if (loading) {
+  if (loading || assignmentLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">Initializing telemetry console...</p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">
+          {assignmentLoading ? 'Hydrating coach-assigned routine...' : 'Initializing telemetry console...'}
+        </p>
       </div>
     )
   }
@@ -308,7 +318,7 @@ function LogWorkoutPage() {
           <h1 className="headline-lg font-black text-white m-0">LOG TRAINING SESSION</h1>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => navigate({ to: '/workouts' })} className="btn btn-secondary py-2">Cancel</button>
+          <button onClick={() => navigate({ to: '/workouts/' })} className="btn btn-secondary py-2">Cancel</button>
           <button onClick={handleSave} disabled={saving} className={`btn btn-primary py-2 ${saving ? 'btn-disabled' : ''}`}>
             {saving ? 'Syncing Session...' : 'Sync Session Data'}
           </button>

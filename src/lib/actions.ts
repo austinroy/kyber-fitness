@@ -228,6 +228,45 @@ async function verifyTrainerClientAccess(trainerId: string, clientId: string) {
   return rel.length > 0;
 }
 
+async function getProgramDetailsById(programId: string) {
+  const progs = await db.select().from(workoutPrograms).where(eq(workoutPrograms.id, programId)).limit(1);
+  if (progs.length === 0) {
+    throw new Error('Program template not found.');
+  }
+  const program = progs[0];
+
+  const exercisesList = await db.select({
+    id: workoutProgramExercises.id,
+    orderIndex: workoutProgramExercises.orderIndex,
+    notes: workoutProgramExercises.notes,
+    exerciseId: exercises.id,
+    name: exercises.name,
+    category: exercises.category,
+    defaultUnit: exercises.defaultUnit,
+  })
+  .from(workoutProgramExercises)
+  .innerJoin(exercises, eq(workoutProgramExercises.exerciseId, exercises.id))
+  .where(eq(workoutProgramExercises.programId, programId))
+  .orderBy(workoutProgramExercises.orderIndex);
+
+  const fullExercises = [];
+  for (const ex of exercisesList) {
+    const sets = await db.select().from(workoutProgramSets)
+      .where(eq(workoutProgramSets.programExerciseId, ex.id))
+      .orderBy(workoutProgramSets.setNumber);
+
+    fullExercises.push({
+      ...ex,
+      sets,
+    });
+  }
+
+  return {
+    ...program,
+    exercises: fullExercises,
+  };
+}
+
 // 5. Save Workout Session
 export const saveWorkoutSession = createServerFn({ method: 'POST' })
   .inputValidator((data: {
@@ -260,14 +299,34 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
     const now = new Date().toISOString();
 
     let targetUserId = currentUserId;
+    let assignment = null;
 
     // If logging for a client, verify active connection
     if (data.clientId) {
+      if (data.assignmentId) {
+        throw new Error('Coach-entered client sessions cannot complete athlete program assignments.');
+      }
       const isPermitted = await verifyTrainerClientAccess(currentUserId, data.clientId);
       if (!isPermitted) {
         throw new Error('Trainer does not have an active partnership with this client.');
       }
       targetUserId = data.clientId;
+    }
+
+    if (data.assignmentId) {
+      const assignments = await db.select().from(programAssignments).where(
+        and(
+          eq(programAssignments.id, data.assignmentId),
+          eq(programAssignments.clientId, currentUserId),
+          eq(programAssignments.status, 'pending')
+        )
+      ).limit(1);
+
+      if (assignments.length === 0) {
+        throw new Error('Program assignment not found, already completed, or not assigned to this athlete.');
+      }
+
+      assignment = assignments[0];
     }
 
     const sessionId = generateId('sess');
@@ -317,10 +376,16 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
       }
 
       // 3. Mark program assignment as completed if assignmentId is present
-      if (data.assignmentId) {
+      if (assignment) {
         tx.update(programAssignments)
           .set({ status: 'completed', completedAt: now })
-          .where(eq(programAssignments.id, data.assignmentId))
+          .where(
+            and(
+              eq(programAssignments.id, assignment.id),
+              eq(programAssignments.clientId, currentUserId),
+              eq(programAssignments.status, 'pending')
+            )
+          )
           .run();
       }
     });
@@ -661,43 +726,69 @@ export const getWorkoutProgramDetails = createServerFn({ method: 'GET' })
   .inputValidator((data: { programId: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser();
+    const userId = auth.userId;
 
-    const progs = await db.select().from(workoutPrograms).where(eq(workoutPrograms.id, data.programId)).limit(1);
+    const progs = await db.select().from(workoutPrograms)
+      .where(eq(workoutPrograms.id, data.programId))
+      .limit(1);
     if (progs.length === 0) {
       throw new Error('Program template not found.');
     }
     const program = progs[0];
 
-    // Fetch exercises
-    const exercisesList = await db.select({
-      id: workoutProgramExercises.id,
-      orderIndex: workoutProgramExercises.orderIndex,
-      notes: workoutProgramExercises.notes,
-      exerciseId: exercises.id,
-      name: exercises.name,
-      category: exercises.category,
-      defaultUnit: exercises.defaultUnit,
-    })
-    .from(workoutProgramExercises)
-    .innerJoin(exercises, eq(workoutProgramExercises.exerciseId, exercises.id))
-    .where(eq(workoutProgramExercises.programId, data.programId))
-    .orderBy(workoutProgramExercises.orderIndex);
+    if (program.createdByUserId !== userId) {
+      const assignmentAccess = await db.select().from(programAssignments).where(
+        and(
+          eq(programAssignments.programId, data.programId),
+          eq(programAssignments.clientId, userId)
+        )
+      ).limit(1);
 
-    const fullExercises = [];
-    for (const ex of exercisesList) {
-      const sets = await db.select().from(workoutProgramSets)
-        .where(eq(workoutProgramSets.programExerciseId, ex.id))
-        .orderBy(workoutProgramSets.setNumber);
-
-      fullExercises.push({
-        ...ex,
-        sets,
-      });
+      if (assignmentAccess.length === 0) {
+        throw new Error('Unauthorized program access.');
+      }
     }
 
+    return getProgramDetailsById(data.programId);
+  });
+
+// 14b. Get assigned program details for the current athlete
+export const getAssignedWorkoutProgramDetails = createServerFn({ method: 'GET' })
+  .inputValidator((data: { assignmentId: string }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser();
+    const clientId = auth.userId;
+
+    const assignments = await db.select({
+      id: programAssignments.id,
+      status: programAssignments.status,
+      notes: programAssignments.notes,
+      assignedAt: programAssignments.assignedAt,
+      completedAt: programAssignments.completedAt,
+      programId: programAssignments.programId,
+      trainerName: users.name,
+    })
+    .from(programAssignments)
+    .innerJoin(users, eq(programAssignments.assignedByUserId, users.id))
+    .where(
+      and(
+        eq(programAssignments.id, data.assignmentId),
+        eq(programAssignments.clientId, clientId),
+        eq(programAssignments.status, 'pending')
+      )
+    )
+    .limit(1);
+
+    if (assignments.length === 0) {
+      throw new Error('Program assignment not found, already completed, or not assigned to this athlete.');
+    }
+
+    const assignment = assignments[0];
+    const program = await getProgramDetailsById(assignment.programId);
+
     return {
-      ...program,
-      exercises: fullExercises,
+      assignment,
+      program,
     };
   });
 
@@ -731,6 +822,19 @@ export const saveWorkoutProgram = createServerFn({ method: 'POST' })
     const isEdit = !!data.programId;
     const programId = data.programId || generateId('prog');
 
+    if (isEdit) {
+      const existing = await db.select().from(workoutPrograms).where(
+        and(
+          eq(workoutPrograms.id, programId),
+          eq(workoutPrograms.createdByUserId, trainerId)
+        )
+      ).limit(1);
+
+      if (existing.length === 0) {
+        throw new Error('Unauthorized or program not found.');
+      }
+    }
+
     db.transaction((tx) => {
       if (isEdit) {
         // 1. Update program header
@@ -740,7 +844,12 @@ export const saveWorkoutProgram = createServerFn({ method: 'POST' })
             notes: data.notes || null,
             updatedAt: now,
           })
-          .where(eq(workoutPrograms.id, programId))
+          .where(
+            and(
+              eq(workoutPrograms.id, programId),
+              eq(workoutPrograms.createdByUserId, trainerId)
+            )
+          )
           .run();
 
         // 2. Delete existing exercises and sets
