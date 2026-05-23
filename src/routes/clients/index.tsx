@@ -8,8 +8,12 @@ import {
   getWorkoutSessionsHistory,
   getHealthMetricsHistory,
   logHealthMetric,
+  getCoachingNotes,
+  saveCoachingNote,
+  deleteCoachingNote,
 } from '../../lib/actions'
 import type {
+  CoachingNoteRecord,
   HealthMetricRecord,
   MetricType,
   TrainerClientRecord,
@@ -39,8 +43,9 @@ function TrainerClientsPage() {
   const [selectedClientId, setSelectedClientId] = useState<string>('')
   const [selectedClientWorkouts, setSelectedClientWorkouts] = useState<WorkoutSessionRecord[]>([])
   const [selectedClientMetrics, setSelectedClientMetrics] = useState<HealthMetricRecord[]>([])
+  const [selectedClientNotes, setSelectedClientNotes] = useState<CoachingNoteRecord[]>([])
   const [detailLoading, setDetailLoading] = useState(false)
-  const [detailTab, setDetailTab] = useState<'workouts' | 'health' | 'sync'>('workouts')
+  const [detailTab, setDetailTab] = useState<'workouts' | 'health' | 'notes' | 'sync'>('workouts')
   const [activeMetricType, setActiveMetricType] = useState<MetricType>('weight')
 
   // Log client metric states
@@ -50,6 +55,12 @@ function TrainerClientsPage() {
   const [syncingMetric, setSyncingMetric] = useState(false)
   const [syncSuccess, setSyncSuccess] = useState('')
   const [syncError, setSyncError] = useState('')
+  const [noteId, setNoteId] = useState('')
+  const [noteTitle, setNoteTitle] = useState('')
+  const [noteBody, setNoteBody] = useState('')
+  const [notePinned, setNotePinned] = useState(false)
+  const [savingNote, setSavingNote] = useState(false)
+  const [noteStatus, setNoteStatus] = useState('')
 
   // Load baseline profile & check if Trainer
   useEffect(() => {
@@ -97,11 +108,13 @@ function TrainerClientsPage() {
       const fetchMetrics = getHealthMetricsHistory({
         data: { clientId: selectedClientId, metricType: activeMetricType },
       })
+      const fetchNotes = getCoachingNotes({ data: { clientId: selectedClientId } })
 
-      Promise.all([fetchWorkouts, fetchMetrics])
-        .then(([wHist, mHist]) => {
+      Promise.all([fetchWorkouts, fetchMetrics, fetchNotes])
+        .then(([wHist, mHist, notes]) => {
           setSelectedClientWorkouts(wHist || [])
           setSelectedClientMetrics(mHist || [])
+          setSelectedClientNotes(notes || [])
           setDetailLoading(false)
         })
         .catch((err) => {
@@ -111,6 +124,7 @@ function TrainerClientsPage() {
     } else {
       setSelectedClientWorkouts([])
       setSelectedClientMetrics([])
+      setSelectedClientNotes([])
     }
   }, [selectedClientId, activeMetricType])
 
@@ -183,6 +197,74 @@ function TrainerClientsPage() {
       setSyncError(err instanceof Error ? err.message : 'Failed to sync client health metric.')
     } finally {
       setSyncingMetric(false)
+    }
+  }
+
+  const resetNoteForm = () => {
+    setNoteId('')
+    setNoteTitle('')
+    setNoteBody('')
+    setNotePinned(false)
+  }
+
+  const refreshCoachingNotes = async () => {
+    if (!selectedClientId) return
+    const notes = await getCoachingNotes({ data: { clientId: selectedClientId } })
+    setSelectedClientNotes(notes || [])
+  }
+
+  const handleNoteSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedClientId || !noteTitle || !noteBody) return
+
+    setSavingNote(true)
+    setNoteStatus('')
+
+    try {
+      await saveCoachingNote({
+        data: {
+          clientId: selectedClientId,
+          noteId: noteId || undefined,
+          title: noteTitle,
+          body: noteBody,
+          pinned: notePinned,
+        },
+      })
+      await refreshCoachingNotes()
+      resetNoteForm()
+      setNoteStatus('Coaching note saved.')
+      setTimeout(() => setNoteStatus(''), 3000)
+    } catch (err) {
+      setNoteStatus(err instanceof Error ? err.message : 'Unable to save coaching note.')
+    } finally {
+      setSavingNote(false)
+    }
+  }
+
+  const handleNoteEdit = (note: CoachingNoteRecord) => {
+    setNoteId(note.id)
+    setNoteTitle(note.title)
+    setNoteBody(note.body)
+    setNotePinned(note.pinned === 1)
+    setDetailTab('notes')
+  }
+
+  const handleNoteDelete = async (note: CoachingNoteRecord) => {
+    if (!selectedClientId || !window.confirm('Delete this private coaching note?')) return
+
+    setSavingNote(true)
+    setNoteStatus('')
+
+    try {
+      await deleteCoachingNote({ data: { clientId: selectedClientId, noteId: note.id } })
+      await refreshCoachingNotes()
+      if (noteId === note.id) resetNoteForm()
+      setNoteStatus('Coaching note deleted.')
+      setTimeout(() => setNoteStatus(''), 3000)
+    } catch (err) {
+      setNoteStatus(err instanceof Error ? err.message : 'Unable to delete coaching note.')
+    } finally {
+      setSavingNote(false)
     }
   }
 
@@ -529,6 +611,17 @@ function TrainerClientsPage() {
                   Biometric History
                 </button>
                 <button
+                  onClick={() => setDetailTab('notes')}
+                  className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 flex items-center gap-2 transition-all ${
+                    detailTab === 'notes'
+                      ? 'border-[var(--primary-container)] text-white bg-white/[0.02]'
+                      : 'border-transparent text-[var(--on-surface-variant)] hover:text-white'
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-sm">clinical_notes</span>
+                  Coach Notes ({selectedClientNotes.length})
+                </button>
+                <button
                   onClick={() => setDetailTab('sync')}
                   className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 flex items-center gap-2 transition-all ${
                     detailTab === 'sync'
@@ -677,6 +770,125 @@ function TrainerClientsPage() {
                               ))}
                             </tbody>
                           </table>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {detailTab === 'notes' && (
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                      <div className="card space-y-4">
+                        <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+                          <span className="material-symbols-outlined text-[var(--primary-container)]">
+                            edit_note
+                          </span>
+                          {noteId ? 'Edit Private Note' : 'New Private Note'}
+                        </h3>
+
+                        {noteStatus && (
+                          <div className="p-3 text-xs rounded bg-white/[0.03] border border-white/10 text-[var(--on-surface)]">
+                            {noteStatus}
+                          </div>
+                        )}
+
+                        <form onSubmit={handleNoteSubmit} className="space-y-4">
+                          <div className="input-group">
+                            <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                              Note Title
+                            </label>
+                            <input
+                              value={noteTitle}
+                              onChange={(event) => setNoteTitle(event.target.value)}
+                              className="input-field"
+                              placeholder="e.g. Knee comfort check-in"
+                            />
+                          </div>
+                          <div className="input-group">
+                            <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                              Coaching Context
+                            </label>
+                            <textarea
+                              value={noteBody}
+                              onChange={(event) => setNoteBody(event.target.value)}
+                              className="input-field min-h-[140px]"
+                              placeholder="Private trainer-only notes, cues, adherence patterns, or follow-up items."
+                            />
+                          </div>
+                          <label className="flex items-center gap-2 text-xs text-[var(--on-surface)]">
+                            <input
+                              type="checkbox"
+                              checked={notePinned}
+                              onChange={(event) => setNotePinned(event.target.checked)}
+                            />
+                            Pin to top of client notes
+                          </label>
+                          <div className="flex gap-2">
+                            <button
+                              type="submit"
+                              disabled={savingNote}
+                              className={`btn btn-primary flex-1 ${savingNote ? 'btn-disabled' : ''}`}
+                            >
+                              {savingNote ? 'Saving...' : 'Save Note'}
+                            </button>
+                            {noteId && (
+                              <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={resetNoteForm}
+                              >
+                                New
+                              </button>
+                            )}
+                          </div>
+                        </form>
+                      </div>
+
+                      <div className="space-y-3">
+                        {selectedClientNotes.length === 0 ? (
+                          <div className="card text-center py-12">
+                            <p className="body-md text-xs text-[var(--on-surface-variant)]">
+                              No private coaching notes saved for this athlete yet.
+                            </p>
+                          </div>
+                        ) : (
+                          selectedClientNotes.map((note) => (
+                            <div key={note.id} className="card p-4 space-y-3">
+                              <div className="flex justify-between items-start gap-3">
+                                <div>
+                                  <h4 className="headline-md text-white font-bold text-base m-0">
+                                    {note.pinned === 1 ? 'Pinned: ' : ''}
+                                    {note.title}
+                                  </h4>
+                                  <p className="text-[10px] text-[var(--on-surface-variant)] mt-1">
+                                    Updated {new Date(note.updatedAt).toLocaleString()}
+                                  </p>
+                                </div>
+                                {note.pinned === 1 && (
+                                  <span className="chip py-0.5 px-2 text-[8px]">PINNED</span>
+                                )}
+                              </div>
+                              <p className="body-md text-sm text-[var(--on-surface)] whitespace-pre-wrap">
+                                {note.body}
+                              </p>
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  className="btn btn-secondary py-1 px-3 text-[10px]"
+                                  onClick={() => handleNoteEdit(note)}
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-danger py-1 px-3 text-[10px]"
+                                  disabled={savingNote}
+                                  onClick={() => handleNoteDelete(note)}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            </div>
+                          ))
                         )}
                       </div>
                     </div>
