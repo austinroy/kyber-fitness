@@ -28,6 +28,7 @@ Shared TypeScript data-transfer and form/editor shapes live under `src/types`. C
 - **Workout logging and review:** Custom workout session builder with global/custom exercises, set targets, reps, load, distance, duration, rest, intensity, notes, dedicated session detail pages, and permission-checked edit/delete flows.
 - **Health metrics:** Timelines for weight, body fat, and resting heart rate, including trainer-supported client metric logging plus permission-checked metric correction and deletion when access allows.
 - **Trainer clients:** Client invitation, active relationship management, athlete profile/metric views, and permission-guarded client logging.
+- **Trainer coaching notes:** Trainer-private client notes with pinned follow-ups, update/delete controls, and active relationship enforcement.
 - **Program builder:** Trainer-only program templates with ordered exercises and target sets.
 - **Program assignment flow:** Trainers assign programs to active clients; athletes can open pending assignments, preload the routine into `/workouts/new`, record the actual session, and complete the assignment through a server-validated workflow.
 
@@ -57,6 +58,7 @@ erDiagram
     users ||--o{ health_metrics : "logs metrics"
     users ||--o{ workout_programs : "creates"
     users ||--o{ program_assignments : "receives / assigns"
+    users ||--o{ coaching_notes : "writes / receives private context"
     workout_sessions ||--o{ session_exercises : "contains"
     exercises ||--o{ session_exercises : "is added to"
     session_exercises ||--o{ exercise_sets : "has sets"
@@ -74,6 +76,7 @@ erDiagram
 7.  **`health_metrics`:** Historical timelines of athlete tracking (body weight, body fat %, resting heart rate).
 8.  **`workout_programs`, `workout_program_exercises`, `workout_program_sets`:** Trainer-owned reusable routine templates with ordered movements, target sets, and coaching instructions.
 9.  **`program_assignments`:** Direct trainer-to-athlete routine assignments with `pending` and `completed` states.
+10. **`coaching_notes`:** Trainer-private client notes with pinned status and update timestamps, guarded by active trainer-client relationships.
 
 ---
 

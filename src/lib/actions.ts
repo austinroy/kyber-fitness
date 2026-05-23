@@ -14,6 +14,7 @@ import {
   workoutProgramExercises,
   workoutProgramSets,
   programAssignments,
+  coachingNotes,
 } from './db/schema'
 import { eq, and, or, desc, sql } from 'drizzle-orm'
 import { getAuthUser, requireAuthUser } from './auth-server'
@@ -735,6 +736,121 @@ export const getTrainerClientsList = createServerFn({ method: 'GET' }).handler(a
 
   return relationships
 })
+
+export const getCoachingNotes = createServerFn({ method: 'GET' })
+  .inputValidator((data: { clientId: string }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser()
+    const trainerId = auth.userId
+
+    const isPermitted = await verifyTrainerClientAccess(trainerId, data.clientId)
+    if (!isPermitted) {
+      throw new Error('Trainer does not have an active partnership with this client.')
+    }
+
+    return await db
+      .select()
+      .from(coachingNotes)
+      .where(and(eq(coachingNotes.trainerId, trainerId), eq(coachingNotes.clientId, data.clientId)))
+      .orderBy(desc(coachingNotes.pinned), desc(coachingNotes.updatedAt))
+  })
+
+export const saveCoachingNote = createServerFn({ method: 'POST' })
+  .inputValidator(
+    (data: {
+      clientId: string
+      noteId?: string
+      title: string
+      body: string
+      pinned?: boolean
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser()
+    const trainerId = auth.userId
+    const now = new Date().toISOString()
+
+    const isPermitted = await verifyTrainerClientAccess(trainerId, data.clientId)
+    if (!isPermitted) {
+      throw new Error('Trainer does not have an active partnership with this client.')
+    }
+
+    if (data.noteId) {
+      const existing = await db
+        .select()
+        .from(coachingNotes)
+        .where(
+          and(
+            eq(coachingNotes.id, data.noteId),
+            eq(coachingNotes.trainerId, trainerId),
+            eq(coachingNotes.clientId, data.clientId),
+          ),
+        )
+        .limit(1)
+
+      if (existing.length === 0) {
+        throw new Error('Coaching note not found or unauthorized.')
+      }
+
+      await db
+        .update(coachingNotes)
+        .set({
+          title: data.title,
+          body: data.body,
+          pinned: data.pinned ? 1 : 0,
+          updatedAt: now,
+        })
+        .where(eq(coachingNotes.id, data.noteId))
+
+      return { success: true, noteId: data.noteId }
+    }
+
+    const noteId = generateId('note')
+    await db.insert(coachingNotes).values({
+      id: noteId,
+      trainerId,
+      clientId: data.clientId,
+      title: data.title,
+      body: data.body,
+      pinned: data.pinned ? 1 : 0,
+      createdAt: now,
+      updatedAt: now,
+    })
+
+    return { success: true, noteId }
+  })
+
+export const deleteCoachingNote = createServerFn({ method: 'POST' })
+  .inputValidator((data: { clientId: string; noteId: string }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser()
+    const trainerId = auth.userId
+
+    const isPermitted = await verifyTrainerClientAccess(trainerId, data.clientId)
+    if (!isPermitted) {
+      throw new Error('Trainer does not have an active partnership with this client.')
+    }
+
+    const existing = await db
+      .select()
+      .from(coachingNotes)
+      .where(
+        and(
+          eq(coachingNotes.id, data.noteId),
+          eq(coachingNotes.trainerId, trainerId),
+          eq(coachingNotes.clientId, data.clientId),
+        ),
+      )
+      .limit(1)
+
+    if (existing.length === 0) {
+      throw new Error('Coaching note not found or unauthorized.')
+    }
+
+    await db.delete(coachingNotes).where(eq(coachingNotes.id, data.noteId))
+
+    return { success: true }
+  })
 
 // 8. Invite Client via Email (Flow A: Trainer invites client by email)
 export const inviteClientByEmail = createServerFn({ method: 'POST' })

@@ -184,3 +184,19 @@ export const programAssignments = sqliteTable('program_assignments', {
   assignedAt: text('assigned_at').notNull(),
   completedAt: text('completed_at'),
 })
+
+// 14. Trainer Private Coaching Notes
+export const coachingNotes = sqliteTable('coaching_notes', {
+  id: text('id').primaryKey(),
+  trainerId: text('trainer_id')
+    .references(() => users.id, { onDelete: 'cascade' })
+    .notNull(),
+  clientId: text('client_id')
+    .references(() => users.id, { onDelete: 'cascade' })
+    .notNull(),
+  title: text('title').notNull(),
+  body: text('body').notNull(),
+  pinned: integer('pinned').default(0).notNull(),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+})

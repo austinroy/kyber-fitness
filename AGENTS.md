@@ -173,6 +173,7 @@ erDiagram
     users ||--o{ health_metrics : "logs metrics"
     users ||--o{ workout_programs : "creates"
     users ||--o{ program_assignments : "receives / assigns"
+    users ||--o{ coaching_notes : "writes / receives private context"
     workout_sessions ||--o{ session_exercises : "contains"
     exercises ||--o{ session_exercises : "is added to"
     session_exercises ||--o{ exercise_sets : "has sets"
@@ -313,6 +314,17 @@ erDiagram
         text assignedAt
         text completedAt
     }
+
+    coaching_notes {
+        text id PK
+        text trainerId FK "Trainer users.id"
+        text clientId FK "Client users.id"
+        text title
+        text body
+        integer pinned "0 | 1"
+        text createdAt
+        text updatedAt
+    }
 ```
 
 ---
@@ -390,6 +402,10 @@ Kyber Fitness enforces a secure Trainer-Client permission system inside `src/lib
   - A trainer can only view data or log sessions for an athlete if there is an active contract inside `trainerClients` with `status = 'active'`.
   - Permissions are serialized inside a JSON column in `trainer_clients.permissions` (e.g., `{"canViewHealthData": true, "canAddSessions": true}`).
   - Before performing any trainer actions, agents must execute the server-side validation hook `verifyTrainerClientAccess(trainerId, clientId)`.
+- **Trainer Coaching Notes**:
+  - Coaching notes are trainer-private records scoped to `trainerId` and `clientId`.
+  - Trainers can create, edit, list, pin, or delete notes only for active client relationships verified by `verifyTrainerClientAccess`.
+  - Athletes do not have a route or server action contract for reading trainer-private notes unless a future product decision explicitly changes visibility.
 - **Program Templates and Assignments**:
   - Trainers can create, edit, and delete only workout programs where `workoutPrograms.createdByUserId` matches their Clerk user ID.
   - Athletes can load a program only through a pending or historical assignment that belongs to their own user ID.

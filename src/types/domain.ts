@@ -154,3 +154,14 @@ export interface CurrentUserProfile {
   profile?: ProfileRecord | null
   trainerProfile?: TrainerProfileRecord | null
 }
+
+export interface CoachingNoteRecord {
+  id: string
+  trainerId: string
+  clientId: string
+  title: string
+  body: string
+  pinned: number
+  createdAt: string
+  updatedAt: string
+}
