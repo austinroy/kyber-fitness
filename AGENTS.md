@@ -529,6 +529,38 @@ These are product-planning candidates only. Do not gate existing functionality w
 
 ---
 
+## 11. Future Premium / Paywall Considerations
+
+These are product-planning candidates only. Do not gate existing functionality without an explicit product decision, pricing model, and server-side entitlement enforcement.
+
+### Recommended Tier Shape
+
+- **Free Athlete**: Workout logging, health metric logging, basic dashboard access, trainer invitations, and essential account/profile settings.
+- **Premium Athlete**: Advanced analytics, PR tracking, calendar views, full data import/export, durable cloud sync, progress media, and richer historical reporting.
+- **Trainer Pro**: Client management, program assignment, coaching notes, adherence dashboards, client notifications, roster exports, and client progress reports.
+
+### Strong Paywall Candidates
+
+1. **Trainer Client Management**: Keep a small free client cap, then require Trainer Pro for unlimited clients, advanced filters, relationship history, and richer client dashboards.
+2. **Program Builder and Assignments**: Allow limited free templates, then require premium for unlimited reusable programs, assignment scheduling, completion tracking, reusable program blocks, and progression plans.
+3. **Trainer Coaching Notes**: Gate private client notes, session-linked notes, pinned reminders, note history, and follow-up prompts behind Trainer Pro.
+4. **Advanced Analytics**: Gate PR trends, workout volume by movement/category, adherence analytics, strength progression, and body composition trend projections.
+5. **Calendar and Scheduling**: Gate program calendars, trainer-assigned sessions, missed workout detection, recurring routines, and schedule-aware dashboard prompts.
+6. **Notifications / In-App Inbox**: Keep essential auth, invite, and safety messages free; gate assignment alerts, coach feedback alerts, client inactivity alerts, and weekly summaries.
+7. **Data Import / Export**: Offer basic portability if desired, but gate full-history exports, client reports, trainer roster exports, and PDF progress reports.
+8. **Persistent Cloud Database / Sync**: Gate durable hosted storage, cross-device sync, backups, and production-grade persistence beyond local/demo data.
+9. **Progress Media**: Gate secure progress photos, measurements, private media timelines, and trainer-shared media with explicit consent.
+10. **AI / Smart Coaching Assist**: Gate workout summaries, program suggestions, anomaly detection, and goal-based progression hints after core data quality is strong.
+
+### Implementation Rules for Premium Features
+
+- Entitlements must be checked server-side in TanStack Start server functions before returning premium data or executing premium mutations.
+- Never rely on hidden buttons, client-only route guards, or UI state as the source of truth for premium access.
+- Keep billing/provider integrations isolated from Clerk identity and Drizzle application persistence; Clerk remains identity source of truth, while SQLite/Drizzle stores app-specific entitlement state only if needed.
+- Update `AGENTS.md` and `README.md` whenever premium tiers, entitlement rules, paywalled routes, schema, or deployment requirements materially change.
+
+---
+
 Always double-check that your work preserves visual beauty, follows hydration standards, and honors the Clerk rethrow policies! Keep building the ultimate athletic hub.
 
 ---
