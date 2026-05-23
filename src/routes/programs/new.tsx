@@ -1,7 +1,13 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
-import { getCurrentUserProfile, getExercisesList, createCustomExercise, saveWorkoutProgram, getWorkoutProgramDetails } from '../../lib/actions'
+import {
+  getCurrentUserProfile,
+  getExercisesList,
+  createCustomExercise,
+  saveWorkoutProgram,
+  getWorkoutProgramDetails,
+} from '../../lib/actions'
 
 export const Route = createFileRoute('/programs/new')({
   ssr: false,
@@ -14,24 +20,24 @@ export const Route = createFileRoute('/programs/new')({
 })
 
 interface SetInput {
-  setNumber: number;
-  reps: string;
-  weight: string;
-  durationSeconds: string;
-  distance: string;
-  restSeconds: string;
-  intensity: string;
-  notes: string;
+  setNumber: number
+  reps: string
+  weight: string
+  durationSeconds: string
+  distance: string
+  restSeconds: string
+  intensity: string
+  notes: string
 }
 
 interface ExerciseInput {
-  exerciseId: string;
-  name: string;
-  category: string;
-  defaultUnit: string;
-  notes: string;
-  orderIndex: number;
-  sets: SetInput[];
+  exerciseId: string
+  name: string
+  category: string
+  defaultUnit: string
+  notes: string
+  orderIndex: number
+  sets: SetInput[]
 }
 
 function ProgramBuilderPage() {
@@ -74,7 +80,7 @@ function ProgramBuilderPage() {
                 navigate({ to: '/dashboard' }) // Individuals cannot build programs
               } else {
                 setRole(res.user.role)
-                
+
                 // Fetch exercises list
                 getExercisesList()
                   .then((exs) => setExercisesList(exs || []))
@@ -86,7 +92,7 @@ function ProgramBuilderPage() {
                     .then((details: any) => {
                       setTitle(details.title)
                       setProgramNotes(details.notes || '')
-                      
+
                       const mapped = details.exercises.map((ex: any) => ({
                         exerciseId: ex.exerciseId,
                         name: ex.name,
@@ -103,7 +109,7 @@ function ProgramBuilderPage() {
                           restSeconds: s.restSeconds?.toString() || '',
                           intensity: s.intensity || '',
                           notes: s.notes || '',
-                        }))
+                        })),
                       }))
                       setAddedExercises(mapped)
                     })
@@ -112,7 +118,7 @@ function ProgramBuilderPage() {
                       setError('Failed to load program template.')
                     })
                 }
-                
+
                 setLoading(false)
               }
             } else {
@@ -142,8 +148,8 @@ function ProgramBuilderPage() {
           restSeconds: '60',
           intensity: '',
           notes: '',
-        }
-      ]
+        },
+      ],
     }
     setAddedExercises([...addedExercises, newEx])
     setSearchQuery('')
@@ -161,7 +167,7 @@ function ProgramBuilderPage() {
 
     const targetIdx = direction === 'up' ? idx - 1 : idx + 1
     const updated = [...addedExercises]
-    
+
     // Swap
     const temp = updated[idx]
     updated[idx] = updated[targetIdx]
@@ -201,7 +207,7 @@ function ProgramBuilderPage() {
     const updated = [...addedExercises]
     updated[exIdx].sets[setIdx] = {
       ...updated[exIdx].sets[setIdx],
-      [field]: value
+      [field]: value,
     }
     setAddedExercises(updated)
   }
@@ -222,7 +228,7 @@ function ProgramBuilderPage() {
           name: customName,
           category: customCategory,
           defaultUnit: customUnit,
-        }
+        },
       })
       if (res && res.success) {
         const newEx = {
@@ -259,11 +265,11 @@ function ProgramBuilderPage() {
         programId: programId || undefined,
         title: title.trim(),
         notes: programNotes.trim() || undefined,
-        exercises: addedExercises.map(ex => ({
+        exercises: addedExercises.map((ex) => ({
           exerciseId: ex.exerciseId,
           notes: ex.notes || undefined,
           orderIndex: ex.orderIndex,
-          sets: ex.sets.map(s => ({
+          sets: ex.sets.map((s) => ({
             setNumber: s.setNumber,
             reps: s.reps ? parseInt(s.reps) : undefined,
             weight: s.weight ? parseFloat(s.weight) : undefined,
@@ -272,8 +278,8 @@ function ProgramBuilderPage() {
             restSeconds: s.restSeconds ? parseInt(s.restSeconds) : undefined,
             intensity: s.intensity || undefined,
             notes: s.notes || undefined,
-          }))
-        }))
+          })),
+        })),
       }
 
       await saveWorkoutProgram({ data: payload })
@@ -289,14 +295,17 @@ function ProgramBuilderPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">Streaming program telemetry console...</p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">
+          Streaming program telemetry console...
+        </p>
       </div>
     )
   }
 
-  const filteredExercises = exercisesList.filter(ex => 
-    ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    ex.category.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredExercises = exercisesList.filter(
+    (ex) =>
+      ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ex.category.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   return (
@@ -310,8 +319,14 @@ function ProgramBuilderPage() {
           </h1>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => navigate({ to: '/programs' })} className="btn btn-secondary py-2">Cancel</button>
-          <button onClick={handleSaveProgram} disabled={saving} className={`btn btn-primary py-2 ${saving ? 'btn-disabled' : ''}`}>
+          <button onClick={() => navigate({ to: '/programs' })} className="btn btn-secondary py-2">
+            Cancel
+          </button>
+          <button
+            onClick={handleSaveProgram}
+            disabled={saving}
+            className={`btn btn-primary py-2 ${saving ? 'btn-disabled' : ''}`}
+          >
             {saving ? 'Saving Template...' : 'Save Template'}
           </button>
         </div>
@@ -325,15 +340,16 @@ function ProgramBuilderPage() {
 
       {/* Main Form Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* Left column: Catalog search & Custom register */}
         <div className="lg:col-span-1 space-y-6">
           <div className="card space-y-4">
             <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
-              <span className="material-symbols-outlined text-[var(--primary-container)]">search</span>
+              <span className="material-symbols-outlined text-[var(--primary-container)]">
+                search
+              </span>
               Exercise Catalog
             </h3>
-            
+
             <div className="input-group">
               <input
                 type="text"
@@ -346,15 +362,17 @@ function ProgramBuilderPage() {
 
             <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1 custom-scrollbar">
               {filteredExercises.map((ex) => (
-                <div 
-                  key={ex.id} 
+                <div
+                  key={ex.id}
                   className="flex justify-between items-center p-3 rounded-md bg-white/5 hover:bg-white/10 transition-colors border border-white/5"
                 >
                   <div>
                     <p className="body-md font-bold text-white text-sm m-0">{ex.name}</p>
-                    <span className="text-[10px] text-[var(--on-surface-variant)] capitalize">{ex.category} • Default {ex.defaultUnit || 'kg'}</span>
+                    <span className="text-[10px] text-[var(--on-surface-variant)] capitalize">
+                      {ex.category} • Default {ex.defaultUnit || 'kg'}
+                    </span>
                   </div>
-                  <button 
+                  <button
                     onClick={() => handleAddExercise(ex)}
                     className="btn py-1 px-2.5 text-xs bg-[var(--primary-container)]/10 hover:bg-[var(--primary-container)]/20 text-[var(--primary-container)] border border-[var(--primary-container)]/20 rounded-md flex items-center"
                   >
@@ -363,12 +381,14 @@ function ProgramBuilderPage() {
                 </div>
               ))}
               {filteredExercises.length === 0 && (
-                <p className="body-md text-[var(--on-surface-variant)] text-xs text-center py-4">No matching exercises found.</p>
+                <p className="body-md text-[var(--on-surface-variant)] text-xs text-center py-4">
+                  No matching exercises found.
+                </p>
               )}
             </div>
 
             <div className="border-t border-white/5 pt-4">
-              <button 
+              <button
                 onClick={() => setShowCustomModal(true)}
                 className="btn btn-secondary w-full py-2 flex items-center justify-center gap-2 text-xs"
               >
@@ -380,12 +400,16 @@ function ProgramBuilderPage() {
 
           <div className="card space-y-4">
             <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
-              <span className="material-symbols-outlined text-[var(--secondary-container)]">info</span>
+              <span className="material-symbols-outlined text-[var(--secondary-container)]">
+                info
+              </span>
               Template Attributes
             </h3>
-            
+
             <div className="input-group">
-              <label className="label-md text-xs text-[var(--on-surface-variant)]">Template Title</label>
+              <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                Template Title
+              </label>
               <input
                 type="text"
                 placeholder="e.g., Push Day Hypertrophy"
@@ -396,7 +420,9 @@ function ProgramBuilderPage() {
             </div>
 
             <div className="input-group">
-              <label className="label-md text-xs text-[var(--on-surface-variant)]">Coaching / Routine Notes</label>
+              <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                Coaching / Routine Notes
+              </label>
               <textarea
                 placeholder="Write overall guidelines, hydration, or warm-up notes here..."
                 value={programNotes}
@@ -411,7 +437,9 @@ function ProgramBuilderPage() {
         <div className="lg:col-span-2 space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="headline-md text-lg font-bold flex items-center gap-2">
-              <span className="material-symbols-outlined text-[var(--secondary-container)]">assignment_turned_in</span>
+              <span className="material-symbols-outlined text-[var(--secondary-container)]">
+                assignment_turned_in
+              </span>
               Routine Constructor
             </h3>
             <span className="chip chip-cyan">{addedExercises.length} exercises added</span>
@@ -419,17 +447,20 @@ function ProgramBuilderPage() {
 
           {addedExercises.length === 0 ? (
             <div className="card text-center py-16 border-dashed border-white/10 bg-white/[0.01]">
-              <span className="material-symbols-outlined text-[var(--secondary-container)] text-5xl mb-3 animate-pulse">playlist_add</span>
+              <span className="material-symbols-outlined text-[var(--secondary-container)] text-5xl mb-3 animate-pulse">
+                playlist_add
+              </span>
               <h4 className="headline-md font-bold text-white/70 text-lg">Your canvas is empty</h4>
               <p className="body-md text-[var(--on-surface-variant)] text-sm max-w-sm mx-auto">
-                Add exercises from the catalog on the left to structure your premium routine template.
+                Add exercises from the catalog on the left to structure your premium routine
+                template.
               </p>
             </div>
           ) : (
             <div className="space-y-6">
               {addedExercises.map((ex, exIdx) => (
-                <div 
-                  key={`${ex.exerciseId}-${exIdx}`} 
+                <div
+                  key={`${ex.exerciseId}-${exIdx}`}
                   className="card p-5 relative overflow-hidden transition-all duration-300 border border-[var(--secondary-container)] shadow-[0_0_15px_rgba(0,238,252,0.05)]"
                 >
                   {/* Decorative glowing gradient border indicator */}
@@ -438,30 +469,38 @@ function ProgramBuilderPage() {
                   <div className="flex justify-between items-start gap-4 mb-4">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="chip py-0.5 px-2 text-[10px] bg-white/10 text-white font-bold">{exIdx + 1}</span>
-                        <h4 className="headline-md text-white font-black text-lg m-0 uppercase tracking-tight">{ex.name}</h4>
-                        <span className="chip chip-cyan py-0.5 px-2 text-[9px] uppercase font-semibold">{ex.category}</span>
+                        <span className="chip py-0.5 px-2 text-[10px] bg-white/10 text-white font-bold">
+                          {exIdx + 1}
+                        </span>
+                        <h4 className="headline-md text-white font-black text-lg m-0 uppercase tracking-tight">
+                          {ex.name}
+                        </h4>
+                        <span className="chip chip-cyan py-0.5 px-2 text-[9px] uppercase font-semibold">
+                          {ex.category}
+                        </span>
                       </div>
-                      <p className="text-[10px] text-[var(--on-surface-variant)] m-0 mt-1 capitalize">Default Unit: {ex.defaultUnit}</p>
+                      <p className="text-[10px] text-[var(--on-surface-variant)] m-0 mt-1 capitalize">
+                        Default Unit: {ex.defaultUnit}
+                      </p>
                     </div>
 
                     <div className="flex items-center gap-1">
                       {/* Sort ordering arrows */}
-                      <button 
+                      <button
                         onClick={() => handleMoveExercise(exIdx, 'up')}
                         disabled={exIdx === 0}
                         className="btn py-1 px-2 text-xs bg-white/5 hover:bg-white/10 text-white disabled:opacity-30 rounded-md"
                       >
                         <span className="material-symbols-outlined text-sm">arrow_upward</span>
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleMoveExercise(exIdx, 'down')}
                         disabled={exIdx === addedExercises.length - 1}
                         className="btn py-1 px-2 text-xs bg-white/5 hover:bg-white/10 text-white disabled:opacity-30 rounded-md"
                       >
                         <span className="material-symbols-outlined text-sm">arrow_downward</span>
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleRemoveExercise(exIdx)}
                         className="btn py-1 px-2 text-xs bg-red-950/40 hover:bg-red-950/80 border border-red-900/40 text-red-400 rounded-md ml-2"
                       >
@@ -477,9 +516,15 @@ function ProgramBuilderPage() {
                         <tr className="border-b border-white/5 text-[10px] text-[var(--on-surface-variant)] uppercase tracking-wider">
                           <th className="py-2 pl-2 w-12 text-center">Set</th>
                           {ex.category !== 'cardio' && <th className="py-2 w-20">Reps</th>}
-                          {ex.category !== 'cardio' && <th className="py-2 w-24">Weight ({ex.defaultUnit})</th>}
-                          {ex.category === 'cardio' && <th className="py-2 w-24">Duration (sec)</th>}
-                          {ex.category === 'cardio' && <th className="py-2 w-24">Distance ({ex.defaultUnit})</th>}
+                          {ex.category !== 'cardio' && (
+                            <th className="py-2 w-24">Weight ({ex.defaultUnit})</th>
+                          )}
+                          {ex.category === 'cardio' && (
+                            <th className="py-2 w-24">Duration (sec)</th>
+                          )}
+                          {ex.category === 'cardio' && (
+                            <th className="py-2 w-24">Distance ({ex.defaultUnit})</th>
+                          )}
                           <th className="py-2 w-20">Rest (sec)</th>
                           <th className="py-2 w-24">Intensity</th>
                           <th className="py-2 pr-2">Instruction Note</th>
@@ -488,15 +533,22 @@ function ProgramBuilderPage() {
                       </thead>
                       <tbody>
                         {ex.sets.map((set, setIdx) => (
-                          <tr key={setIdx} className="border-b border-white/5 text-sm align-middle hover:bg-white/[0.02]">
-                            <td className="py-2 text-center font-bold text-[var(--secondary-container)] pl-2">{set.setNumber}</td>
-                            
+                          <tr
+                            key={setIdx}
+                            className="border-b border-white/5 text-sm align-middle hover:bg-white/[0.02]"
+                          >
+                            <td className="py-2 text-center font-bold text-[var(--secondary-container)] pl-2">
+                              {set.setNumber}
+                            </td>
+
                             {ex.category !== 'cardio' && (
                               <td className="py-1">
                                 <input
                                   type="number"
                                   value={set.reps}
-                                  onChange={(e) => handleSetChange(exIdx, setIdx, 'reps', e.target.value)}
+                                  onChange={(e) =>
+                                    handleSetChange(exIdx, setIdx, 'reps', e.target.value)
+                                  }
                                   className="w-16 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-center text-xs"
                                   placeholder="10"
                                 />
@@ -508,7 +560,9 @@ function ProgramBuilderPage() {
                                 <input
                                   type="number"
                                   value={set.weight}
-                                  onChange={(e) => handleSetChange(exIdx, setIdx, 'weight', e.target.value)}
+                                  onChange={(e) =>
+                                    handleSetChange(exIdx, setIdx, 'weight', e.target.value)
+                                  }
                                   className="w-20 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-center text-xs"
                                   placeholder="60"
                                   step="any"
@@ -521,7 +575,14 @@ function ProgramBuilderPage() {
                                 <input
                                   type="number"
                                   value={set.durationSeconds}
-                                  onChange={(e) => handleSetChange(exIdx, setIdx, 'durationSeconds', e.target.value)}
+                                  onChange={(e) =>
+                                    handleSetChange(
+                                      exIdx,
+                                      setIdx,
+                                      'durationSeconds',
+                                      e.target.value,
+                                    )
+                                  }
                                   className="w-20 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-center text-xs"
                                   placeholder="600"
                                 />
@@ -533,7 +594,9 @@ function ProgramBuilderPage() {
                                 <input
                                   type="number"
                                   value={set.distance}
-                                  onChange={(e) => handleSetChange(exIdx, setIdx, 'distance', e.target.value)}
+                                  onChange={(e) =>
+                                    handleSetChange(exIdx, setIdx, 'distance', e.target.value)
+                                  }
                                   className="w-20 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-center text-xs"
                                   placeholder="1.5"
                                   step="any"
@@ -545,7 +608,9 @@ function ProgramBuilderPage() {
                               <input
                                 type="number"
                                 value={set.restSeconds}
-                                onChange={(e) => handleSetChange(exIdx, setIdx, 'restSeconds', e.target.value)}
+                                onChange={(e) =>
+                                  handleSetChange(exIdx, setIdx, 'restSeconds', e.target.value)
+                                }
                                 className="w-16 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-center text-xs"
                                 placeholder="60"
                               />
@@ -555,7 +620,9 @@ function ProgramBuilderPage() {
                               <input
                                 type="text"
                                 value={set.intensity}
-                                onChange={(e) => handleSetChange(exIdx, setIdx, 'intensity', e.target.value)}
+                                onChange={(e) =>
+                                  handleSetChange(exIdx, setIdx, 'intensity', e.target.value)
+                                }
                                 className="w-20 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-left text-xs"
                                 placeholder={ex.category === 'cardio' ? 'Pace' : 'RPE 8'}
                               />
@@ -565,7 +632,9 @@ function ProgramBuilderPage() {
                               <input
                                 type="text"
                                 value={set.notes}
-                                onChange={(e) => handleSetChange(exIdx, setIdx, 'notes', e.target.value)}
+                                onChange={(e) =>
+                                  handleSetChange(exIdx, setIdx, 'notes', e.target.value)
+                                }
                                 className="w-full bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-left text-xs"
                                 placeholder="e.g. Slow negative pace"
                               />
@@ -573,7 +642,7 @@ function ProgramBuilderPage() {
 
                             <td className="py-1 text-right pr-2">
                               {ex.sets.length > 1 && (
-                                <button 
+                                <button
                                   onClick={() => handleRemoveSet(exIdx, setIdx)}
                                   className="text-red-400 hover:text-red-500 flex items-center justify-center p-1"
                                 >
@@ -589,7 +658,7 @@ function ProgramBuilderPage() {
 
                   {/* Add set and specific exercise guidelines */}
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mt-4 pt-3 border-t border-white/5">
-                    <button 
+                    <button
                       onClick={() => handleAddSet(exIdx)}
                       className="btn py-1 px-3 bg-white/5 hover:bg-white/10 text-white rounded-md text-xs flex items-center gap-1.5"
                     >
@@ -598,12 +667,14 @@ function ProgramBuilderPage() {
                     </button>
 
                     <div className="w-full md:max-w-md flex items-center gap-2">
-                      <span className="material-symbols-outlined text-xs text-[var(--on-surface-variant)]">notes</span>
-                      <input 
-                        type="text" 
-                        placeholder="Exercise specific coaching instructions..." 
-                        value={ex.notes} 
-                        onChange={(e) => handleExerciseNotesChange(exIdx, e.target.value)} 
+                      <span className="material-symbols-outlined text-xs text-[var(--on-surface-variant)]">
+                        notes
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="Exercise specific coaching instructions..."
+                        value={ex.notes}
+                        onChange={(e) => handleExerciseNotesChange(exIdx, e.target.value)}
                         className="bg-transparent text-white placeholder-white/20 border-b border-white/5 hover:border-white/15 focus:border-[var(--secondary-container)] w-full py-1 text-xs outline-none transition-colors"
                       />
                     </div>
@@ -621,10 +692,12 @@ function ProgramBuilderPage() {
           <div className="card w-full max-w-md space-y-6 relative border border-white/10 bg-[#121212] shadow-2xl">
             <div className="flex justify-between items-center border-b border-white/5 pb-3">
               <h3 className="headline-md text-lg font-bold text-white flex items-center gap-2">
-                <span className="material-symbols-outlined text-[var(--primary-container)]">add_box</span>
+                <span className="material-symbols-outlined text-[var(--primary-container)]">
+                  add_box
+                </span>
                 Register Custom Exercise
               </h3>
-              <button 
+              <button
                 onClick={() => setShowCustomModal(false)}
                 className="text-[var(--on-surface-variant)] hover:text-white"
               >
@@ -634,7 +707,9 @@ function ProgramBuilderPage() {
 
             <form onSubmit={handleCreateCustomExercise} className="space-y-4">
               <div className="input-group">
-                <label className="label-md text-xs text-[var(--on-surface-variant)]">Exercise Name</label>
+                <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                  Exercise Name
+                </label>
                 <input
                   type="text"
                   placeholder="e.g., Barbell Zercher Squat"
@@ -646,7 +721,9 @@ function ProgramBuilderPage() {
               </div>
 
               <div className="input-group">
-                <label className="label-md text-xs text-[var(--on-surface-variant)]">Movement Category</label>
+                <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                  Movement Category
+                </label>
                 <select
                   value={customCategory}
                   onChange={(e) => setCustomCategory(e.target.value)}
@@ -660,7 +737,9 @@ function ProgramBuilderPage() {
               </div>
 
               <div className="input-group">
-                <label className="label-md text-xs text-[var(--on-surface-variant)]">Default Metric Unit</label>
+                <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                  Default Metric Unit
+                </label>
                 <select
                   value={customUnit}
                   onChange={(e) => setCustomUnit(e.target.value)}
@@ -674,17 +753,14 @@ function ProgramBuilderPage() {
               </div>
 
               <div className="flex gap-3 justify-end pt-2 border-t border-white/5">
-                <button 
-                  type="button" 
-                  onClick={() => setShowCustomModal(false)} 
+                <button
+                  type="button"
+                  onClick={() => setShowCustomModal(false)}
                   className="btn btn-secondary py-1.5 px-4 text-xs"
                 >
                   Cancel
                 </button>
-                <button 
-                  type="submit" 
-                  className="btn btn-primary py-1.5 px-4 text-xs"
-                >
+                <button type="submit" className="btn btn-primary py-1.5 px-4 text-xs">
                   Register and Add
                 </button>
               </div>

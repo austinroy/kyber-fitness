@@ -1,13 +1,13 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
-import { 
-  getCurrentUserProfile, 
-  getTrainerClientsList, 
-  inviteClientByEmail, 
-  getWorkoutSessionsHistory, 
-  getHealthMetricsHistory, 
-  logHealthMetric 
+import {
+  getCurrentUserProfile,
+  getTrainerClientsList,
+  inviteClientByEmail,
+  getWorkoutSessionsHistory,
+  getHealthMetricsHistory,
+  logHealthMetric,
 } from '../../lib/actions'
 
 export const Route = createFileRoute('/clients/')({
@@ -36,7 +36,9 @@ function TrainerClientsPage() {
   const [selectedClientMetrics, setSelectedClientMetrics] = useState<any[]>([])
   const [detailLoading, setDetailLoading] = useState(false)
   const [detailTab, setDetailTab] = useState<'workouts' | 'health' | 'sync'>('workouts')
-  const [activeMetricType, setActiveMetricType] = useState<'weight' | 'body_fat' | 'resting_hr'>('weight')
+  const [activeMetricType, setActiveMetricType] = useState<'weight' | 'body_fat' | 'resting_hr'>(
+    'weight',
+  )
 
   // Log client metric states
   const [metricValue, setMetricValue] = useState('')
@@ -88,9 +90,11 @@ function TrainerClientsPage() {
   useEffect(() => {
     if (selectedClientId) {
       setDetailLoading(true)
-      
+
       const fetchWorkouts = getWorkoutSessionsHistory({ data: { clientId: selectedClientId } })
-      const fetchMetrics = getHealthMetricsHistory({ data: { clientId: selectedClientId, metricType: activeMetricType } })
+      const fetchMetrics = getHealthMetricsHistory({
+        data: { clientId: selectedClientId, metricType: activeMetricType },
+      })
 
       Promise.all([fetchWorkouts, fetchMetrics])
         .then(([wHist, mHist]) => {
@@ -153,21 +157,21 @@ function TrainerClientsPage() {
           value: parseFloat(metricValue),
           unit: metricUnit,
           notes: metricNotes || undefined,
-          clientId: selectedClientId
-        }
+          clientId: selectedClientId,
+        },
       })
 
       if (res && res.success) {
         setSyncSuccess('Biometric data successfully written to athlete core!')
         setMetricValue('')
         setMetricNotes('')
-        
+
         // Refresh metrics history
         const refreshed = await getHealthMetricsHistory({
           data: {
             clientId: selectedClientId,
-            metricType: activeMetricType
-          }
+            metricType: activeMetricType,
+          },
         })
         setSelectedClientMetrics(refreshed || [])
         setTimeout(() => setSyncSuccess(''), 4000)
@@ -184,14 +188,16 @@ function TrainerClientsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">Connecting to elite athlete database...</p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">
+          Connecting to elite athlete database...
+        </p>
       </div>
     )
   }
 
-  const activePartnerships = clients.filter(c => c.status === 'active')
-  const pendingPartnerships = clients.filter(c => c.status === 'pending')
-  const selectedRel = clients.find(c => c.client.id === selectedClientId)
+  const activePartnerships = clients.filter((c) => c.status === 'active')
+  const pendingPartnerships = clients.filter((c) => c.status === 'pending')
+  const selectedRel = clients.find((c) => c.client.id === selectedClientId)
 
   // SVG Trend Chart for Clients
   const renderClientTrendChart = () => {
@@ -204,13 +210,13 @@ function TrainerClientsPage() {
     }
 
     const chronologicalData = [...selectedClientMetrics]
-      .map(m => ({
+      .map((m) => ({
         value: Number(m.value),
         date: m.recordedAt.split('T')[0],
       }))
       .reverse()
 
-    const values = chronologicalData.map(d => d.value)
+    const values = chronologicalData.map((d) => d.value)
     const maxVal = Math.max(...values)
     const minVal = Math.min(...values)
     const valRange = maxVal - minVal
@@ -239,8 +245,13 @@ function TrainerClientsPage() {
     return (
       <div className="space-y-2">
         <div className="flex justify-between items-center text-[10px] text-[var(--on-surface-variant)]">
-          <span>Timeline: {chronologicalData[0].date} &rarr; {chronologicalData[chronologicalData.length - 1].date}</span>
-          <span className="text-white font-bold">Peak: {maxVal.toFixed(1)} / Low: {minVal.toFixed(1)}</span>
+          <span>
+            Timeline: {chronologicalData[0].date} &rarr;{' '}
+            {chronologicalData[chronologicalData.length - 1].date}
+          </span>
+          <span className="text-white font-bold">
+            Peak: {maxVal.toFixed(1)} / Low: {minVal.toFixed(1)}
+          </span>
         </div>
         <div className="border border-white/5 rounded p-2 bg-black/20">
           <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full h-auto overflow-visible">
@@ -251,9 +262,24 @@ function TrainerClientsPage() {
               </linearGradient>
             </defs>
             <path d={areaPath} fill="url(#clientChartGrad)" />
-            <path d={linePath} fill="none" stroke={themeHex} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <path
+              d={linePath}
+              fill="none"
+              stroke={themeHex}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
             {points.map((p, i) => (
-              <circle key={i} cx={p.x} cy={p.y} r="4" fill="#131313" stroke={themeHex} strokeWidth="1.5" />
+              <circle
+                key={i}
+                cx={p.x}
+                cy={p.y}
+                r="4"
+                fill="#131313"
+                stroke={themeHex}
+                strokeWidth="1.5"
+              />
             ))}
           </svg>
         </div>
@@ -268,19 +294,20 @@ function TrainerClientsPage() {
         <div className="chip chip-cyan mb-2">TRAINER REGISTRY TERMINAL</div>
         <h1 className="display-lg text-3xl font-black m-0 text-white">COACHING DESK</h1>
         <p className="body-md text-[var(--on-surface-variant)] m-0">
-          Manage individual client partnerships, dispatch core invitations, log strength & cardio sessions, and oversee biometric profiles.
+          Manage individual client partnerships, dispatch core invitations, log strength & cardio
+          sessions, and oversee biometric profiles.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* Left Side: Client List & Invite Desk */}
         <div className="lg:col-span-1 space-y-6">
-          
           {/* Invite Form */}
           <div className="card space-y-4">
             <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
-              <span className="material-symbols-outlined text-[var(--primary-container)]">person_add</span>
+              <span className="material-symbols-outlined text-[var(--primary-container)]">
+                person_add
+              </span>
               Invite Athlete Client
             </h3>
             <p className="body-md text-[var(--on-surface-variant)] text-xs">
@@ -301,7 +328,9 @@ function TrainerClientsPage() {
 
             <form onSubmit={handleInviteSubmit} className="space-y-4">
               <div className="input-group">
-                <label className="label-md text-xs text-[var(--on-surface-variant)]">Athlete Account Email</label>
+                <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                  Athlete Account Email
+                </label>
                 <input
                   type="email"
                   required
@@ -324,17 +353,19 @@ function TrainerClientsPage() {
           {/* Active / Pending registry lists */}
           <div className="card space-y-4">
             <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
-              <span className="material-symbols-outlined text-[var(--secondary-container)]">assignment_ind</span>
+              <span className="material-symbols-outlined text-[var(--secondary-container)]">
+                assignment_ind
+              </span>
               Athlete Registry ({activePartnerships.length})
             </h3>
-            
+
             {activePartnerships.length === 0 && pendingPartnerships.length === 0 ? (
               <p className="body-md text-xs text-[var(--on-surface-variant)] text-center py-6">
                 No active partnerships on record. Send an email invite above.
               </p>
             ) : (
               <div className="space-y-2">
-                {activePartnerships.map(rel => (
+                {activePartnerships.map((rel) => (
                   <button
                     key={rel.client.id}
                     onClick={() => setSelectedClientId(rel.client.id)}
@@ -345,61 +376,76 @@ function TrainerClientsPage() {
                     }`}
                   >
                     <div>
-                      <h4 className="text-white font-bold text-sm m-0 leading-none">{rel.client.name}</h4>
-                      <p className="text-[10px] text-[var(--on-surface-variant)] m-0 mt-1">{rel.client.email}</p>
+                      <h4 className="text-white font-bold text-sm m-0 leading-none">
+                        {rel.client.name}
+                      </h4>
+                      <p className="text-[10px] text-[var(--on-surface-variant)] m-0 mt-1">
+                        {rel.client.email}
+                      </p>
                     </div>
                     <span className="chip chip-cyan py-0 px-2 text-[8px]">ACTIVE</span>
                   </button>
                 ))}
 
-                {pendingPartnerships.map(rel => (
+                {pendingPartnerships.map((rel) => (
                   <div
                     key={rel.client.id}
                     className="w-full flex items-center justify-between p-3 rounded-md border bg-white/[0.01] border-white/5 opacity-60"
                   >
                     <div>
-                      <h4 className="text-white/80 font-semibold text-sm m-0 leading-none">{rel.client.name}</h4>
-                      <p className="text-[10px] text-[var(--on-surface-variant)] m-0 mt-1">{rel.client.email}</p>
+                      <h4 className="text-white/80 font-semibold text-sm m-0 leading-none">
+                        {rel.client.name}
+                      </h4>
+                      <p className="text-[10px] text-[var(--on-surface-variant)] m-0 mt-1">
+                        {rel.client.email}
+                      </p>
                     </div>
-                    <span className="chip py-0 px-2 text-[8px] bg-white/5 border-white/10 text-white/50">PENDING</span>
+                    <span className="chip py-0 px-2 text-[8px] bg-white/5 border-white/10 text-white/50">
+                      PENDING
+                    </span>
                   </div>
                 ))}
               </div>
             )}
           </div>
-
         </div>
 
         {/* Right Side: Client Telemetry details */}
         <div className="lg:col-span-2 space-y-6">
-          
           {!selectedClientId ? (
             <div className="card text-center py-24 border-dashed flex flex-col items-center justify-center">
-              <span className="material-symbols-outlined text-white/10 text-6xl mb-3">monitoring</span>
-              <h4 className="headline-md font-bold text-white/50 text-base">Select Athlete Core Terminal</h4>
+              <span className="material-symbols-outlined text-white/10 text-6xl mb-3">
+                monitoring
+              </span>
+              <h4 className="headline-md font-bold text-white/50 text-base">
+                Select Athlete Core Terminal
+              </h4>
               <p className="body-md text-[var(--on-surface-variant)] text-xs mt-1 max-w-sm">
-                Click on any verified active athlete in your sidebar registry to sync and unlock historical performance analytics, health metrics, and workout logs.
+                Click on any verified active athlete in your sidebar registry to sync and unlock
+                historical performance analytics, health metrics, and workout logs.
               </p>
             </div>
           ) : (
             <div className="space-y-6">
-              
               {/* Profile Bio details card */}
               <div className="card space-y-4 relative overflow-hidden">
-                
                 {/* Visual glow indicator */}
                 <div className="absolute top-0 right-0 w-24 h-24 bg-[var(--primary-container)] rounded-full blur-[60px] opacity-10"></div>
-                
+
                 <div className="flex flex-wrap justify-between items-start gap-4 border-b border-white/5 pb-4">
                   <div>
                     <div className="chip chip-cyan mb-1.5">TELEMETRY ACCESS: GRANTED</div>
-                    <h2 className="headline-lg text-2xl font-black text-white m-0 uppercase">{selectedRel?.client.name}</h2>
-                    <p className="body-md text-[var(--on-surface-variant)] text-xs m-0">{selectedRel?.client.email}</p>
+                    <h2 className="headline-lg text-2xl font-black text-white m-0 uppercase">
+                      {selectedRel?.client.name}
+                    </h2>
+                    <p className="body-md text-[var(--on-surface-variant)] text-xs m-0">
+                      {selectedRel?.client.email}
+                    </p>
                   </div>
-                  
+
                   <div className="flex gap-2">
-                    <Link 
-                      to={`/workouts/new`} 
+                    <Link
+                      to={`/workouts/new`}
                       search={{ clientId: selectedClientId }}
                       className="btn btn-primary py-1.5 px-4 text-xs font-bold"
                     >
@@ -413,30 +459,44 @@ function TrainerClientsPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
                   <div className="p-3 bg-white/[0.02] border border-white/5 rounded">
                     <span className="text-[var(--on-surface-variant)] block">Height Details</span>
-                    <span className="text-white font-bold text-sm block mt-1">{selectedRel?.profile.height || '--'} cm</span>
+                    <span className="text-white font-bold text-sm block mt-1">
+                      {selectedRel?.profile.height || '--'} cm
+                    </span>
                   </div>
                   <div className="p-3 bg-white/[0.02] border border-white/5 rounded">
                     <span className="text-[var(--on-surface-variant)] block">Date of Birth</span>
-                    <span className="text-white font-bold text-sm block mt-1">{selectedRel?.profile.dateOfBirth || '--'}</span>
+                    <span className="text-white font-bold text-sm block mt-1">
+                      {selectedRel?.profile.dateOfBirth || '--'}
+                    </span>
                   </div>
                   <div className="p-3 bg-white/[0.02] border border-white/5 rounded">
                     <span className="text-[var(--on-surface-variant)] block">Activity Level</span>
-                    <span className="text-white font-bold text-sm block mt-1 capitalize">{selectedRel?.profile.activityLevel || '--'}</span>
+                    <span className="text-white font-bold text-sm block mt-1 capitalize">
+                      {selectedRel?.profile.activityLevel || '--'}
+                    </span>
                   </div>
                   <div className="p-3 bg-white/[0.02] border border-white/5 rounded">
                     <span className="text-[var(--on-surface-variant)] block">Gender Identity</span>
-                    <span className="text-white font-bold text-sm block mt-1 capitalize">{selectedRel?.profile.gender || '--'}</span>
+                    <span className="text-white font-bold text-sm block mt-1 capitalize">
+                      {selectedRel?.profile.gender || '--'}
+                    </span>
                   </div>
                 </div>
 
                 <div className="p-3.5 bg-white/[0.01] border border-white/5 rounded text-xs">
-                  <span className="text-[var(--on-surface-variant)] block font-semibold">Primary Fitness Goal Target</span>
-                  <p className="text-white font-semibold mt-1.5 mb-0 text-sm leading-relaxed">{selectedRel?.profile.fitnessGoal || 'No targeted fitness goal specified yet.'}</p>
+                  <span className="text-[var(--on-surface-variant)] block font-semibold">
+                    Primary Fitness Goal Target
+                  </span>
+                  <p className="text-white font-semibold mt-1.5 mb-0 text-sm leading-relaxed">
+                    {selectedRel?.profile.fitnessGoal || 'No targeted fitness goal specified yet.'}
+                  </p>
                 </div>
 
                 {selectedRel?.profile.notes && (
                   <div className="p-3.5 bg-yellow-950/20 border border-yellow-900/30 rounded text-xs text-[var(--on-surface-variant)]">
-                    <span className="text-yellow-400 font-bold block mb-1">Athlete Health Advisory Notes:</span>
+                    <span className="text-yellow-400 font-bold block mb-1">
+                      Athlete Health Advisory Notes:
+                    </span>
                     {selectedRel.profile.notes}
                   </div>
                 )}
@@ -483,7 +543,9 @@ function TrainerClientsPage() {
               {detailLoading ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[var(--primary-container)] mx-auto"></div>
-                  <p className="text-xs text-[var(--on-surface-variant)] mt-2">Loading data packets...</p>
+                  <p className="text-xs text-[var(--on-surface-variant)] mt-2">
+                    Loading data packets...
+                  </p>
                 </div>
               ) : (
                 <>
@@ -491,34 +553,49 @@ function TrainerClientsPage() {
                     <div className="space-y-4">
                       {selectedClientWorkouts.length === 0 ? (
                         <div className="card text-center py-12 bg-white/[0.01]">
-                          <p className="body-md text-xs text-[var(--on-surface-variant)]">No workout sessions logged for this athlete yet.</p>
+                          <p className="body-md text-xs text-[var(--on-surface-variant)]">
+                            No workout sessions logged for this athlete yet.
+                          </p>
                         </div>
                       ) : (
-                        selectedClientWorkouts.map(sess => (
+                        selectedClientWorkouts.map((sess) => (
                           <div key={sess.id} className="card p-4 space-y-3">
                             <div className="flex justify-between items-start gap-4">
                               <div>
-                                <h4 className="headline-md text-white font-bold text-base m-0">{sess.title}</h4>
+                                <h4 className="headline-md text-white font-bold text-base m-0">
+                                  {sess.title}
+                                </h4>
                                 <p className="text-[10px] text-[var(--on-surface-variant)] m-0 mt-1 flex items-center gap-1.5">
-                                  <span className="material-symbols-outlined text-[12px]">calendar_month</span>
+                                  <span className="material-symbols-outlined text-[12px]">
+                                    calendar_month
+                                  </span>
                                   {sess.sessionDate}
                                   {sess.durationMinutes && (
                                     <>
                                       <span className="h-1 w-1 rounded-full bg-white/20"></span>
-                                      <span className="material-symbols-outlined text-[12px]">schedule</span>
+                                      <span className="material-symbols-outlined text-[12px]">
+                                        schedule
+                                      </span>
                                       {sess.durationMinutes} min
                                     </>
                                   )}
                                   {sess.recordedByName !== 'Self' && (
                                     <>
                                       <span className="h-1 w-1 rounded-full bg-white/20"></span>
-                                      <span className="material-symbols-outlined text-[12px]">face</span>
+                                      <span className="material-symbols-outlined text-[12px]">
+                                        face
+                                      </span>
                                       Logged by coach: {sess.recordedByName}
                                     </>
                                   )}
                                 </p>
                               </div>
-                              <Link to={`/workouts/${sess.id}`} className="btn btn-secondary py-1 px-3 text-[10px]">Details</Link>
+                              <Link
+                                to={`/workouts/${sess.id}`}
+                                className="btn btn-secondary py-1 px-3 text-[10px]"
+                              >
+                                Details
+                              </Link>
                             </div>
 
                             {/* Exercises overview */}
@@ -537,20 +614,23 @@ function TrainerClientsPage() {
 
                   {detailTab === 'health' && (
                     <div className="space-y-6">
-                      
                       {/* Metric type selectors */}
                       <div className="flex gap-2 bg-white/[0.02] p-1 rounded-md max-w-sm">
-                        {(['weight', 'body_fat', 'resting_hr'] as const).map(type => (
+                        {(['weight', 'body_fat', 'resting_hr'] as const).map((type) => (
                           <button
                             key={type}
                             onClick={() => setActiveMetricType(type)}
                             className={`flex-1 py-1 px-2.5 text-[10px] font-bold uppercase rounded transition-all ${
-                              activeMetricType === type 
-                                ? 'bg-[var(--surface-container-high)] text-white' 
+                              activeMetricType === type
+                                ? 'bg-[var(--surface-container-high)] text-white'
                                 : 'text-[var(--on-surface-variant)] hover:text-white'
                             }`}
                           >
-                            {type === 'weight' ? 'Weight' : type === 'body_fat' ? 'Body Fat' : 'Resting HR'}
+                            {type === 'weight'
+                              ? 'Weight'
+                              : type === 'body_fat'
+                                ? 'Body Fat'
+                                : 'Resting HR'}
                           </button>
                         ))}
                       </div>
@@ -561,7 +641,9 @@ function TrainerClientsPage() {
                       {/* Metrics Table */}
                       <div className="card">
                         {selectedClientMetrics.length === 0 ? (
-                          <p className="text-center py-6 text-xs text-[var(--on-surface-variant)]">No biometric logs exist under this parameter.</p>
+                          <p className="text-center py-6 text-xs text-[var(--on-surface-variant)]">
+                            No biometric logs exist under this parameter.
+                          </p>
                         ) : (
                           <table className="w-full text-left text-xs border-collapse">
                             <thead>
@@ -573,31 +655,40 @@ function TrainerClientsPage() {
                               </tr>
                             </thead>
                             <tbody>
-                              {selectedClientMetrics.map(m => (
+                              {selectedClientMetrics.map((m) => (
                                 <tr key={m.id} className="border-b border-white/[0.02]">
-                                  <td className="py-2.5 font-semibold text-white">{new Date(m.recordedAt).toLocaleDateString()}</td>
-                                  <td className="py-2.5 font-bold text-white text-sm">{m.value} {m.unit}</td>
-                                  <td className="py-2.5 text-[var(--on-surface-variant)]">
-                                    {m.recordedByUserId === m.userId ? 'Athlete Self' : 'Coach Entry'}
+                                  <td className="py-2.5 font-semibold text-white">
+                                    {new Date(m.recordedAt).toLocaleDateString()}
                                   </td>
-                                  <td className="py-2.5 text-[var(--on-surface-variant)] truncate max-w-[150px]">{m.notes || '--'}</td>
+                                  <td className="py-2.5 font-bold text-white text-sm">
+                                    {m.value} {m.unit}
+                                  </td>
+                                  <td className="py-2.5 text-[var(--on-surface-variant)]">
+                                    {m.recordedByUserId === m.userId
+                                      ? 'Athlete Self'
+                                      : 'Coach Entry'}
+                                  </td>
+                                  <td className="py-2.5 text-[var(--on-surface-variant)] truncate max-w-[150px]">
+                                    {m.notes || '--'}
+                                  </td>
                                 </tr>
                               ))}
                             </tbody>
                           </table>
                         )}
                       </div>
-
                     </div>
                   )}
 
                   {detailTab === 'sync' && (
                     <div className="card space-y-4">
                       <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
-                        <span className="material-symbols-outlined text-[var(--primary-container)]">add_box</span>
+                        <span className="material-symbols-outlined text-[var(--primary-container)]">
+                          add_box
+                        </span>
                         Sync Client Biometrics
                       </h3>
-                      
+
                       {syncSuccess && (
                         <div className="p-3 text-xs rounded bg-green-950/40 border border-green-900 text-green-300">
                           {syncSuccess}
@@ -611,10 +702,11 @@ function TrainerClientsPage() {
                       )}
 
                       <form onSubmit={handleClientMetricSubmit} className="space-y-4">
-                        
                         <div className="grid grid-cols-2 gap-4">
                           <div className="input-group">
-                            <label className="label-md text-xs text-[var(--on-surface-variant)] font-bold">Biometric Type</label>
+                            <label className="label-md text-xs text-[var(--on-surface-variant)] font-bold">
+                              Biometric Type
+                            </label>
                             <select
                               value={activeMetricType}
                               onChange={(e) => setActiveMetricType(e.target.value as any)}
@@ -625,7 +717,7 @@ function TrainerClientsPage() {
                               <option value="resting_hr">Resting Heart Rate</option>
                             </select>
                           </div>
-                          
+
                           <div className="input-group">
                             <label className="label-md text-xs text-[var(--on-surface-variant)] font-bold">
                               Value ({metricUnit})
@@ -643,7 +735,9 @@ function TrainerClientsPage() {
                         </div>
 
                         <div className="input-group">
-                          <label className="label-md text-xs text-[var(--on-surface-variant)] font-bold font-sans">Verification / Coach Notes</label>
+                          <label className="label-md text-xs text-[var(--on-surface-variant)] font-bold font-sans">
+                            Verification / Coach Notes
+                          </label>
                           <textarea
                             value={metricNotes}
                             onChange={(e) => setMetricNotes(e.target.value)}
@@ -664,14 +758,10 @@ function TrainerClientsPage() {
                   )}
                 </>
               )}
-
             </div>
           )}
-
         </div>
-
       </div>
-
     </div>
   )
 }

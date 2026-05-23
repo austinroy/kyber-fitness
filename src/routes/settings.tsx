@@ -16,7 +16,7 @@ function SettingsPage() {
   // General state
   const [profileLoading, setProfileLoading] = useState(true)
   const [dbUser, setDbUser] = useState<any>(null)
-  
+
   // Shared fields
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -55,7 +55,7 @@ function SettingsPage() {
                 setDbUser(res.user)
                 setName(res.user.name || '')
                 setEmail(res.user.email || '')
-                
+
                 if (res.user.role === 'individual' && res.profile) {
                   setDob(res.profile.dateOfBirth || '')
                   setGender(res.profile.gender || '')
@@ -68,7 +68,11 @@ function SettingsPage() {
                     setBusinessName(res.trainerProfile.businessName || '')
                     setBio(res.trainerProfile.bio || '')
                     setSpecialization(res.trainerProfile.specialization || '')
-                    setExperience(res.trainerProfile.yearsExperience ? String(res.trainerProfile.yearsExperience) : '')
+                    setExperience(
+                      res.trainerProfile.yearsExperience
+                        ? String(res.trainerProfile.yearsExperience)
+                        : '',
+                    )
                   }
                 }
                 setProfileLoading(false)
@@ -112,7 +116,7 @@ function SettingsPage() {
 
       await updateUserProfile({ data: payload })
       setSuccess(true)
-      
+
       // Auto fade success alert after 4 seconds
       setTimeout(() => {
         setSuccess(false)
@@ -129,7 +133,9 @@ function SettingsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">Retrieving biometric settings console...</p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">
+          Retrieving biometric settings console...
+        </p>
       </div>
     )
   }
@@ -163,7 +169,10 @@ function SettingsPage() {
             <span className="material-symbols-outlined text-emerald-400">check_circle</span>
             <span>Biometric ledger updated successfully. Core changes saved.</span>
           </div>
-          <button onClick={() => setSuccess(false)} className="text-emerald-300/60 hover:text-emerald-300">
+          <button
+            onClick={() => setSuccess(false)}
+            className="text-emerald-300/60 hover:text-emerald-300"
+          >
             <span className="material-symbols-outlined text-sm">close</span>
           </button>
         </div>
@@ -176,7 +185,7 @@ function SettingsPage() {
             <span className="material-symbols-outlined text-[var(--primary-container)]">badge</span>
             <h3 className="headline-md text-lg font-bold text-white">Base Directory Details</h3>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="input-group">
               <label className="label-md text-[var(--on-surface-variant)]">Display Name</label>
@@ -208,17 +217,16 @@ function SettingsPage() {
           /* Athlete Bio Metrics Card */
           <div className="card space-y-4">
             <div className="flex items-center gap-2 border-b border-white/5 pb-2">
-              <span className="material-symbols-outlined text-[var(--primary-container)]">fitness_center</span>
+              <span className="material-symbols-outlined text-[var(--primary-container)]">
+                fitness_center
+              </span>
               <h3 className="headline-md text-lg font-bold text-white">Athlete Metrics Ledger</h3>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="input-group">
                 <label className="label-md text-[var(--on-surface-variant)]">Date of Birth</label>
-                <DatePicker
-                  value={dob}
-                  onChange={setDob}
-                />
+                <DatePicker value={dob} onChange={setDob} />
               </div>
               <div className="input-group">
                 <label className="label-md text-[var(--on-surface-variant)]">Gender</label>
@@ -263,7 +271,9 @@ function SettingsPage() {
                 </select>
               </div>
               <div className="input-group">
-                <label className="label-md text-[var(--on-surface-variant)]">Primary Fitness Goal</label>
+                <label className="label-md text-[var(--on-surface-variant)]">
+                  Primary Fitness Goal
+                </label>
                 <input
                   type="text"
                   value={goal}
@@ -275,7 +285,9 @@ function SettingsPage() {
             </div>
 
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">Medical / Injury Notes</label>
+              <label className="label-md text-[var(--on-surface-variant)]">
+                Medical / Injury Notes
+              </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -288,13 +300,17 @@ function SettingsPage() {
           /* Trainer Credentials Card */
           <div className="card space-y-4">
             <div className="flex items-center gap-2 border-b border-white/5 pb-2">
-              <span className="material-symbols-outlined text-[var(--secondary-container)]">sports</span>
+              <span className="material-symbols-outlined text-[var(--secondary-container)]">
+                sports
+              </span>
               <h3 className="headline-md text-lg font-bold text-white">Coaching Credentials</h3>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="input-group">
-                <label className="label-md text-[var(--on-surface-variant)]">Business / Studio Name</label>
+                <label className="label-md text-[var(--on-surface-variant)]">
+                  Business / Studio Name
+                </label>
                 <input
                   type="text"
                   value={businessName}
@@ -304,7 +320,9 @@ function SettingsPage() {
                 />
               </div>
               <div className="input-group">
-                <label className="label-md text-[var(--on-surface-variant)]">Years of Experience</label>
+                <label className="label-md text-[var(--on-surface-variant)]">
+                  Years of Experience
+                </label>
                 <input
                   type="number"
                   value={experience}
@@ -316,7 +334,9 @@ function SettingsPage() {
             </div>
 
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">Specialization Areas</label>
+              <label className="label-md text-[var(--on-surface-variant)]">
+                Specialization Areas
+              </label>
               <input
                 type="text"
                 value={specialization}
@@ -359,7 +379,7 @@ function SettingsPage() {
               </>
             )}
           </button>
-          
+
           <button
             type="button"
             onClick={() => navigate({ to: '/dashboard' })}

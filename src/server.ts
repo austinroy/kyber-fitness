@@ -1,43 +1,40 @@
 import './shim'
-import {
-  createStartHandler,
-  defaultStreamHandler,
-} from '@tanstack/react-start/server'
+import { createStartHandler, defaultStreamHandler } from '@tanstack/react-start/server'
 import type { Register } from '@tanstack/react-router'
 import type { RequestHandler } from '@tanstack/react-start/server'
 import { createClerkHandler } from '@clerk/tanstack-start/server'
 
 // Fetch validation keys
-const pubKey = process.env.CLERK_PUBLISHABLE_KEY || process.env.VITE_CLERK_PUBLISHABLE_KEY;
-const secKey = process.env.CLERK_SECRET_KEY;
+const pubKey = process.env.CLERK_PUBLISHABLE_KEY || process.env.VITE_CLERK_PUBLISHABLE_KEY
+const secKey = process.env.CLERK_SECRET_KEY
 
 const isClerkConfigured = !!(
-  pubKey && 
-  pubKey !== 'pk_test_placeholder' && 
+  pubKey &&
+  pubKey !== 'pk_test_placeholder' &&
   pubKey.trim() !== '' &&
-  secKey && 
-  secKey !== 'sk_test_placeholder' && 
+  secKey &&
+  secKey !== 'sk_test_placeholder' &&
   secKey.trim() !== ''
-);
+)
 
 // We define a standard handler as fallback
-const standardHandler = createStartHandler(defaultStreamHandler);
-const clerkWrappedHandler = isClerkConfigured 
+const standardHandler = createStartHandler(defaultStreamHandler)
+const clerkWrappedHandler = isClerkConfigured
   ? createClerkHandler(createStartHandler)(defaultStreamHandler)
-  : null;
+  : null
 
 export const fetch: RequestHandler<Register> = async (request, ...args) => {
   if (isClerkConfigured && clerkWrappedHandler) {
-    return await clerkWrappedHandler(request, ...args);
+    return await clerkWrappedHandler(request, ...args)
   }
 
   // If Clerk is NOT configured, intercept document requests to serve a beautiful diagnostics page.
   // We allow static assets, js, css, etc., to load normally.
-  const url = new URL(request.url);
-  const isDocumentRequest = 
-    !url.pathname.includes('.') && 
-    !url.pathname.startsWith('/_server') && 
-    !url.pathname.startsWith('/api');
+  const url = new URL(request.url)
+  const isDocumentRequest =
+    !url.pathname.includes('.') &&
+    !url.pathname.startsWith('/_server') &&
+    !url.pathname.startsWith('/api')
 
   if (isDocumentRequest) {
     return new Response(
@@ -191,12 +188,12 @@ VITE_CLERK_SIGN_UP_URL=/sign-up</div>
           'Content-Type': 'text/html; charset=utf-8',
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
         },
-      }
-    );
+      },
+    )
   }
 
-  return await standardHandler(request, ...args);
-};
+  return await standardHandler(request, ...args)
+}
 
 // Providing RequestHandler is required so that output types are resolved correctly
 export type ServerEntry = { fetch: RequestHandler<Register> }

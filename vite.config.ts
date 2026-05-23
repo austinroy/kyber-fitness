@@ -23,8 +23,8 @@ const config = defineConfig({
   },
   plugins: [devtools(), tailwindcss(), tanstackStart(), netlify(), viteReact()],
   ssr: {
-    noExternal: ['@clerk/tanstack-start']
-  }
+    noExternal: ['@clerk/tanstack-start'],
+  },
 })
 
 export default config

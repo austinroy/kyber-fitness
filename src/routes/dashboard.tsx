@@ -1,7 +1,12 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
-import { getCurrentUserProfile, getWorkoutSessionsHistory, logHealthMetric, getClientAssignedPrograms } from '../lib/actions'
+import {
+  getCurrentUserProfile,
+  getWorkoutSessionsHistory,
+  logHealthMetric,
+  getClientAssignedPrograms,
+} from '../lib/actions'
 
 export const Route = createFileRoute('/dashboard')({
   ssr: false,
@@ -19,7 +24,7 @@ function DashboardPage() {
   const [trainerProfile, setTrainerProfile] = useState<any>(null)
   const [workouts, setWorkouts] = useState<any[]>([])
   const [assignedPrograms, setAssignedPrograms] = useState<any[]>([])
-  
+
   // Quick log states
   const [weight, setWeight] = useState('')
   const [notes, setNotes] = useState('')
@@ -41,10 +46,10 @@ function DashboardPage() {
                 setDbUser(res.user)
                 setProfile(res.profile)
                 setTrainerProfile(res.trainerProfile)
-                
+
                 const isAthlete = res.user.role === 'individual'
                 const workoutFetch = getWorkoutSessionsHistory()
-                const assignFetch = isAthlete 
+                const assignFetch = isAthlete
                   ? getClientAssignedPrograms({ data: { status: 'pending' } })
                   : Promise.resolve([])
 
@@ -78,7 +83,7 @@ function DashboardPage() {
           value: parseFloat(weight),
           unit: 'kg',
           notes: notes || undefined,
-        }
+        },
       })
       setWeight('')
       setNotes('')
@@ -95,7 +100,9 @@ function DashboardPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">Streaming biometric console...</p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">
+          Streaming biometric console...
+        </p>
       </div>
     )
   }
@@ -112,7 +119,8 @@ function DashboardPage() {
             {isTrainer ? 'COACH TERMINAL' : 'ATHLETE CONSOLE'}
           </h1>
           <p className="body-md text-[var(--on-surface-variant)] m-0">
-            Biometric sync ok. Logged in as <span className="text-white font-bold">{dbUser?.name}</span>.
+            Biometric sync ok. Logged in as{' '}
+            <span className="text-white font-bold">{dbUser?.name}</span>.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -127,25 +135,27 @@ function DashboardPage() {
       {!isTrainer && assignedPrograms.length > 0 && (
         <div className="space-y-4">
           {assignedPrograms.map((assign) => (
-            <div 
+            <div
               key={assign.id}
               className="card relative overflow-hidden p-6 border border-[var(--secondary-container)] bg-gradient-to-r from-black/60 to-[rgba(0,238,252,0.03)] shadow-[0_0_20px_rgba(0,238,252,0.08)] flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
             >
               {/* Left design glow border overlay */}
               <div className="absolute top-0 left-0 w-1.5 h-full bg-[var(--secondary-container)]"></div>
-              
+
               <div className="space-y-2 flex-1 pl-2">
                 <div className="flex items-center gap-2">
-                  <span className="chip chip-cyan text-[9px] uppercase font-black tracking-widest">ASSIGNED BY COACH {assign.trainerName}</span>
+                  <span className="chip chip-cyan text-[9px] uppercase font-black tracking-widest">
+                    ASSIGNED BY COACH {assign.trainerName}
+                  </span>
                   <span className="text-[10px] text-[var(--on-surface-variant)]">
                     Received {new Date(assign.assignedAt).toLocaleDateString()}
                   </span>
                 </div>
-                
+
                 <h3 className="headline-md text-white font-black text-xl tracking-tight uppercase m-0">
                   {assign.programTitle}
                 </h3>
-                
+
                 {assign.notes && (
                   <p className="body-md text-[var(--on-surface-variant)] text-xs m-0 italic bg-white/[0.02] p-3 rounded border border-white/5 max-w-2xl">
                     Coaching Note: "{assign.notes}"
@@ -154,12 +164,14 @@ function DashboardPage() {
               </div>
 
               <div className="flex gap-3 w-full md:w-auto">
-                <Link 
-                  to="/workouts/new" 
+                <Link
+                  to="/workouts/new"
                   search={{ assignmentId: assign.id }}
                   className="btn py-2 px-6 w-full md:w-auto text-sm font-black bg-[var(--secondary-container)] hover:bg-[var(--secondary-container)]/95 text-black flex items-center justify-center gap-2 rounded-md shadow-[0_0_15px_rgba(0,238,252,0.25)] transition-all"
                 >
-                  <span className="material-symbols-outlined text-sm font-bold animate-bounce">fitness_center</span>
+                  <span className="material-symbols-outlined text-sm font-bold animate-bounce">
+                    fitness_center
+                  </span>
                   <span>Record Routine</span>
                 </Link>
               </div>
@@ -173,25 +185,42 @@ function DashboardPage() {
         {isTrainer ? (
           <>
             <div className="card card-featured">
-              <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl mb-2">sports</span>
+              <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl mb-2">
+                sports
+              </span>
               <p className="label-md text-[var(--on-surface-variant)] m-0">Coaching Hub</p>
-              <h2 className="headline-lg font-black text-white mt-1">{trainerProfile?.businessName || 'Elite Training'}</h2>
+              <h2 className="headline-lg font-black text-white mt-1">
+                {trainerProfile?.businessName || 'Elite Training'}
+              </h2>
             </div>
             <div className="card">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">group</span>
+              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
+                group
+              </span>
               <p className="label-md text-[var(--on-surface-variant)] m-0">Active Partnerships</p>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="metric-xl text-3xl leading-none">Manage</span>
               </div>
-              <Link to="/clients" className="label-md text-[var(--secondary-container)] text-xs font-bold hover:underline block mt-3">Open Client Desk &rarr;</Link>
+              <Link
+                to="/clients"
+                className="label-md text-[var(--secondary-container)] text-xs font-bold hover:underline block mt-3"
+              >
+                Open Client Desk &rarr;
+              </Link>
             </div>
             <div className="card">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">military_tech</span>
+              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
+                military_tech
+              </span>
               <p className="label-md text-[var(--on-surface-variant)] m-0">Specialization</p>
-              <h3 className="headline-md font-bold text-white text-base mt-2 line-clamp-2">{trainerProfile?.specialization || 'General Strength'}</h3>
+              <h3 className="headline-md font-bold text-white text-base mt-2 line-clamp-2">
+                {trainerProfile?.specialization || 'General Strength'}
+              </h3>
             </div>
             <div className="card">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">history</span>
+              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
+                history
+              </span>
               <p className="label-md text-[var(--on-surface-variant)] m-0">Experience</p>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="metric-xl text-4xl">{trainerProfile?.yearsExperience || 0}</span>
@@ -202,7 +231,9 @@ function DashboardPage() {
         ) : (
           <>
             <div className="card card-featured">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">fitness_center</span>
+              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
+                fitness_center
+              </span>
               <p className="label-md text-[var(--on-surface-variant)] m-0">Total Workouts</p>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="metric-xl text-5xl leading-none">{workouts.length}</span>
@@ -210,7 +241,9 @@ function DashboardPage() {
               </div>
             </div>
             <div className="card">
-              <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl mb-2">height</span>
+              <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl mb-2">
+                height
+              </span>
               <p className="label-md text-[var(--on-surface-variant)] m-0">Height Details</p>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="metric-xl text-4xl">{profile?.height || '--'}</span>
@@ -218,9 +251,13 @@ function DashboardPage() {
               </div>
             </div>
             <div className="card col-span-2">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">track_changes</span>
+              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
+                track_changes
+              </span>
               <p className="label-md text-[var(--on-surface-variant)] m-0">Current Target Goal</p>
-              <h3 className="headline-md font-bold text-white text-base mt-2">{profile?.fitnessGoal || 'No goal set yet. Modify in profile onboarding.'}</h3>
+              <h3 className="headline-md font-bold text-white text-base mt-2">
+                {profile?.fitnessGoal || 'No goal set yet. Modify in profile onboarding.'}
+              </h3>
             </div>
           </>
         )}
@@ -228,23 +265,37 @@ function DashboardPage() {
 
       {/* Main Body Columns */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* Left Column: Recent Logs */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex justify-between items-center">
             <h3 className="headline-md text-xl font-bold flex items-center gap-2">
-              <span className="material-symbols-outlined text-[var(--primary-container)]">receipt_long</span>
+              <span className="material-symbols-outlined text-[var(--primary-container)]">
+                receipt_long
+              </span>
               Recent Sessions History
             </h3>
-            <Link to="/workouts" className="label-md text-[var(--primary-container)] text-xs hover:underline">View All &rarr;</Link>
+            <Link
+              to="/workouts"
+              className="label-md text-[var(--primary-container)] text-xs hover:underline"
+            >
+              View All &rarr;
+            </Link>
           </div>
 
           {workouts.length === 0 ? (
             <div className="card text-center py-12 border-dashed">
-              <span className="material-symbols-outlined text-white/20 text-5xl mb-3">fitness_center</span>
-              <h4 className="headline-md font-bold text-white/70 text-lg">No sessions recorded yet</h4>
-              <p className="body-md text-[var(--on-surface-variant)] text-sm mb-6">Initialize your performance sync by adding your first workout.</p>
-              <Link to="/workouts/new" className="btn btn-primary px-6 py-2.5">Record First Session</Link>
+              <span className="material-symbols-outlined text-white/20 text-5xl mb-3">
+                fitness_center
+              </span>
+              <h4 className="headline-md font-bold text-white/70 text-lg">
+                No sessions recorded yet
+              </h4>
+              <p className="body-md text-[var(--on-surface-variant)] text-sm mb-6">
+                Initialize your performance sync by adding your first workout.
+              </p>
+              <Link to="/workouts/new" className="btn btn-primary px-6 py-2.5">
+                Record First Session
+              </Link>
             </div>
           ) : (
             <div className="space-y-4">
@@ -253,8 +304,12 @@ function DashboardPage() {
                   <div className="flex justify-between items-start gap-4">
                     <div>
                       <div className="flex items-center gap-2 mb-1.5">
-                        <h4 className="headline-md text-white font-bold text-base m-0">{sess.title}</h4>
-                        <span className="chip py-0.5 px-2 text-[10px]">{sess.exercises.length} Exercises</span>
+                        <h4 className="headline-md text-white font-bold text-base m-0">
+                          {sess.title}
+                        </h4>
+                        <span className="chip py-0.5 px-2 text-[10px]">
+                          {sess.exercises.length} Exercises
+                        </span>
                       </div>
                       <p className="body-md text-[var(--on-surface-variant)] text-xs m-0 flex items-center gap-1.5">
                         <span className="material-symbols-outlined text-xs">calendar_month</span>
@@ -275,9 +330,14 @@ function DashboardPage() {
                         )}
                       </p>
                     </div>
-                    <Link to={`/workouts/${sess.id}`} className="btn btn-secondary py-1 px-3 text-[10px]">Details</Link>
+                    <Link
+                      to={`/workouts/${sess.id}`}
+                      className="btn btn-secondary py-1 px-3 text-[10px]"
+                    >
+                      Details
+                    </Link>
                   </div>
-                  
+
                   {/* Exercises list summary */}
                   <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-white/5">
                     {sess.exercises.map((ex: any) => (
@@ -298,7 +358,9 @@ function DashboardPage() {
             /* Quick Weight Log Widget for Individuals */
             <div className="card space-y-4">
               <h3 className="headline-md text-lg font-bold flex items-center gap-2">
-                <span className="material-symbols-outlined text-[var(--secondary-container)]">scale</span>
+                <span className="material-symbols-outlined text-[var(--secondary-container)]">
+                  scale
+                </span>
                 Quick Weight Log
               </h3>
               <p className="body-md text-[var(--on-surface-variant)] text-xs">
@@ -313,7 +375,9 @@ function DashboardPage() {
 
               <form onSubmit={handleQuickWeightLog} className="space-y-4">
                 <div className="input-group">
-                  <label className="label-md text-xs text-[var(--on-surface-variant)]">Body Weight (kg)</label>
+                  <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                    Body Weight (kg)
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -325,7 +389,9 @@ function DashboardPage() {
                   />
                 </div>
                 <div className="input-group">
-                  <label className="label-md text-xs text-[var(--on-surface-variant)]">Notes (optional)</label>
+                  <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                    Notes (optional)
+                  </label>
                   <input
                     type="text"
                     value={notes}
@@ -347,7 +413,9 @@ function DashboardPage() {
             /* Coaching Desk shortcuts for Trainers */
             <div className="card space-y-4">
               <h3 className="headline-md text-lg font-bold flex items-center gap-2">
-                <span className="material-symbols-outlined text-[var(--secondary-container)]">support_agent</span>
+                <span className="material-symbols-outlined text-[var(--secondary-container)]">
+                  support_agent
+                </span>
                 Client Administration
               </h3>
               <p className="body-md text-[var(--on-surface-variant)] text-xs">
@@ -364,17 +432,17 @@ function DashboardPage() {
 
           {/* Quick tips card */}
           <div className="card bg-white/[0.01] border-white/5">
-            <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl mb-2">tips_and_updates</span>
+            <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl mb-2">
+              tips_and_updates
+            </span>
             <h4 className="headline-md font-bold text-white text-sm m-0">Performance Insights</h4>
             <p className="body-md text-[var(--on-surface-variant)] text-xs mt-2 leading-relaxed">
-              Consistently logging weight at the same time daily creates a cleaner, highly accurate rolling weight trendline. Make sure to log post-waking!
+              Consistently logging weight at the same time daily creates a cleaner, highly accurate
+              rolling weight trendline. Make sure to log post-waking!
             </p>
           </div>
-
         </div>
-
       </div>
-
     </div>
   )
 }

@@ -1,7 +1,14 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
-import { getCurrentUserProfile, getExercisesList, createCustomExercise, getTrainerClientsList, saveWorkoutSession, getClientAssignedPrograms, getWorkoutProgramDetails } from '../../lib/actions'
+import {
+  getCurrentUserProfile,
+  getExercisesList,
+  createCustomExercise,
+  getTrainerClientsList,
+  saveWorkoutSession,
+  getAssignedWorkoutProgramDetails,
+} from '../../lib/actions'
 import DatePicker from '../../components/DatePicker'
 
 export const Route = createFileRoute('/workouts/new')({
@@ -15,24 +22,24 @@ export const Route = createFileRoute('/workouts/new')({
 })
 
 interface SetInput {
-  setNumber: number;
-  reps: string;
-  weight: string;
-  durationSeconds: string;
-  distance: string;
-  restSeconds: string;
-  intensity: string;
-  notes: string;
+  setNumber: number
+  reps: string
+  weight: string
+  durationSeconds: string
+  distance: string
+  restSeconds: string
+  intensity: string
+  notes: string
 }
 
 interface ExerciseInput {
-  exerciseId: string;
-  name: string;
-  category: string;
-  defaultUnit: string;
-  notes: string;
-  orderIndex: number;
-  sets: SetInput[];
+  exerciseId: string
+  name: string
+  category: string
+  defaultUnit: string
+  notes: string
+  orderIndex: number
+  sets: SetInput[]
 }
 
 function LogWorkoutPage() {
@@ -46,6 +53,7 @@ function LogWorkoutPage() {
   const [role, setRole] = useState<'individual' | 'trainer'>('individual')
   const [exercisesList, setExercisesList] = useState<any[]>([])
   const [clientsList, setClientsList] = useState<any[]>([])
+  const [assignmentLoading, setAssignmentLoading] = useState(false)
 
   // Selection states
   const [selectedClientId, setSelectedClientId] = useState('')
@@ -78,15 +86,23 @@ function LogWorkoutPage() {
       getCurrentUserProfile()
         .then((res) => {
           if (res && res.authenticated) {
-            setRole(res.user.role)
-            
+            if (!res.user) {
+              navigate({ to: '/onboarding/' })
+              return
+            }
+
+            const user = res.user
+            const userRole = user.role === 'trainer' ? 'trainer' : 'individual'
+
+            setRole(userRole)
+
             // 2. Fetch exercises
             getExercisesList()
               .then((exs) => setExercisesList(exs || []))
               .catch(() => {})
 
             // 3. If trainer, fetch clients
-            if (res.user.role === 'trainer') {
+            if (userRole === 'trainer') {
               getTrainerClientsList()
                 .then((clients) => {
                   const active = clients?.filter((c: any) => c.status === 'active') || []
@@ -95,44 +111,47 @@ function LogWorkoutPage() {
                 .catch(() => {})
             }
 
-            // 4. If assignmentId is present, fetch and pre-populate
-            if (assignmentId && res.user.role === 'individual') {
-              getClientAssignedPrograms({ data: { status: 'pending' } })
-                .then((assignedList) => {
-                  const matchingAssign = assignedList?.find((a: any) => a.id === assignmentId)
-                  if (matchingAssign) {
-                    setCoachName(matchingAssign.trainerName)
-                    setProgramTitle(matchingAssign.programTitle)
-                    
-                    getWorkoutProgramDetails({ data: { programId: matchingAssign.programId } })
-                      .then((details: any) => {
-                        setTitle(details.title)
-                        setSessionNotes(`Assigned by Coach ${matchingAssign.trainerName}: ${matchingAssign.notes || ''}`)
-                        
-                        const prefilled = details.exercises.map((ex: any) => ({
-                          exerciseId: ex.exerciseId,
-                          name: ex.name,
-                          category: ex.category,
-                          defaultUnit: ex.defaultUnit || 'kg',
-                          notes: ex.notes || '',
-                          orderIndex: ex.orderIndex,
-                          sets: ex.sets.map((s: any) => ({
-                            setNumber: s.setNumber,
-                            reps: s.reps?.toString() || '',
-                            weight: s.weight?.toString() || '',
-                            durationSeconds: s.durationSeconds?.toString() || '',
-                            distance: s.distance?.toString() || '',
-                            restSeconds: s.restSeconds?.toString() || '',
-                            intensity: s.intensity || '',
-                            notes: s.notes || '',
-                          }))
-                        }))
-                        setAddedExercises(prefilled)
-                      })
-                      .catch(() => {})
-                  }
+            // 4. If assignmentId is present, fetch authorized assignment details and pre-populate
+            if (assignmentId && userRole === 'individual') {
+              setAssignmentLoading(true)
+              getAssignedWorkoutProgramDetails({ data: { assignmentId } })
+                .then(({ assignment, program }: any) => {
+                  setCoachName(assignment.trainerName)
+                  setProgramTitle(program.title)
+                  setTitle(program.title)
+                  setSessionNotes(
+                    `Assigned by Coach ${assignment.trainerName}: ${assignment.notes || program.notes || ''}`,
+                  )
+
+                  const prefilled = program.exercises.map((ex: any) => ({
+                    exerciseId: ex.exerciseId,
+                    name: ex.name,
+                    category: ex.category,
+                    defaultUnit: ex.defaultUnit || 'kg',
+                    notes: ex.notes || '',
+                    orderIndex: ex.orderIndex,
+                    sets: ex.sets.map((s: any) => ({
+                      setNumber: s.setNumber,
+                      reps: s.reps?.toString() || '',
+                      weight: s.weight?.toString() || '',
+                      durationSeconds: s.durationSeconds?.toString() || '',
+                      distance: s.distance?.toString() || '',
+                      restSeconds: s.restSeconds?.toString() || '',
+                      intensity: s.intensity || '',
+                      notes: s.notes || '',
+                    })),
+                  }))
+                  setAddedExercises(prefilled)
                 })
-                .catch(() => {})
+                .catch((err: any) => {
+                  console.error(err)
+                  setError(err?.message || 'Could not load this assigned routine.')
+                })
+                .finally(() => setAssignmentLoading(false))
+            } else if (assignmentId && userRole === 'trainer') {
+              setError(
+                'Coach accounts cannot complete athlete program assignments from this screen.',
+              )
             }
 
             setLoading(false)
@@ -160,8 +179,8 @@ function LogWorkoutPage() {
           restSeconds: '60',
           intensity: '',
           notes: '',
-        }
-      ]
+        },
+      ],
     }
     setAddedExercises([...addedExercises, newEx])
     setSearchQuery('')
@@ -205,7 +224,7 @@ function LogWorkoutPage() {
     const updated = [...addedExercises]
     updated[exIdx].sets[setIdx] = {
       ...updated[exIdx].sets[setIdx],
-      [field]: value
+      [field]: value,
     }
     setAddedExercises(updated)
   }
@@ -220,7 +239,7 @@ function LogWorkoutPage() {
           name: customName,
           category: customCategory,
           defaultUnit: customUnit,
-        }
+        },
       })
       if (res && res.success) {
         const newEx = {
@@ -231,7 +250,7 @@ function LogWorkoutPage() {
         }
         setExercisesList([newEx, ...exercisesList])
         handleAddExercise(newEx)
-        
+
         // reset custom modal
         setCustomName('')
         setShowCustomModal(false)
@@ -259,11 +278,11 @@ function LogWorkoutPage() {
         notes: sessionNotes || undefined,
         clientId: selectedClientId || undefined,
         assignmentId: assignmentId || undefined,
-        exercises: addedExercises.map(ex => ({
+        exercises: addedExercises.map((ex) => ({
           exerciseId: ex.exerciseId,
           notes: ex.notes || undefined,
           orderIndex: ex.orderIndex,
-          sets: ex.sets.map(s => ({
+          sets: ex.sets.map((s) => ({
             setNumber: s.setNumber,
             reps: s.reps ? parseInt(s.reps) : undefined,
             weight: s.weight ? parseFloat(s.weight) : undefined,
@@ -272,12 +291,12 @@ function LogWorkoutPage() {
             restSeconds: s.restSeconds ? parseInt(s.restSeconds) : undefined,
             intensity: s.intensity || undefined,
             notes: s.notes || undefined,
-          }))
-        }))
+          })),
+        })),
       }
 
       await saveWorkoutSession({ data: payload })
-      navigate({ to: '/workouts' })
+      navigate({ to: '/workouts/' })
     } catch (err: any) {
       console.error(err)
       setError(err?.message || 'Failed to save workout session.')
@@ -285,18 +304,23 @@ function LogWorkoutPage() {
     }
   }
 
-  if (loading) {
+  if (loading || assignmentLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">Initializing telemetry console...</p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">
+          {assignmentLoading
+            ? 'Hydrating coach-assigned routine...'
+            : 'Initializing telemetry console...'}
+        </p>
       </div>
     )
   }
 
-  const filteredExercises = exercisesList.filter(ex => 
-    ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    ex.category.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredExercises = exercisesList.filter(
+    (ex) =>
+      ex.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ex.category.toLowerCase().includes(searchQuery.toLowerCase()),
   )
 
   return (
@@ -308,8 +332,14 @@ function LogWorkoutPage() {
           <h1 className="headline-lg font-black text-white m-0">LOG TRAINING SESSION</h1>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => navigate({ to: '/workouts' })} className="btn btn-secondary py-2">Cancel</button>
-          <button onClick={handleSave} disabled={saving} className={`btn btn-primary py-2 ${saving ? 'btn-disabled' : ''}`}>
+          <button onClick={() => navigate({ to: '/workouts/' })} className="btn btn-secondary py-2">
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className={`btn btn-primary py-2 ${saving ? 'btn-disabled' : ''}`}
+          >
             {saving ? 'Syncing Session...' : 'Sync Session Data'}
           </button>
         </div>
@@ -317,11 +347,14 @@ function LogWorkoutPage() {
 
       {coachName && programTitle && (
         <div className="card border border-[var(--secondary-container)] bg-[rgba(0,238,252,0.02)] p-4 rounded-md flex items-center gap-3 animate-pulse">
-          <span className="material-symbols-outlined text-[var(--secondary-container)]">sports</span>
+          <span className="material-symbols-outlined text-[var(--secondary-container)]">
+            sports
+          </span>
           <div>
             <p className="body-md font-bold text-white text-sm m-0">LOGGING COACH ASSIGNMENT</p>
             <p className="body-md text-[var(--on-surface-variant)] text-xs m-0">
-              You are tracking <strong className="text-white">"{programTitle}"</strong>, custom designed by Coach <strong className="text-white">{coachName}</strong>.
+              You are tracking <strong className="text-white">"{programTitle}"</strong>, custom
+              designed by Coach <strong className="text-white">{coachName}</strong>.
             </p>
           </div>
         </div>
@@ -335,27 +368,31 @@ function LogWorkoutPage() {
 
       {/* Main Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
         {/* Left Form: Session Configurations & Search */}
         <div className="lg:col-span-1 space-y-6">
-          
           {/* Trainer Client Selection */}
           {role === 'trainer' && (
             <div className="card space-y-4">
               <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
-                <span className="material-symbols-outlined text-[var(--secondary-container)]">assignment_ind</span>
+                <span className="material-symbols-outlined text-[var(--secondary-container)]">
+                  assignment_ind
+                </span>
                 Coaching Designation
               </h3>
               <div className="input-group">
-                <label className="label-md text-xs text-[var(--on-surface-variant)]">Select Client</label>
+                <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                  Select Client
+                </label>
                 <select
                   value={selectedClientId}
                   onChange={(e) => setSelectedClientId(e.target.value)}
                   className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
                 >
                   <option value="">Self (Personal workout)</option>
-                  {clientsList.map(c => (
-                    <option key={c.client.id} value={c.client.id}>{c.client.name}</option>
+                  {clientsList.map((c) => (
+                    <option key={c.client.id} value={c.client.id}>
+                      {c.client.name}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -365,12 +402,16 @@ function LogWorkoutPage() {
           {/* Session details */}
           <div className="card space-y-4">
             <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
-              <span className="material-symbols-outlined text-[var(--primary-container)]">tune</span>
+              <span className="material-symbols-outlined text-[var(--primary-container)]">
+                tune
+              </span>
               Session Parameters
             </h3>
-            
+
             <div className="input-group">
-              <label className="label-md text-xs text-[var(--on-surface-variant)]">Session Title</label>
+              <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                Session Title
+              </label>
               <input
                 type="text"
                 value={title}
@@ -383,13 +424,12 @@ function LogWorkoutPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="input-group">
                 <label className="label-md text-xs text-[var(--on-surface-variant)]">Date</label>
-                <DatePicker
-                  value={sessionDate}
-                  onChange={setSessionDate}
-                />
+                <DatePicker value={sessionDate} onChange={setSessionDate} />
               </div>
               <div className="input-group">
-                <label className="label-md text-xs text-[var(--on-surface-variant)]">Duration (min)</label>
+                <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                  Duration (min)
+                </label>
                 <input
                   type="number"
                   value={durationMinutes}
@@ -401,7 +441,9 @@ function LogWorkoutPage() {
             </div>
 
             <div className="input-group">
-              <label className="label-md text-xs text-[var(--on-surface-variant)]">Gym / Location</label>
+              <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                Gym / Location
+              </label>
               <input
                 type="text"
                 value={location}
@@ -412,7 +454,9 @@ function LogWorkoutPage() {
             </div>
 
             <div className="input-group">
-              <label className="label-md text-xs text-[var(--on-surface-variant)]">Overall Session Notes</label>
+              <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                Overall Session Notes
+              </label>
               <textarea
                 value={sessionNotes}
                 onChange={(e) => setSessionNotes(e.target.value)}
@@ -426,12 +470,14 @@ function LogWorkoutPage() {
           <div className="card space-y-4">
             <div className="flex justify-between items-center border-b border-white/5 pb-2">
               <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
-                <span className="material-symbols-outlined text-[var(--primary-container)]">search</span>
+                <span className="material-symbols-outlined text-[var(--primary-container)]">
+                  search
+                </span>
                 Add Exercise
               </h3>
-              <button 
-                type="button" 
-                onClick={() => setShowCustomModal(true)} 
+              <button
+                type="button"
+                onClick={() => setShowCustomModal(true)}
                 className="btn btn-secondary py-0.5 px-2 text-[10px]"
               >
                 + Custom
@@ -448,9 +494,11 @@ function LogWorkoutPage() {
 
             <div className="max-h-[300px] overflow-y-auto space-y-2 pr-1">
               {filteredExercises.length === 0 ? (
-                <p className="body-md text-xs text-[var(--on-surface-variant)] text-center py-4">No matching exercises. Click "+ Custom" to create one.</p>
+                <p className="body-md text-xs text-[var(--on-surface-variant)] text-center py-4">
+                  No matching exercises. Click "+ Custom" to create one.
+                </p>
               ) : (
-                filteredExercises.map(ex => (
+                filteredExercises.map((ex) => (
                   <button
                     key={ex.id}
                     type="button"
@@ -464,20 +512,26 @@ function LogWorkoutPage() {
               )}
             </div>
           </div>
-
         </div>
 
         {/* Right Panel: Exercises Added Editor */}
         <div className="lg:col-span-2 space-y-6">
           <h3 className="headline-md text-lg font-bold text-white flex items-center gap-2">
-            <span className="material-symbols-outlined text-[var(--primary-container)]">fitness_center</span>
+            <span className="material-symbols-outlined text-[var(--primary-container)]">
+              fitness_center
+            </span>
             Training Volume Editor
           </h3>
 
           {addedExercises.length === 0 ? (
             <div className="card text-center py-20 border-dashed">
-              <span className="material-symbols-outlined text-white/10 text-5xl mb-2">playlist_add</span>
-              <p className="body-md text-[var(--on-surface-variant)]">No exercises added yet. Use the sidebar search panel to populate your training session.</p>
+              <span className="material-symbols-outlined text-white/10 text-5xl mb-2">
+                playlist_add
+              </span>
+              <p className="body-md text-[var(--on-surface-variant)]">
+                No exercises added yet. Use the sidebar search panel to populate your training
+                session.
+              </p>
             </div>
           ) : (
             <div className="space-y-6">
@@ -494,7 +548,9 @@ function LogWorkoutPage() {
 
                   {/* Header */}
                   <div className="border-b border-white/5 pb-2 pr-8 flex items-center gap-2">
-                    <span className="chip py-0 px-2 text-[8px] bg-white/5 border-white/10 text-white/50">EX #{exIdx + 1}</span>
+                    <span className="chip py-0 px-2 text-[8px] bg-white/5 border-white/10 text-white/50">
+                      EX #{exIdx + 1}
+                    </span>
                     <h4 className="headline-md font-bold text-white text-base m-0">{ex.name}</h4>
                     <span className="chip chip-cyan py-0.5 px-2 text-[8px]">{ex.category}</span>
                   </div>
@@ -539,15 +595,24 @@ function LogWorkoutPage() {
                     <tbody>
                       {ex.sets.map((set, setIdx) => (
                         <tr key={setIdx} className="border-b border-white/[0.01]">
-                          <td className="py-2 font-bold text-white text-center">#{set.setNumber}</td>
-                          
+                          <td className="py-2 font-bold text-white text-center">
+                            #{set.setNumber}
+                          </td>
+
                           {ex.category === 'cardio' ? (
                             <>
                               <td className="py-1">
                                 <input
                                   type="number"
                                   value={set.durationSeconds}
-                                  onChange={(e) => handleSetChange(exIdx, setIdx, 'durationSeconds', e.target.value)}
+                                  onChange={(e) =>
+                                    handleSetChange(
+                                      exIdx,
+                                      setIdx,
+                                      'durationSeconds',
+                                      e.target.value,
+                                    )
+                                  }
                                   className="input-field py-1 px-2 text-xs w-20 text-center"
                                   placeholder="secs"
                                 />
@@ -557,7 +622,9 @@ function LogWorkoutPage() {
                                   type="number"
                                   step="0.01"
                                   value={set.distance}
-                                  onChange={(e) => handleSetChange(exIdx, setIdx, 'distance', e.target.value)}
+                                  onChange={(e) =>
+                                    handleSetChange(exIdx, setIdx, 'distance', e.target.value)
+                                  }
                                   className="input-field py-1 px-2 text-xs w-20 text-center"
                                   placeholder="dist"
                                 />
@@ -569,7 +636,9 @@ function LogWorkoutPage() {
                                 <input
                                   type="number"
                                   value={set.reps}
-                                  onChange={(e) => handleSetChange(exIdx, setIdx, 'reps', e.target.value)}
+                                  onChange={(e) =>
+                                    handleSetChange(exIdx, setIdx, 'reps', e.target.value)
+                                  }
                                   className="input-field py-1 px-2 text-xs w-16 text-center"
                                   placeholder="reps"
                                 />
@@ -579,7 +648,9 @@ function LogWorkoutPage() {
                                   type="number"
                                   step="0.1"
                                   value={set.weight}
-                                  onChange={(e) => handleSetChange(exIdx, setIdx, 'weight', e.target.value)}
+                                  onChange={(e) =>
+                                    handleSetChange(exIdx, setIdx, 'weight', e.target.value)
+                                  }
                                   className="input-field py-1 px-2 text-xs w-20 text-center"
                                   placeholder="kg"
                                 />
@@ -591,7 +662,9 @@ function LogWorkoutPage() {
                             <input
                               type="number"
                               value={set.restSeconds}
-                              onChange={(e) => handleSetChange(exIdx, setIdx, 'restSeconds', e.target.value)}
+                              onChange={(e) =>
+                                handleSetChange(exIdx, setIdx, 'restSeconds', e.target.value)
+                              }
                               className="input-field py-1 px-2 text-xs w-16 text-center"
                               placeholder="secs"
                             />
@@ -600,7 +673,9 @@ function LogWorkoutPage() {
                             <input
                               type="text"
                               value={set.intensity}
-                              onChange={(e) => handleSetChange(exIdx, setIdx, 'intensity', e.target.value)}
+                              onChange={(e) =>
+                                handleSetChange(exIdx, setIdx, 'intensity', e.target.value)
+                              }
                               className="input-field py-1 px-2 text-xs w-16 text-center"
                               placeholder="RPE/pace"
                             />
@@ -609,7 +684,9 @@ function LogWorkoutPage() {
                             <input
                               type="text"
                               value={set.notes}
-                              onChange={(e) => handleSetChange(exIdx, setIdx, 'notes', e.target.value)}
+                              onChange={(e) =>
+                                handleSetChange(exIdx, setIdx, 'notes', e.target.value)
+                              }
                               className="input-field py-1 px-2 text-xs w-full"
                               placeholder="Warmup, drop set..."
                             />
@@ -638,14 +715,11 @@ function LogWorkoutPage() {
                     <span className="material-symbols-outlined text-sm mr-1">add</span>
                     Add Set
                   </button>
-
                 </div>
               ))}
             </div>
           )}
-
         </div>
-
       </div>
 
       {/* Custom Exercise Modal */}
@@ -654,14 +728,19 @@ function LogWorkoutPage() {
           <div className="card max-w-md w-full p-6 border-white/10 space-y-4">
             <div className="flex justify-between items-center border-b border-white/5 pb-2">
               <h3 className="headline-md text-lg font-bold text-white">Create Custom Exercise</h3>
-              <button onClick={() => setShowCustomModal(false)} className="text-white/40 hover:text-white">
+              <button
+                onClick={() => setShowCustomModal(false)}
+                className="text-white/40 hover:text-white"
+              >
                 <span className="material-symbols-outlined">close</span>
               </button>
             </div>
-            
+
             <form onSubmit={handleCreateCustomExercise} className="space-y-4">
               <div className="input-group">
-                <label className="label-md text-xs text-[var(--on-surface-variant)]">Exercise Name</label>
+                <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                  Exercise Name
+                </label>
                 <input
                   type="text"
                   required
@@ -674,7 +753,9 @@ function LogWorkoutPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="input-group">
-                  <label className="label-md text-xs text-[var(--on-surface-variant)]">Category</label>
+                  <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                    Category
+                  </label>
                   <select
                     value={customCategory}
                     onChange={(e) => setCustomCategory(e.target.value)}
@@ -687,7 +768,9 @@ function LogWorkoutPage() {
                   </select>
                 </div>
                 <div className="input-group">
-                  <label className="label-md text-xs text-[var(--on-surface-variant)]">Default Unit</label>
+                  <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                    Default Unit
+                  </label>
                   <select
                     value={customUnit}
                     onChange={(e) => setCustomUnit(e.target.value)}
@@ -712,7 +795,6 @@ function LogWorkoutPage() {
           </div>
         </div>
       )}
-
     </div>
   )
 }

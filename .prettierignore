@@ -1,0 +1,7 @@
+dist
+node_modules
+.netlify
+.tanstack
+fitness.db
+pnpm-lock.yaml
+src/routeTree.gen.ts
