@@ -126,9 +126,11 @@ VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 VITE_CLERK_SIGN_IN_URL=/sign-in
 VITE_CLERK_SIGN_UP_URL=/sign-up
+KYBER_DATABASE_PATH=/absolute/path/to/persistent/fitness.db # optional
 ```
 
 _Note: SQLite database points directly to `fitness.db` in the workspace root. No database URL configuration is needed._
+For production deployments that provide durable mounted storage, set `KYBER_DATABASE_PATH` to that persistent SQLite file path. If omitted in serverless environments, Kyber Fitness falls back to `/tmp/fitness.db`, which is writable but ephemeral between cold starts and deploys.
 
 ### 2. Install Dependencies & Build
 
@@ -234,6 +236,7 @@ To complete the build and runtime pipeline, navigate to **Site configuration > E
 - `CLERK_SECRET_KEY`: Clerk's private API key.
 - `VITE_CLERK_SIGN_IN_URL`: `/sign-in`
 - `VITE_CLERK_SIGN_UP_URL`: `/sign-up`
+- `KYBER_DATABASE_PATH` (optional): Absolute path to a durable SQLite database file when the host provides persistent mounted storage.
 
 ### 5. Strict Dependency Resolution (`unctx`)
 

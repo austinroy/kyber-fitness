@@ -5,6 +5,10 @@ export default defineConfig({
   out: './drizzle',
   dialect: 'sqlite',
   dbCredentials: {
-    url: 'fitness.db',
+    url:
+      process.env.KYBER_DATABASE_PATH ||
+      process.env.FITNESS_DATABASE_PATH ||
+      process.env.SQLITE_DATABASE_PATH ||
+      'fitness.db',
   },
 })
