@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-
-type ThemeMode = 'light' | 'dark' | 'auto'
+import type { ThemeMode } from './ThemeToggle.types'
 
 function getInitialMode(): ThemeMode {
   if (typeof window === 'undefined') {

@@ -6,6 +6,7 @@ import {
   getIndividualTrainersList,
   respondToTrainerInvitation,
 } from '../../lib/actions'
+import type { TrainerRelationshipRecord, UserRecord } from '../../types/domain'
 
 export const Route = createFileRoute('/my-trainers/')({
   ssr: false,
@@ -18,8 +19,8 @@ function MyTrainersPage() {
 
   // State Management
   const [loading, setLoading] = useState(true)
-  const [dbUser, setDbUser] = useState<any>(null)
-  const [trainers, setTrainers] = useState<any[]>([])
+  const [dbUser, setDbUser] = useState<UserRecord | null>(null)
+  const [trainers, setTrainers] = useState<TrainerRelationshipRecord[]>([])
 
   // Interactive responding states
   const [actingId, setActingId] = useState<string | null>(null)
@@ -86,9 +87,11 @@ function MyTrainersPage() {
         await loadTrainers()
         setTimeout(() => setSuccessMsg(''), 5000)
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setErrorMsg(err?.message || 'Failed to submit response to trainer invitation.')
+      setErrorMsg(
+        err instanceof Error ? err.message : 'Failed to submit response to trainer invitation.',
+      )
     } finally {
       setActingId(null)
     }

@@ -1,12 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-
-interface DatePickerProps {
-  value: string // Format: YYYY-MM-DD
-  onChange: (value: string) => void
-  placeholder?: string
-  disabled?: boolean
-  className?: string
-}
+import type { DatePickerProps, DatePickerTab, ParsedDateParts } from './DatePicker.types'
 
 const MONTHS = [
   'January',
@@ -38,7 +31,7 @@ const SHORT_MONTHS = [
   'Dec',
 ]
 
-function parseDateString(dateStr: string) {
+function parseDateString(dateStr: string): ParsedDateParts | null {
   if (!dateStr) return null
   const parts = dateStr.split('-')
   if (parts.length !== 3) return null
@@ -76,7 +69,7 @@ export default function DatePicker({
   const [selectedMonth, setSelectedMonth] = useState(() => new Date().getMonth())
   const [selectedDay, setSelectedDay] = useState(() => new Date().getDate())
 
-  const [activeTab, setActiveTab] = useState<'month' | 'date' | 'year'>('date')
+  const [activeTab, setActiveTab] = useState<DatePickerTab>('date')
 
   const containerRef = useRef<HTMLDivElement>(null)
 

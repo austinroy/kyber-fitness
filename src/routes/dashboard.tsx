@@ -7,6 +7,13 @@ import {
   logHealthMetric,
   getClientAssignedPrograms,
 } from '../lib/actions'
+import type {
+  ProgramAssignmentRecord,
+  ProfileRecord,
+  TrainerProfileRecord,
+  UserRecord,
+  WorkoutSessionRecord,
+} from '../types/domain'
 
 export const Route = createFileRoute('/dashboard')({
   ssr: false,
@@ -19,11 +26,11 @@ function DashboardPage() {
 
   // App States
   const [profileLoading, setProfileLoading] = useState(true)
-  const [dbUser, setDbUser] = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
-  const [trainerProfile, setTrainerProfile] = useState<any>(null)
-  const [workouts, setWorkouts] = useState<any[]>([])
-  const [assignedPrograms, setAssignedPrograms] = useState<any[]>([])
+  const [dbUser, setDbUser] = useState<UserRecord | null>(null)
+  const [profile, setProfile] = useState<ProfileRecord | null>(null)
+  const [trainerProfile, setTrainerProfile] = useState<TrainerProfileRecord | null>(null)
+  const [workouts, setWorkouts] = useState<WorkoutSessionRecord[]>([])
+  const [assignedPrograms, setAssignedPrograms] = useState<ProgramAssignmentRecord[]>([])
 
   // Quick log states
   const [weight, setWeight] = useState('')
@@ -340,7 +347,7 @@ function DashboardPage() {
 
                   {/* Exercises list summary */}
                   <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-white/5">
-                    {sess.exercises.map((ex: any) => (
+                    {sess.exercises.map((ex) => (
                       <span key={ex.id} className="chip chip-cyan py-0.5 px-2 text-[10px]">
                         {ex.name} ({ex.sets.length} sets)
                       </span>

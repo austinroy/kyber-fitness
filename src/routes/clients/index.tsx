@@ -9,6 +9,12 @@ import {
   getHealthMetricsHistory,
   logHealthMetric,
 } from '../../lib/actions'
+import type {
+  HealthMetricRecord,
+  MetricType,
+  TrainerClientRecord,
+  WorkoutSessionRecord,
+} from '../../types/domain'
 
 export const Route = createFileRoute('/clients/')({
   ssr: false,
@@ -21,8 +27,7 @@ function TrainerClientsPage() {
 
   // Coach and Registry states
   const [loading, setLoading] = useState(true)
-  const [dbUser, setDbUser] = useState<any>(null)
-  const [clients, setClients] = useState<any[]>([])
+  const [clients, setClients] = useState<TrainerClientRecord[]>([])
 
   // Invitation state
   const [inviteEmail, setInviteEmail] = useState('')
@@ -32,13 +37,11 @@ function TrainerClientsPage() {
 
   // Selected client detail view states
   const [selectedClientId, setSelectedClientId] = useState<string>('')
-  const [selectedClientWorkouts, setSelectedClientWorkouts] = useState<any[]>([])
-  const [selectedClientMetrics, setSelectedClientMetrics] = useState<any[]>([])
+  const [selectedClientWorkouts, setSelectedClientWorkouts] = useState<WorkoutSessionRecord[]>([])
+  const [selectedClientMetrics, setSelectedClientMetrics] = useState<HealthMetricRecord[]>([])
   const [detailLoading, setDetailLoading] = useState(false)
   const [detailTab, setDetailTab] = useState<'workouts' | 'health' | 'sync'>('workouts')
-  const [activeMetricType, setActiveMetricType] = useState<'weight' | 'body_fat' | 'resting_hr'>(
-    'weight',
-  )
+  const [activeMetricType, setActiveMetricType] = useState<MetricType>('weight')
 
   // Log client metric states
   const [metricValue, setMetricValue] = useState('')
@@ -63,7 +66,6 @@ function TrainerClientsPage() {
                 // If not trainer, redirect to dashboard or appropriate place
                 navigate({ to: '/dashboard' })
               } else {
-                setDbUser(res.user)
                 loadClientsRegistry()
               }
             } else {
@@ -134,9 +136,9 @@ function TrainerClientsPage() {
         setInviteEmail('')
         loadClientsRegistry()
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setInviteError(err?.message || 'Failed to dispatch client invitation.')
+      setInviteError(err instanceof Error ? err.message : 'Failed to dispatch client invitation.')
     } finally {
       setInviting(false)
     }
@@ -176,9 +178,9 @@ function TrainerClientsPage() {
         setSelectedClientMetrics(refreshed || [])
         setTimeout(() => setSyncSuccess(''), 4000)
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setSyncError(err?.message || 'Failed to sync client health metric.')
+      setSyncError(err instanceof Error ? err.message : 'Failed to sync client health metric.')
     } finally {
       setSyncingMetric(false)
     }
@@ -600,7 +602,7 @@ function TrainerClientsPage() {
 
                             {/* Exercises overview */}
                             <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/5">
-                              {sess.exercises.map((ex: any) => (
+                              {sess.exercises.map((ex) => (
                                 <span key={ex.id} className="chip chip-cyan py-0.5 px-2 text-[9px]">
                                   {ex.name} ({ex.sets.length} sets)
                                 </span>

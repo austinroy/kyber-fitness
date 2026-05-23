@@ -7,6 +7,13 @@ import {
   logHealthMetric,
   getTrainerClientsList,
 } from '../../lib/actions'
+import type {
+  HealthMetricRecord,
+  MetricType,
+  ProfileRecord,
+  TrainerClientRecord,
+  UserRecord,
+} from '../../types/domain'
 
 export const Route = createFileRoute('/health/')({
   ssr: false,
@@ -19,14 +26,14 @@ function HealthDashboardPage() {
 
   // App & Session states
   const [profileLoading, setProfileLoading] = useState(true)
-  const [dbUser, setDbUser] = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
-  const [clientsList, setClientsList] = useState<any[]>([])
+  const [dbUser, setDbUser] = useState<UserRecord | null>(null)
+  const [, setProfile] = useState<ProfileRecord | null>(null)
+  const [clientsList, setClientsList] = useState<TrainerClientRecord[]>([])
 
   // Dashboard selections
   const [selectedClientId, setSelectedClientId] = useState('')
-  const [activeMetric, setActiveMetric] = useState<'weight' | 'body_fat' | 'resting_hr'>('weight')
-  const [metricsHistory, setMetricsHistory] = useState<any[]>([])
+  const [activeMetric, setActiveMetric] = useState<MetricType>('weight')
+  const [metricsHistory, setMetricsHistory] = useState<HealthMetricRecord[]>([])
 
   // Logger Form States
   const [logValue, setLogValue] = useState('')
@@ -56,7 +63,7 @@ function HealthDashboardPage() {
                 if (res.user.role === 'trainer') {
                   getTrainerClientsList()
                     .then((clients) => {
-                      const active = clients?.filter((c: any) => c.status === 'active') || []
+                      const active = clients?.filter((c) => c.status === 'active') || []
                       setClientsList(active)
                     })
                     .catch(() => {})
@@ -138,9 +145,9 @@ function HealthDashboardPage() {
 
         setTimeout(() => setSuccessMsg(''), 4000)
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setErrorMsg(err?.message || 'Failed to submit health metrics.')
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to submit health metrics.')
     } finally {
       setLogging(false)
     }

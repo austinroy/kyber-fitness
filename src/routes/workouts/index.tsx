@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
 import { getWorkoutSessionsHistory, getCurrentUserProfile } from '../../lib/actions'
+import type { WorkoutSessionRecord } from '../../types/domain'
 
 export const Route = createFileRoute('/workouts/')({
   ssr: false,
@@ -12,8 +13,8 @@ function WorkoutsPage() {
   const { isLoaded, isSignedIn } = useUser()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
-  const [sessions, setSessions] = useState<any[]>([])
-  const [selectedSession, setSelectedSession] = useState<any | null>(null)
+  const [sessions, setSessions] = useState<WorkoutSessionRecord[]>([])
+  const [selectedSession, setSelectedSession] = useState<WorkoutSessionRecord | null>(null)
 
   useEffect(() => {
     if (isLoaded) {
@@ -114,7 +115,7 @@ function WorkoutsPage() {
                   </p>
 
                   <div className="flex flex-wrap gap-1">
-                    {sess.exercises.map((ex: any) => (
+                    {sess.exercises.map((ex) => (
                       <span key={ex.id} className="chip py-0.5 px-2 text-[8px]">
                         {ex.name}
                       </span>
@@ -183,7 +184,7 @@ function WorkoutsPage() {
                     Volume & Set Details
                   </h3>
 
-                  {selectedSession.exercises.map((ex: any, idx: number) => (
+                  {selectedSession.exercises.map((ex, idx) => (
                     <div
                       key={ex.id}
                       className="p-4 rounded-md border border-white/5 bg-[var(--surface-container-low)] space-y-4"
@@ -230,7 +231,7 @@ function WorkoutsPage() {
                           </tr>
                         </thead>
                         <tbody>
-                          {ex.sets.map((set: any) => (
+                          {ex.sets.map((set) => (
                             <tr
                               key={set.id}
                               className="border-b border-white/[0.02] hover:bg-white/[0.01]"

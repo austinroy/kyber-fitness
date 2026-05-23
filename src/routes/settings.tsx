@@ -3,6 +3,8 @@ import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
 import { getCurrentUserProfile, updateUserProfile } from '../lib/actions'
 import DatePicker from '../components/DatePicker'
+import type { UserRecord } from '../types/domain'
+import type { UpdateUserProfilePayload } from '../types/profile-forms'
 
 export const Route = createFileRoute('/settings')({
   ssr: false,
@@ -15,7 +17,7 @@ function SettingsPage() {
 
   // General state
   const [profileLoading, setProfileLoading] = useState(true)
-  const [dbUser, setDbUser] = useState<any>(null)
+  const [dbUser, setDbUser] = useState<UserRecord | null>(null)
 
   // Shared fields
   const [name, setName] = useState('')
@@ -96,7 +98,7 @@ function SettingsPage() {
     setSuccess(false)
 
     try {
-      const payload: any = {
+      const payload: UpdateUserProfilePayload = {
         name: name.trim() || 'Kyber Athlete',
       }
 
@@ -121,9 +123,11 @@ function SettingsPage() {
       setTimeout(() => {
         setSuccess(false)
       }, 4000)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setError(err?.message || 'Failed to update profile settings. Please try again.')
+      setError(
+        err instanceof Error ? err.message : 'Failed to update profile settings. Please try again.',
+      )
     } finally {
       setSubmitting(false)
     }
