@@ -94,7 +94,7 @@ function WorkoutsPage() {
             </h3>
             <div className="space-y-3 overflow-y-auto max-h-[70vh] pr-2">
               {sessions.map((sess) => (
-                <button
+                <div
                   key={sess.id}
                   onClick={() => setSelectedSession(sess)}
                   className={`card text-left w-full relative transition-all block cursor-pointer ${
@@ -121,7 +121,15 @@ function WorkoutsPage() {
                       </span>
                     ))}
                   </div>
-                </button>
+                  <Link
+                    to="/workouts/$sessionId"
+                    params={{ sessionId: sess.id }}
+                    onClick={(event) => event.stopPropagation()}
+                    className="btn btn-secondary mt-3 w-full justify-center text-[10px] py-1.5"
+                  >
+                    Open Detail
+                  </Link>
+                </div>
               ))}
             </div>
           </div>

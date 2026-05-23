@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
 import {
@@ -6,6 +6,8 @@ import {
   getHealthMetricsHistory,
   logHealthMetric,
   getTrainerClientsList,
+  updateHealthMetric,
+  deleteHealthMetric,
 } from '../../lib/actions'
 import type {
   HealthMetricRecord,
@@ -41,6 +43,9 @@ function HealthDashboardPage() {
   const [logNotes, setLogNotes] = useState('')
   const [logForClientId, setLogForClientId] = useState('')
   const [logging, setLogging] = useState(false)
+  const [editingMetricId, setEditingMetricId] = useState('')
+  const [editValue, setEditValue] = useState('')
+  const [editNotes, setEditNotes] = useState('')
   const [successMsg, setSuccessMsg] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -148,6 +153,77 @@ function HealthDashboardPage() {
     } catch (err: unknown) {
       console.error(err)
       setErrorMsg(err instanceof Error ? err.message : 'Failed to submit health metrics.')
+    } finally {
+      setLogging(false)
+    }
+  }
+
+  const refreshMetrics = async () => {
+    const refreshed = await getHealthMetricsHistory({
+      data: {
+        clientId: selectedClientId || undefined,
+        metricType: activeMetric,
+      },
+    })
+    setMetricsHistory(refreshed || [])
+  }
+
+  const startMetricEdit = (metric: HealthMetricRecord) => {
+    setEditingMetricId(metric.id)
+    setEditValue(String(metric.value))
+    setEditNotes(metric.notes || '')
+    setErrorMsg('')
+    setSuccessMsg('')
+  }
+
+  const handleMetricUpdate = async (metric: HealthMetricRecord) => {
+    if (!editValue) return
+
+    setLogging(true)
+    setErrorMsg('')
+    setSuccessMsg('')
+
+    try {
+      await updateHealthMetric({
+        data: {
+          metricId: metric.id,
+          metricType: activeMetric,
+          value: Number(editValue),
+          unit: metric.unit,
+          notes: editNotes || undefined,
+          clientId: selectedClientId || undefined,
+        },
+      })
+      await refreshMetrics()
+      setEditingMetricId('')
+      setSuccessMsg('Biometric log updated.')
+      setTimeout(() => setSuccessMsg(''), 3000)
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to update health metric.')
+    } finally {
+      setLogging(false)
+    }
+  }
+
+  const handleMetricDelete = async (metric: HealthMetricRecord) => {
+    if (!window.confirm('Delete this biometric log permanently?')) return
+
+    setLogging(true)
+    setErrorMsg('')
+    setSuccessMsg('')
+
+    try {
+      await deleteHealthMetric({
+        data: {
+          metricId: metric.id,
+          clientId: selectedClientId || undefined,
+        },
+      })
+      await refreshMetrics()
+      setSuccessMsg('Biometric log deleted.')
+      setTimeout(() => setSuccessMsg(''), 3000)
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Failed to delete health metric.')
     } finally {
       setLogging(false)
     }
@@ -492,6 +568,7 @@ function HealthDashboardPage() {
                       <th className="py-2.5">Recorded Value</th>
                       <th className="py-2.5">Sync Terminal</th>
                       <th className="py-2.5">Notes</th>
+                      <th className="py-2.5 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -504,21 +581,79 @@ function HealthDashboardPage() {
                           })}
                         </td>
                         <td className="py-3 text-white font-bold text-sm">
-                          {Number(m.value).toFixed(1)}{' '}
-                          <span className="text-[10px] text-[var(--on-surface-variant)] font-normal">
-                            {m.unit}
-                          </span>
+                          {editingMetricId === m.id ? (
+                            <input
+                              type="number"
+                              step="0.01"
+                              value={editValue}
+                              onChange={(event) => setEditValue(event.target.value)}
+                              className="input-field w-28 py-1 text-xs"
+                            />
+                          ) : (
+                            <>
+                              {Number(m.value).toFixed(1)}{' '}
+                              <span className="text-[10px] text-[var(--on-surface-variant)] font-normal">
+                                {m.unit}
+                              </span>
+                            </>
+                          )}
                         </td>
                         <td className="py-3 text-[var(--on-surface-variant)]">
                           {m.recordedByUserId === m.userId
                             ? 'Individual Core'
                             : 'Trainer Portal Override'}
                         </td>
-                        <td
-                          className="py-3 text-[var(--on-surface-variant)] truncate max-w-[200px]"
-                          title={m.notes || ''}
-                        >
-                          {m.notes || '--'}
+                        <td className="py-3 text-[var(--on-surface-variant)] max-w-[240px]">
+                          {editingMetricId === m.id ? (
+                            <input
+                              value={editNotes}
+                              onChange={(event) => setEditNotes(event.target.value)}
+                              className="input-field w-full py-1 text-xs"
+                            />
+                          ) : (
+                            <span className="truncate block" title={m.notes || ''}>
+                              {m.notes || '--'}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 text-right">
+                          {editingMetricId === m.id ? (
+                            <div className="flex justify-end gap-2">
+                              <button
+                                type="button"
+                                className="btn btn-primary py-1 px-2 text-[10px]"
+                                disabled={logging}
+                                onClick={() => handleMetricUpdate(m)}
+                              >
+                                Save
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-secondary py-1 px-2 text-[10px]"
+                                onClick={() => setEditingMetricId('')}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex justify-end gap-2">
+                              <button
+                                type="button"
+                                className="btn btn-secondary py-1 px-2 text-[10px]"
+                                onClick={() => startMetricEdit(m)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-danger py-1 px-2 text-[10px]"
+                                disabled={logging}
+                                onClick={() => handleMetricDelete(m)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))}
