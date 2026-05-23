@@ -54,13 +54,16 @@ VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 VITE_CLERK_SIGN_IN_URL=/sign-in
 VITE_CLERK_SIGN_UP_URL=/sign-up
+KYBER_DATABASE_PATH=/absolute/path/to/persistent/fitness.db # optional
 ```
 
 ### Rules:
 
 - `VITE_CLERK_PUBLISHABLE_KEY` and redirect URLs may be used on the client-side.
 - `CLERK_SECRET_KEY` is highly sensitive and must only be accessed in server-side blocks.
-- **No Database URL Required**: The local SQLite database resolves dynamically to the file `fitness.db` in the workspace root. Do not commit secrets.
+- **No Database URL Required Locally**: The local SQLite database resolves dynamically to the file `fitness.db` in the workspace root.
+- **Persistent Storage Override**: In production environments with durable mounted storage, set `KYBER_DATABASE_PATH` to an absolute SQLite file path. `FITNESS_DATABASE_PATH` and `SQLITE_DATABASE_PATH` are supported aliases. If no path is configured in serverless runtimes, the app uses `/tmp/fitness.db`, which is writable but ephemeral.
+- Do not commit secrets or production database files.
 
 ---
 
@@ -107,7 +110,7 @@ kyber-fitness/
         $sessionId.tsx  # Dedicated session detail review with edit/delete controls
 
   drizzle.config.ts     # Drizzle Kit migration configuration
-  fitness.db            # SQLite database file (Local)
+  fitness.db            # SQLite database file (Local seed/default)
   package.json          # Dependency configurations
   tsconfig.json         # TypeScript configuration
   vite.config.ts        # Vite/Vinxi packaging configuration
@@ -475,6 +478,8 @@ npx drizzle-kit push
 pnpm run db:seed
 ```
 
+For durable hosted storage, set `KYBER_DATABASE_PATH` before running Drizzle commands so schema pushes and seed data target the same persistent SQLite file used by the server runtime.
+
 ---
 
 ## 10. Netlify Deployment Strategy
@@ -487,6 +492,7 @@ Kyber Fitness is configured for serverless hosting on **Netlify** using `@netlif
 2. **Settings**: Configured build steps inside `netlify.toml` targeting `pnpm run build` and publishing `dist/client`.
 3. **Strict Dependency Resolution**: Added `unctx` as a direct dependency in `package.json` to resolve Rolldown compilation import resolution errors on Netlify due to pnpm's strict layout structure.
 4. **Environment Configuration**: You MUST supply the Clerk credentials (`CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`, `VITE_CLERK_SIGN_IN_URL`, `VITE_CLERK_SIGN_UP_URL`) as Site environment variables on Netlify.
+5. **SQLite Persistence**: Netlify's default function filesystem is ephemeral. If durable SQLite storage is required, configure a host-provided persistent mount and set `KYBER_DATABASE_PATH`; otherwise `/tmp/fitness.db` is only a runtime scratch copy seeded from the bundled database.
 
 ---
 
