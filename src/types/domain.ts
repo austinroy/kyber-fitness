@@ -165,3 +165,14 @@ export interface CoachingNoteRecord {
   createdAt: string
   updatedAt: string
 }
+
+export interface NotificationRecord {
+  id: string
+  userId: string
+  type: string
+  title: string
+  body: string
+  actionUrl?: string | null
+  readAt?: string | null
+  createdAt: string
+}

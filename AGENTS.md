@@ -174,6 +174,7 @@ erDiagram
     users ||--o{ workout_programs : "creates"
     users ||--o{ program_assignments : "receives / assigns"
     users ||--o{ coaching_notes : "writes / receives private context"
+    users ||--o{ notifications : "receives"
     workout_sessions ||--o{ session_exercises : "contains"
     exercises ||--o{ session_exercises : "is added to"
     session_exercises ||--o{ exercise_sets : "has sets"
@@ -325,6 +326,17 @@ erDiagram
         text createdAt
         text updatedAt
     }
+
+    notifications {
+        text id PK
+        text userId FK "Recipient users.id"
+        text type
+        text title
+        text body
+        text actionUrl
+        text readAt
+        text createdAt
+    }
 ```
 
 ---
@@ -406,6 +418,10 @@ Kyber Fitness enforces a secure Trainer-Client permission system inside `src/lib
   - Coaching notes are trainer-private records scoped to `trainerId` and `clientId`.
   - Trainers can create, edit, list, pin, or delete notes only for active client relationships verified by `verifyTrainerClientAccess`.
   - Athletes do not have a route or server action contract for reading trainer-private notes unless a future product decision explicitly changes visibility.
+- **Notifications / Inbox**:
+  - Notifications are user-scoped records in `notifications`; recipients can list and mark only their own notifications as read.
+  - Trainer invitations and program assignments should create in-app notifications for the athlete recipient.
+  - Notification action URLs are convenience links only. All target routes and server functions must still enforce their own permissions.
 - **Program Templates and Assignments**:
   - Trainers can create, edit, and delete only workout programs where `workoutPrograms.createdByUserId` matches their Clerk user ID.
   - Athletes can load a program only through a pending or historical assignment that belongs to their own user ID.

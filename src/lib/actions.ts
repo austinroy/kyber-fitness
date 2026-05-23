@@ -15,6 +15,7 @@ import {
   workoutProgramSets,
   programAssignments,
   coachingNotes,
+  notifications,
 } from './db/schema'
 import { eq, and, or, desc, sql } from 'drizzle-orm'
 import { getAuthUser, requireAuthUser } from './auth-server'
@@ -22,6 +23,25 @@ import { getAuthUser, requireAuthUser } from './auth-server'
 // Generate a random string ID helper
 function generateId(prefix: string) {
   return `${prefix}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+function createNotification(input: {
+  userId: string
+  type: string
+  title: string
+  body: string
+  actionUrl?: string
+}) {
+  return db.insert(notifications).values({
+    id: generateId('notif'),
+    userId: input.userId,
+    type: input.type,
+    title: input.title,
+    body: input.body,
+    actionUrl: input.actionUrl || null,
+    readAt: null,
+    createdAt: new Date().toISOString(),
+  })
 }
 
 // 1. Get Current User Profile and DB Sync Status
@@ -64,6 +84,45 @@ export const getCurrentUserProfile = createServerFn({ method: 'GET' }).handler(a
     profile,
     trainerProfile,
   }
+})
+
+export const getNotifications = createServerFn({ method: 'GET' }).handler(async () => {
+  const auth = await requireAuthUser()
+  const userId = auth.userId
+
+  return await db
+    .select()
+    .from(notifications)
+    .where(eq(notifications.userId, userId))
+    .orderBy(desc(notifications.createdAt))
+})
+
+export const markNotificationRead = createServerFn({ method: 'POST' })
+  .inputValidator((data: { notificationId: string }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser()
+    const userId = auth.userId
+    const now = new Date().toISOString()
+
+    await db
+      .update(notifications)
+      .set({ readAt: now })
+      .where(and(eq(notifications.id, data.notificationId), eq(notifications.userId, userId)))
+
+    return { success: true }
+  })
+
+export const markAllNotificationsRead = createServerFn({ method: 'POST' }).handler(async () => {
+  const auth = await requireAuthUser()
+  const userId = auth.userId
+  const now = new Date().toISOString()
+
+  await db
+    .update(notifications)
+    .set({ readAt: now })
+    .where(and(eq(notifications.userId, userId), sql`${notifications.readAt} is null`))
+
+  return { success: true }
 })
 
 // 2. Onboard User (Select role and set initial parameters)
@@ -912,6 +971,15 @@ export const inviteClientByEmail = createServerFn({ method: 'POST' })
       updatedAt: now,
     })
 
+    const trainer = await db.select().from(users).where(eq(users.id, trainerId)).limit(1)
+    await createNotification({
+      userId: clientUser.id,
+      type: 'trainer_invite',
+      title: 'Trainer invitation received',
+      body: `${trainer[0]?.name || 'A trainer'} invited you to connect on Kyber Fitness.`,
+      actionUrl: '/my-trainers',
+    })
+
     return { success: true, message: 'Invitation sent successfully! Awaiting individual approval.' }
   })
 
@@ -1438,6 +1506,15 @@ export const assignProgramToClient = createServerFn({ method: 'POST' })
       status: 'pending',
       notes: data.notes || null,
       assignedAt: now,
+    })
+
+    const trainer = await db.select().from(users).where(eq(users.id, trainerId)).limit(1)
+    await createNotification({
+      userId: data.clientId,
+      type: 'program_assignment',
+      title: 'New workout program assigned',
+      body: `${trainer[0]?.name || 'Your trainer'} assigned "${progs[0].title}" to your training queue.`,
+      actionUrl: '/programs',
     })
 
     return { success: true, assignmentId }
