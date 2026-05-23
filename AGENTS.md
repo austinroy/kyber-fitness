@@ -86,6 +86,11 @@ kyber-fitness/
       actions.ts        # Isomorphic server functions (CRUD, permissions)
       auth-server.ts    # Secure Clerk server authentication helpers
 
+    types/              # Shared TypeScript DTOs and form/editor payload types
+      domain.ts         # Server-return/domain records used across routes
+      profile-forms.ts  # Onboarding and settings payload shapes
+      workout-editor.ts # Shared workout/program builder editor payloads
+
     routes/             # File-system router
       __root.tsx        # Document structure, ClerkProvider, ThemeProvider, global errors
       index.tsx         # Premium visual landing page
@@ -106,6 +111,13 @@ kyber-fitness/
   tsconfig.json         # TypeScript configuration
   vite.config.ts        # Vite/Vinxi packaging configuration
 ```
+
+### Type Organization Rules
+
+- Keep reusable domain/data-transfer shapes in `src/types/domain.ts`.
+- Keep reusable form/editor payloads in focused files such as `src/types/workout-editor.ts` and `src/types/profile-forms.ts`.
+- Keep component-only props and local UI helper types beside the component in `*.types.ts` files, e.g. `src/components/DatePicker.types.ts`.
+- Do not re-declare duplicate `SetInput`, `ExerciseInput`, profile payload, trainer-client, workout session, or health metric shapes inside routes/components. Import existing types and extend them only when the local UI genuinely needs a narrower view model.
 
 ---
 

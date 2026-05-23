@@ -8,6 +8,13 @@ import {
   saveWorkoutProgram,
   getWorkoutProgramDetails,
 } from '../../lib/actions'
+import type { ExerciseRecord, WorkoutProgramDetails } from '../../types/domain'
+import type {
+  ExerciseInput,
+  MoveDirection,
+  SaveWorkoutProgramPayload,
+  SetInput,
+} from '../../types/workout-editor'
 
 export const Route = createFileRoute('/programs/new')({
   ssr: false,
@@ -19,27 +26,6 @@ export const Route = createFileRoute('/programs/new')({
   component: ProgramBuilderPage,
 })
 
-interface SetInput {
-  setNumber: number
-  reps: string
-  weight: string
-  durationSeconds: string
-  distance: string
-  restSeconds: string
-  intensity: string
-  notes: string
-}
-
-interface ExerciseInput {
-  exerciseId: string
-  name: string
-  category: string
-  defaultUnit: string
-  notes: string
-  orderIndex: number
-  sets: SetInput[]
-}
-
 function ProgramBuilderPage() {
   const { isLoaded, isSignedIn } = useUser()
   const navigate = useNavigate()
@@ -48,8 +34,7 @@ function ProgramBuilderPage() {
 
   // Load baseline states
   const [loading, setLoading] = useState(true)
-  const [role, setRole] = useState<'individual' | 'trainer'>('individual')
-  const [exercisesList, setExercisesList] = useState<any[]>([])
+  const [exercisesList, setExercisesList] = useState<ExerciseRecord[]>([])
 
   // Form State
   const [title, setTitle] = useState('')
@@ -79,8 +64,6 @@ function ProgramBuilderPage() {
               } else if (res.user.role !== 'trainer') {
                 navigate({ to: '/dashboard' }) // Individuals cannot build programs
               } else {
-                setRole(res.user.role)
-
                 // Fetch exercises list
                 getExercisesList()
                   .then((exs) => setExercisesList(exs || []))
@@ -89,18 +72,18 @@ function ProgramBuilderPage() {
                 // Fetch details if editing
                 if (programId) {
                   getWorkoutProgramDetails({ data: { programId } })
-                    .then((details: any) => {
+                    .then((details: WorkoutProgramDetails) => {
                       setTitle(details.title)
                       setProgramNotes(details.notes || '')
 
-                      const mapped = details.exercises.map((ex: any) => ({
+                      const mapped = details.exercises.map((ex) => ({
                         exerciseId: ex.exerciseId,
                         name: ex.name,
                         category: ex.category,
                         defaultUnit: ex.defaultUnit || 'kg',
                         notes: ex.notes || '',
                         orderIndex: ex.orderIndex,
-                        sets: ex.sets.map((s: any) => ({
+                        sets: ex.sets.map((s) => ({
                           setNumber: s.setNumber,
                           reps: s.reps?.toString() || '',
                           weight: s.weight?.toString() || '',
@@ -130,7 +113,7 @@ function ProgramBuilderPage() {
     }
   }, [isLoaded, isSignedIn, programId])
 
-  const handleAddExercise = (ex: any) => {
+  const handleAddExercise = (ex: ExerciseRecord) => {
     const newEx: ExerciseInput = {
       exerciseId: ex.id,
       name: ex.name,
@@ -161,7 +144,7 @@ function ProgramBuilderPage() {
     setAddedExercises(normalized)
   }
 
-  const handleMoveExercise = (idx: number, direction: 'up' | 'down') => {
+  const handleMoveExercise = (idx: number, direction: MoveDirection) => {
     if (direction === 'up' && idx === 0) return
     if (direction === 'down' && idx === addedExercises.length - 1) return
 
@@ -261,7 +244,7 @@ function ProgramBuilderPage() {
     setError('')
 
     try {
-      const payload = {
+      const payload: SaveWorkoutProgramPayload = {
         programId: programId || undefined,
         title: title.trim(),
         notes: programNotes.trim() || undefined,
@@ -284,9 +267,9 @@ function ProgramBuilderPage() {
 
       await saveWorkoutProgram({ data: payload })
       navigate({ to: '/programs' })
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setError(err?.message || 'Failed to save workout program template.')
+      setError(err instanceof Error ? err.message : 'Failed to save workout program template.')
       setSaving(false)
     }
   }

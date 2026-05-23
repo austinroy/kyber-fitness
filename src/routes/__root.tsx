@@ -5,6 +5,7 @@ import { ClerkProvider, SignedIn, SignedOut, UserButton, useUser } from '@clerk/
 import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { getCurrentUserProfile } from '../lib/actions'
+import type { UserRecord } from '../types/domain'
 import appCss from '../styles.css?url'
 
 // Fetch the Clerk publishable key
@@ -123,7 +124,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   const { isLoaded, isSignedIn } = useUser()
-  const [dbUser, setDbUser] = useState<any>(null)
+  const [dbUser, setDbUser] = useState<UserRecord | null>(null)
   const [loading, setLoading] = useState(true)
 
   // Check onboarding / db user status

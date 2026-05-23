@@ -3,6 +3,8 @@ import { useUser } from '@clerk/tanstack-start'
 import { useEffect, useState } from 'react'
 import { getCurrentUserProfile, onboardUser } from '../lib/actions'
 import DatePicker from '../components/DatePicker'
+import type { UserRole } from '../types/domain'
+import type { OnboardingPayload } from '../types/profile-forms'
 
 export const Route = createFileRoute('/onboarding')({
   ssr: false,
@@ -15,7 +17,7 @@ function OnboardingPage() {
   const [checking, setChecking] = useState(true)
 
   // Form State
-  const [role, setRole] = useState<'individual' | 'trainer'>('individual')
+  const [role, setRole] = useState<UserRole>('individual')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
 
@@ -66,7 +68,7 @@ function OnboardingPage() {
     setError('')
 
     try {
-      const payload: any = {
+      const payload: OnboardingPayload = {
         role,
         name: name.trim() || 'Kyber Athlete',
         email: email.trim(),
@@ -87,9 +89,11 @@ function OnboardingPage() {
 
       await onboardUser({ data: payload })
       navigate({ to: '/dashboard' })
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setError(err?.message || 'Failed to complete onboarding. Please try again.')
+      setError(
+        err instanceof Error ? err.message : 'Failed to complete onboarding. Please try again.',
+      )
       setSubmitting(false)
     }
   }
