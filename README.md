@@ -16,6 +16,8 @@ Kyber Fitness utilizes an isomorphic, typesafe React 19 stack built on the edge:
 - **Telemetry Visuals:** Glowing custom **SVG trendlines** and Lucide React icons for advanced biometric charting.
 - **Quality Tooling:** [Oxlint](https://oxc.rs/docs/guide/usage/linter) for fast JavaScript/TypeScript linting and [Prettier](https://prettier.io) for repo-wide formatting.
 
+Shared TypeScript data-transfer and form/editor shapes live under `src/types`. Component-only prop/helper types live beside their component in `*.types.ts` files. This keeps route files focused on behavior and prevents duplicated workout, program, profile, and trainer-client shapes from drifting.
+
 ---
 
 ## Current Product Surface
@@ -23,8 +25,8 @@ Kyber Fitness utilizes an isomorphic, typesafe React 19 stack built on the edge:
 - **Landing and auth:** A premium public landing page plus Clerk-powered `/sign-in` and `/sign-up` routes with splat support for path-based multi-step auth.
 - **Onboarding and settings:** Role-aware onboarding for athletes and trainers, with unified profile and credential editing in `/settings`.
 - **Athlete dashboard:** Workout totals, assigned-routine prompts, quick body-weight logging, and recent activity summaries.
-- **Workout logging:** Custom workout session builder with global/custom exercises, set targets, reps, load, distance, duration, rest, intensity, and notes.
-- **Health metrics:** Timelines for weight, body fat, and resting heart rate, including trainer-supported client metric logging when permissions allow.
+- **Workout logging and review:** Custom workout session builder with global/custom exercises, set targets, reps, load, distance, duration, rest, intensity, notes, dedicated session detail pages, and permission-checked edit/delete flows.
+- **Health metrics:** Timelines for weight, body fat, and resting heart rate, including trainer-supported client metric logging plus permission-checked metric correction and deletion when access allows.
 - **Trainer clients:** Client invitation, active relationship management, athlete profile/metric views, and permission-guarded client logging.
 - **Program builder:** Trainer-only program templates with ordered exercises and target sets.
 - **Program assignment flow:** Trainers assign programs to active clients; athletes can open pending assignments, preload the routine into `/workouts/new`, record the actual session, and complete the assignment through a server-validated workflow.

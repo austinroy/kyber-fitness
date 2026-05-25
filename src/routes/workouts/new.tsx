@@ -10,6 +10,13 @@ import {
   getAssignedWorkoutProgramDetails,
 } from '../../lib/actions'
 import DatePicker from '../../components/DatePicker'
+import type {
+  AssignedWorkoutProgramDetails,
+  ExerciseRecord,
+  TrainerClientRecord,
+  UserRole,
+} from '../../types/domain'
+import type { ExerciseInput, SaveWorkoutSessionPayload, SetInput } from '../../types/workout-editor'
 
 export const Route = createFileRoute('/workouts/new')({
   ssr: false,
@@ -21,27 +28,6 @@ export const Route = createFileRoute('/workouts/new')({
   component: LogWorkoutPage,
 })
 
-interface SetInput {
-  setNumber: number
-  reps: string
-  weight: string
-  durationSeconds: string
-  distance: string
-  restSeconds: string
-  intensity: string
-  notes: string
-}
-
-interface ExerciseInput {
-  exerciseId: string
-  name: string
-  category: string
-  defaultUnit: string
-  notes: string
-  orderIndex: number
-  sets: SetInput[]
-}
-
 function LogWorkoutPage() {
   const { isLoaded, isSignedIn } = useUser()
   const navigate = useNavigate()
@@ -50,9 +36,9 @@ function LogWorkoutPage() {
 
   // App & Load States
   const [loading, setLoading] = useState(true)
-  const [role, setRole] = useState<'individual' | 'trainer'>('individual')
-  const [exercisesList, setExercisesList] = useState<any[]>([])
-  const [clientsList, setClientsList] = useState<any[]>([])
+  const [role, setRole] = useState<UserRole>('individual')
+  const [exercisesList, setExercisesList] = useState<ExerciseRecord[]>([])
+  const [clientsList, setClientsList] = useState<TrainerClientRecord[]>([])
   const [assignmentLoading, setAssignmentLoading] = useState(false)
 
   // Selection states
@@ -105,7 +91,7 @@ function LogWorkoutPage() {
             if (userRole === 'trainer') {
               getTrainerClientsList()
                 .then((clients) => {
-                  const active = clients?.filter((c: any) => c.status === 'active') || []
+                  const active = clients?.filter((c) => c.status === 'active') || []
                   setClientsList(active)
                 })
                 .catch(() => {})
@@ -115,7 +101,7 @@ function LogWorkoutPage() {
             if (assignmentId && userRole === 'individual') {
               setAssignmentLoading(true)
               getAssignedWorkoutProgramDetails({ data: { assignmentId } })
-                .then(({ assignment, program }: any) => {
+                .then(({ assignment, program }: AssignedWorkoutProgramDetails) => {
                   setCoachName(assignment.trainerName)
                   setProgramTitle(program.title)
                   setTitle(program.title)
@@ -123,14 +109,14 @@ function LogWorkoutPage() {
                     `Assigned by Coach ${assignment.trainerName}: ${assignment.notes || program.notes || ''}`,
                   )
 
-                  const prefilled = program.exercises.map((ex: any) => ({
+                  const prefilled = program.exercises.map((ex) => ({
                     exerciseId: ex.exerciseId,
                     name: ex.name,
                     category: ex.category,
                     defaultUnit: ex.defaultUnit || 'kg',
                     notes: ex.notes || '',
                     orderIndex: ex.orderIndex,
-                    sets: ex.sets.map((s: any) => ({
+                    sets: ex.sets.map((s) => ({
                       setNumber: s.setNumber,
                       reps: s.reps?.toString() || '',
                       weight: s.weight?.toString() || '',
@@ -143,9 +129,11 @@ function LogWorkoutPage() {
                   }))
                   setAddedExercises(prefilled)
                 })
-                .catch((err: any) => {
+                .catch((err: unknown) => {
                   console.error(err)
-                  setError(err?.message || 'Could not load this assigned routine.')
+                  setError(
+                    err instanceof Error ? err.message : 'Could not load this assigned routine.',
+                  )
                 })
                 .finally(() => setAssignmentLoading(false))
             } else if (assignmentId && userRole === 'trainer') {
@@ -161,7 +149,7 @@ function LogWorkoutPage() {
     }
   }, [isLoaded, isSignedIn, assignmentId])
 
-  const handleAddExercise = (ex: any) => {
+  const handleAddExercise = (ex: ExerciseRecord) => {
     const newEx: ExerciseInput = {
       exerciseId: ex.id,
       name: ex.name,
@@ -270,7 +258,7 @@ function LogWorkoutPage() {
     setError('')
 
     try {
-      const payload: any = {
+      const payload: SaveWorkoutSessionPayload = {
         title,
         sessionDate,
         durationMinutes: durationMinutes ? parseInt(durationMinutes) : undefined,
@@ -297,9 +285,9 @@ function LogWorkoutPage() {
 
       await saveWorkoutSession({ data: payload })
       navigate({ to: '/workouts/' })
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setError(err?.message || 'Failed to save workout session.')
+      setError(err instanceof Error ? err.message : 'Failed to save workout session.')
       setSaving(false)
     }
   }

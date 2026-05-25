@@ -8,6 +8,7 @@ import {
   getTrainerClientsList,
   assignProgramToClient,
 } from '../../lib/actions'
+import type { TrainerClientRecord, WorkoutProgramSummary } from '../../types/domain'
 
 export const Route = createFileRoute('/programs/')({
   ssr: false,
@@ -20,13 +21,12 @@ function ProgramsDashboardPage() {
 
   // App & loading states
   const [loading, setLoading] = useState(true)
-  const [dbUser, setDbUser] = useState<any>(null)
-  const [programs, setPrograms] = useState<any[]>([])
-  const [clients, setClients] = useState<any[]>([])
+  const [programs, setPrograms] = useState<WorkoutProgramSummary[]>([])
+  const [clients, setClients] = useState<TrainerClientRecord[]>([])
 
   // Modal / Assign States
   const [showAssignModal, setShowAssignModal] = useState(false)
-  const [selectedProgram, setSelectedProgram] = useState<any>(null)
+  const [selectedProgram, setSelectedProgram] = useState<WorkoutProgramSummary | null>(null)
   const [selectedClientId, setSelectedClientId] = useState('')
   const [coachNotes, setCoachNotes] = useState('')
 
@@ -48,7 +48,6 @@ function ProgramsDashboardPage() {
               } else if (res.user.role !== 'trainer') {
                 navigate({ to: '/dashboard' })
               } else {
-                setDbUser(res.user)
                 loadProgramsData()
               }
             } else {
@@ -67,7 +66,7 @@ function ProgramsDashboardPage() {
       setPrograms(progs || [])
 
       const clientRels = await getTrainerClientsList()
-      const activeClients = clientRels?.filter((rel: any) => rel.status === 'active') || []
+      const activeClients = clientRels?.filter((rel) => rel.status === 'active') || []
       setClients(activeClients)
     } catch (err) {
       console.error(err)
@@ -95,7 +94,7 @@ function ProgramsDashboardPage() {
     }
   }
 
-  const handleOpenAssignModal = (program: any) => {
+  const handleOpenAssignModal = (program: WorkoutProgramSummary) => {
     setSelectedProgram(program)
     if (clients.length > 0) {
       setSelectedClientId(clients[0].client.id)
@@ -140,9 +139,9 @@ function ProgramsDashboardPage() {
       setTimeout(() => {
         setShowAssignModal(false)
       }, 2000)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      setAssignError(err?.message || 'Failed to complete routine assignment.')
+      setAssignError(err instanceof Error ? err.message : 'Failed to complete routine assignment.')
     } finally {
       setAssigning(false)
     }

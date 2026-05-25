@@ -86,6 +86,11 @@ kyber-fitness/
       actions.ts        # Isomorphic server functions (CRUD, permissions)
       auth-server.ts    # Secure Clerk server authentication helpers
 
+    types/              # Shared TypeScript DTOs and form/editor payload types
+      domain.ts         # Server-return/domain records used across routes
+      profile-forms.ts  # Onboarding and settings payload shapes
+      workout-editor.ts # Shared workout/program builder editor payloads
+
     routes/             # File-system router
       __root.tsx        # Document structure, ClerkProvider, ThemeProvider, global errors
       index.tsx         # Premium visual landing page
@@ -99,6 +104,7 @@ kyber-fitness/
       sign-up/          # Splat folder ($) for path-based Clerk registration
       settings.tsx      # Unified settings dashboard for athletes and coaches
       workouts/         # Workout log logs and custom set/exercise builders
+        $sessionId.tsx  # Dedicated session detail review with edit/delete controls
 
   drizzle.config.ts     # Drizzle Kit migration configuration
   fitness.db            # SQLite database file (Local)
@@ -106,6 +112,13 @@ kyber-fitness/
   tsconfig.json         # TypeScript configuration
   vite.config.ts        # Vite/Vinxi packaging configuration
 ```
+
+### Type Organization Rules
+
+- Keep reusable domain/data-transfer shapes in `src/types/domain.ts`.
+- Keep reusable form/editor payloads in focused files such as `src/types/workout-editor.ts` and `src/types/profile-forms.ts`.
+- Keep component-only props and local UI helper types beside the component in `*.types.ts` files, e.g. `src/components/DatePicker.types.ts`.
+- Do not re-declare duplicate `SetInput`, `ExerciseInput`, profile payload, trainer-client, workout session, or health metric shapes inside routes/components. Import existing types and extend them only when the local UI genuinely needs a narrower view model.
 
 ---
 
@@ -369,6 +382,7 @@ export async function getAuthUser(opts?: { shouldRedirect?: boolean }) {
 Kyber Fitness enforces a secure Trainer-Client permission system inside `src/lib/actions.ts`.
 
 - **Self-Access**: Individuals can always read, write, and update their own workouts and profiles. Profile / biometric and coaching credential updates are securely mapped through the `updateUserProfile` action under transaction safety.
+- **Workout / Metric Correction**: Logged workout sessions and health metrics support server-side update/delete flows. Individuals can correct their own records; trainers can correct client records only through the same active trainer-client access checks used for logging and viewing.
 - **Trainer-Client Relationship**:
   - A trainer can only view data or log sessions for an athlete if there is an active contract inside `trainerClients` with `status = 'active'`.
   - Permissions are serialized inside a JSON column in `trainer_clients.permissions` (e.g., `{"canViewHealthData": true, "canAddSessions": true}`).
@@ -473,6 +487,38 @@ Kyber Fitness is configured for serverless hosting on **Netlify** using `@netlif
 2. **Settings**: Configured build steps inside `netlify.toml` targeting `pnpm run build` and publishing `dist/client`.
 3. **Strict Dependency Resolution**: Added `unctx` as a direct dependency in `package.json` to resolve Rolldown compilation import resolution errors on Netlify due to pnpm's strict layout structure.
 4. **Environment Configuration**: You MUST supply the Clerk credentials (`CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`, `VITE_CLERK_SIGN_IN_URL`, `VITE_CLERK_SIGN_UP_URL`) as Site environment variables on Netlify.
+
+---
+
+## 11. Future Premium / Paywall Considerations
+
+These are product-planning candidates only. Do not gate existing functionality without an explicit product decision, pricing model, and server-side entitlement enforcement.
+
+### Recommended Tier Shape
+
+- **Free Athlete**: Workout logging, health metric logging, basic dashboard access, trainer invitations, and essential account/profile settings.
+- **Premium Athlete**: Advanced analytics, PR tracking, calendar views, full data import/export, durable cloud sync, progress media, and richer historical reporting.
+- **Trainer Pro**: Client management, program assignment, coaching notes, adherence dashboards, client notifications, roster exports, and client progress reports.
+
+### Strong Paywall Candidates
+
+1. **Trainer Client Management**: Keep a small free client cap, then require Trainer Pro for unlimited clients, advanced filters, relationship history, and richer client dashboards.
+2. **Program Builder and Assignments**: Allow limited free templates, then require premium for unlimited reusable programs, assignment scheduling, completion tracking, reusable program blocks, and progression plans.
+3. **Trainer Coaching Notes**: Gate private client notes, session-linked notes, pinned reminders, note history, and follow-up prompts behind Trainer Pro.
+4. **Advanced Analytics**: Gate PR trends, workout volume by movement/category, adherence analytics, strength progression, and body composition trend projections.
+5. **Calendar and Scheduling**: Gate program calendars, trainer-assigned sessions, missed workout detection, recurring routines, and schedule-aware dashboard prompts.
+6. **Notifications / In-App Inbox**: Keep essential auth, invite, and safety messages free; gate assignment alerts, coach feedback alerts, client inactivity alerts, and weekly summaries.
+7. **Data Import / Export**: Offer basic portability if desired, but gate full-history exports, client reports, trainer roster exports, and PDF progress reports.
+8. **Persistent Cloud Database / Sync**: Gate durable hosted storage, cross-device sync, backups, and production-grade persistence beyond local/demo data.
+9. **Progress Media**: Gate secure progress photos, measurements, private media timelines, and trainer-shared media with explicit consent.
+10. **AI / Smart Coaching Assist**: Gate workout summaries, program suggestions, anomaly detection, and goal-based progression hints after core data quality is strong.
+
+### Implementation Rules for Premium Features
+
+- Entitlements must be checked server-side in TanStack Start server functions before returning premium data or executing premium mutations.
+- Never rely on hidden buttons, client-only route guards, or UI state as the source of truth for premium access.
+- Keep billing/provider integrations isolated from Clerk identity and Drizzle application persistence; Clerk remains identity source of truth, while SQLite/Drizzle stores app-specific entitlement state only if needed.
+- Update `AGENTS.md` and `README.md` whenever premium tiers, entitlement rules, paywalled routes, schema, or deployment requirements materially change.
 
 ---
 

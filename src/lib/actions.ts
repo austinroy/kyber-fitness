@@ -530,6 +530,179 @@ export const getWorkoutSessionsHistory = createServerFn({ method: 'GET' })
     return fullHistory
   })
 
+export const getWorkoutSessionDetails = createServerFn({ method: 'GET' })
+  .inputValidator((data: { sessionId: string; clientId?: string }) => data)
+  .handler(async ({ data }) => {
+    const sessions = await getWorkoutSessionsHistory({
+      data: data.clientId ? { clientId: data.clientId } : undefined,
+    })
+    const session = sessions.find((item) => item.id === data.sessionId)
+
+    if (!session) {
+      throw new Error('Workout session not found or unauthorized.')
+    }
+
+    return session
+  })
+
+export const updateWorkoutSession = createServerFn({ method: 'POST' })
+  .inputValidator(
+    (data: {
+      sessionId: string
+      title: string
+      sessionDate: string
+      durationMinutes?: number
+      location?: string
+      notes?: string
+      clientId?: string
+      exercises: Array<{
+        exerciseId: string
+        notes?: string
+        orderIndex: number
+        sets: Array<{
+          setNumber: number
+          reps?: number
+          weight?: number
+          durationSeconds?: number
+          distance?: number
+          restSeconds?: number
+          intensity?: string
+          notes?: string
+        }>
+      }>
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser()
+    const currentUserId = auth.userId
+    const now = new Date().toISOString()
+
+    const existing = await db
+      .select()
+      .from(workoutSessions)
+      .where(eq(workoutSessions.id, data.sessionId))
+      .limit(1)
+
+    if (existing.length === 0) {
+      throw new Error('Workout session not found.')
+    }
+
+    const session = existing[0]
+    const targetUserId = data.clientId || currentUserId
+
+    if (session.userId !== targetUserId) {
+      throw new Error('Workout session does not belong to the selected athlete.')
+    }
+
+    if (data.clientId) {
+      const isPermitted = await verifyTrainerClientAccess(currentUserId, data.clientId)
+      if (!isPermitted) {
+        throw new Error('Trainer does not have an active partnership with this client.')
+      }
+    } else if (session.userId !== currentUserId) {
+      throw new Error('Unauthorized workout session update.')
+    }
+
+    db.transaction((tx) => {
+      tx.update(workoutSessions)
+        .set({
+          title: data.title,
+          sessionDate: data.sessionDate,
+          durationMinutes: data.durationMinutes || null,
+          location: data.location || null,
+          notes: data.notes || null,
+          updatedAt: now,
+        })
+        .where(eq(workoutSessions.id, data.sessionId))
+        .run()
+
+      const existingExercises = tx
+        .select({ id: sessionExercises.id })
+        .from(sessionExercises)
+        .where(eq(sessionExercises.workoutSessionId, data.sessionId))
+        .all()
+
+      for (const exercise of existingExercises) {
+        tx.delete(exerciseSets)
+          .where(eq(exerciseSets.sessionExerciseId, exercise.id))
+          .run()
+      }
+
+      tx.delete(sessionExercises)
+        .where(eq(sessionExercises.workoutSessionId, data.sessionId))
+        .run()
+
+      for (const ex of data.exercises) {
+        const sessExId = generateId('sexex')
+        tx.insert(sessionExercises)
+          .values({
+            id: sessExId,
+            workoutSessionId: data.sessionId,
+            exerciseId: ex.exerciseId,
+            orderIndex: ex.orderIndex,
+            notes: ex.notes || null,
+          })
+          .run()
+
+        for (const set of ex.sets) {
+          tx.insert(exerciseSets)
+            .values({
+              id: generateId('set'),
+              sessionExerciseId: sessExId,
+              setNumber: set.setNumber,
+              reps: set.reps || null,
+              weight: set.weight || null,
+              durationSeconds: set.durationSeconds || null,
+              distance: set.distance || null,
+              restSeconds: set.restSeconds || null,
+              intensity: set.intensity || null,
+              notes: set.notes || null,
+            })
+            .run()
+        }
+      }
+    })
+
+    return { success: true, sessionId: data.sessionId }
+  })
+
+export const deleteWorkoutSession = createServerFn({ method: 'POST' })
+  .inputValidator((data: { sessionId: string; clientId?: string }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser()
+    const currentUserId = auth.userId
+
+    const existing = await db
+      .select()
+      .from(workoutSessions)
+      .where(eq(workoutSessions.id, data.sessionId))
+      .limit(1)
+
+    if (existing.length === 0) {
+      throw new Error('Workout session not found.')
+    }
+
+    const session = existing[0]
+    const targetUserId = data.clientId || currentUserId
+
+    if (session.userId !== targetUserId) {
+      throw new Error('Workout session does not belong to the selected athlete.')
+    }
+
+    if (data.clientId) {
+      const isPermitted = await verifyTrainerClientAccess(currentUserId, data.clientId)
+      if (!isPermitted) {
+        throw new Error('Trainer does not have an active partnership with this client.')
+      }
+    } else if (session.userId !== currentUserId) {
+      throw new Error('Unauthorized workout session deletion.')
+    }
+
+    await db.delete(workoutSessions).where(eq(workoutSessions.id, data.sessionId))
+
+    return { success: true }
+  })
+
 // 7. Get Trainer's Clients
 export const getTrainerClientsList = createServerFn({ method: 'GET' }).handler(async () => {
   const auth = await requireAuthUser()
@@ -755,6 +928,97 @@ export const getHealthMetricsHistory = createServerFn({ method: 'GET' })
       .orderBy(desc(healthMetrics.recordedAt))
 
     return list
+  })
+
+export const updateHealthMetric = createServerFn({ method: 'POST' })
+  .inputValidator(
+    (data: {
+      metricId: string
+      metricType: 'weight' | 'body_fat' | 'resting_hr'
+      value: number
+      unit: string
+      notes?: string
+      clientId?: string
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser()
+    const currentUserId = auth.userId
+
+    const existing = await db
+      .select()
+      .from(healthMetrics)
+      .where(eq(healthMetrics.id, data.metricId))
+      .limit(1)
+
+    if (existing.length === 0) {
+      throw new Error('Health metric not found.')
+    }
+
+    const metric = existing[0]
+    const targetUserId = data.clientId || currentUserId
+
+    if (metric.userId !== targetUserId) {
+      throw new Error('Metric does not belong to the selected athlete.')
+    }
+
+    if (data.clientId) {
+      const isPermitted = await verifyTrainerClientAccess(currentUserId, data.clientId)
+      if (!isPermitted) {
+        throw new Error('Trainer does not have permission to edit this client metric.')
+      }
+    } else if (metric.userId !== currentUserId) {
+      throw new Error('Unauthorized metric update.')
+    }
+
+    await db
+      .update(healthMetrics)
+      .set({
+        metricType: data.metricType,
+        value: data.value,
+        unit: data.unit,
+        notes: data.notes || null,
+      })
+      .where(eq(healthMetrics.id, data.metricId))
+
+    return { success: true, metricId: data.metricId }
+  })
+
+export const deleteHealthMetric = createServerFn({ method: 'POST' })
+  .inputValidator((data: { metricId: string; clientId?: string }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser()
+    const currentUserId = auth.userId
+
+    const existing = await db
+      .select()
+      .from(healthMetrics)
+      .where(eq(healthMetrics.id, data.metricId))
+      .limit(1)
+
+    if (existing.length === 0) {
+      throw new Error('Health metric not found.')
+    }
+
+    const metric = existing[0]
+    const targetUserId = data.clientId || currentUserId
+
+    if (metric.userId !== targetUserId) {
+      throw new Error('Metric does not belong to the selected athlete.')
+    }
+
+    if (data.clientId) {
+      const isPermitted = await verifyTrainerClientAccess(currentUserId, data.clientId)
+      if (!isPermitted) {
+        throw new Error('Trainer does not have permission to delete this client metric.')
+      }
+    } else if (metric.userId !== currentUserId) {
+      throw new Error('Unauthorized metric deletion.')
+    }
+
+    await db.delete(healthMetrics).where(eq(healthMetrics.id, data.metricId))
+
+    return { success: true }
   })
 
 // 13. Get Workout Programs created by Trainer
