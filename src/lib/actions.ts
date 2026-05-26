@@ -171,19 +171,20 @@ export const updateUserProfile = createServerFn({ method: 'POST' })
     const user = dbUsers[0]
 
     // 2. Perform updates inside a transaction
-    db.transaction((tx) => {
+    await db.transaction(async (tx) => {
       // Update name and updatedAt on the users table
-      tx.update(users)
+      await tx
+        .update(users)
         .set({
           name: data.name,
           updatedAt: now,
         })
         .where(eq(users.id, userId))
-        .run()
 
       if (user.role === 'individual') {
         // Update profiles table
-        tx.update(profiles)
+        await tx
+          .update(profiles)
           .set({
             dateOfBirth: data.dateOfBirth || null,
             gender: data.gender || null,
@@ -193,10 +194,10 @@ export const updateUserProfile = createServerFn({ method: 'POST' })
             notes: data.notes || null,
           })
           .where(eq(profiles.userId, userId))
-          .run()
       } else if (user.role === 'trainer') {
         // Update trainerProfiles table
-        tx.update(trainerProfiles)
+        await tx
+          .update(trainerProfiles)
           .set({
             businessName: data.businessName || null,
             bio: data.bio || null,
@@ -204,7 +205,6 @@ export const updateUserProfile = createServerFn({ method: 'POST' })
             yearsExperience: data.yearsExperience || null,
           })
           .where(eq(trainerProfiles.userId, userId))
-          .run()
       }
     })
 
@@ -380,58 +380,53 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
     const sessionId = generateId('sess')
 
     // Run within a transaction to maintain integrity
-    db.transaction((tx) => {
+    await db.transaction(async (tx) => {
       // 1. Insert Workout Session
-      tx.insert(workoutSessions)
-        .values({
-          id: sessionId,
-          userId: targetUserId,
-          recordedByUserId: currentUserId,
-          title: data.title,
-          sessionDate: data.sessionDate,
-          durationMinutes: data.durationMinutes || null,
-          location: data.location || null,
-          notes: data.notes || null,
-          createdAt: now,
-          updatedAt: now,
-        })
-        .run()
+      await tx.insert(workoutSessions).values({
+        id: sessionId,
+        userId: targetUserId,
+        recordedByUserId: currentUserId,
+        title: data.title,
+        sessionDate: data.sessionDate,
+        durationMinutes: data.durationMinutes || null,
+        location: data.location || null,
+        notes: data.notes || null,
+        createdAt: now,
+        updatedAt: now,
+      })
 
       // 2. Insert Exercises and their Sets
       for (const ex of data.exercises) {
         const sessExId = generateId('sexex')
-        tx.insert(sessionExercises)
-          .values({
-            id: sessExId,
-            workoutSessionId: sessionId,
-            exerciseId: ex.exerciseId,
-            orderIndex: ex.orderIndex,
-            notes: ex.notes || null,
-          })
-          .run()
+        await tx.insert(sessionExercises).values({
+          id: sessExId,
+          workoutSessionId: sessionId,
+          exerciseId: ex.exerciseId,
+          orderIndex: ex.orderIndex,
+          notes: ex.notes || null,
+        })
 
         for (const set of ex.sets) {
           const setId = generateId('set')
-          tx.insert(exerciseSets)
-            .values({
-              id: setId,
-              sessionExerciseId: sessExId,
-              setNumber: set.setNumber,
-              reps: set.reps || null,
-              weight: set.weight || null,
-              durationSeconds: set.durationSeconds || null,
-              distance: set.distance || null,
-              restSeconds: set.restSeconds || null,
-              intensity: set.intensity || null,
-              notes: set.notes || null,
-            })
-            .run()
+          await tx.insert(exerciseSets).values({
+            id: setId,
+            sessionExerciseId: sessExId,
+            setNumber: set.setNumber,
+            reps: set.reps || null,
+            weight: set.weight || null,
+            durationSeconds: set.durationSeconds || null,
+            distance: set.distance || null,
+            restSeconds: set.restSeconds || null,
+            intensity: set.intensity || null,
+            notes: set.notes || null,
+          })
         }
       }
 
       // 3. Mark program assignment as completed if assignmentId is present
       if (assignment) {
-        tx.update(programAssignments)
+        await tx
+          .update(programAssignments)
           .set({ status: 'completed', completedAt: now })
           .where(
             and(
@@ -440,7 +435,6 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
               eq(programAssignments.status, 'pending'),
             ),
           )
-          .run()
       }
     })
 
@@ -603,8 +597,9 @@ export const updateWorkoutSession = createServerFn({ method: 'POST' })
       throw new Error('Unauthorized workout session update.')
     }
 
-    db.transaction((tx) => {
-      tx.update(workoutSessions)
+    await db.transaction(async (tx) => {
+      await tx
+        .update(workoutSessions)
         .set({
           title: data.title,
           sessionDate: data.sessionDate,
@@ -614,51 +609,41 @@ export const updateWorkoutSession = createServerFn({ method: 'POST' })
           updatedAt: now,
         })
         .where(eq(workoutSessions.id, data.sessionId))
-        .run()
 
-      const existingExercises = tx
+      const existingExercises = await tx
         .select({ id: sessionExercises.id })
         .from(sessionExercises)
         .where(eq(sessionExercises.workoutSessionId, data.sessionId))
-        .all()
 
       for (const exercise of existingExercises) {
-        tx.delete(exerciseSets)
-          .where(eq(exerciseSets.sessionExerciseId, exercise.id))
-          .run()
+        await tx.delete(exerciseSets).where(eq(exerciseSets.sessionExerciseId, exercise.id))
       }
 
-      tx.delete(sessionExercises)
-        .where(eq(sessionExercises.workoutSessionId, data.sessionId))
-        .run()
+      await tx.delete(sessionExercises).where(eq(sessionExercises.workoutSessionId, data.sessionId))
 
       for (const ex of data.exercises) {
         const sessExId = generateId('sexex')
-        tx.insert(sessionExercises)
-          .values({
-            id: sessExId,
-            workoutSessionId: data.sessionId,
-            exerciseId: ex.exerciseId,
-            orderIndex: ex.orderIndex,
-            notes: ex.notes || null,
-          })
-          .run()
+        await tx.insert(sessionExercises).values({
+          id: sessExId,
+          workoutSessionId: data.sessionId,
+          exerciseId: ex.exerciseId,
+          orderIndex: ex.orderIndex,
+          notes: ex.notes || null,
+        })
 
         for (const set of ex.sets) {
-          tx.insert(exerciseSets)
-            .values({
-              id: generateId('set'),
-              sessionExerciseId: sessExId,
-              setNumber: set.setNumber,
-              reps: set.reps || null,
-              weight: set.weight || null,
-              durationSeconds: set.durationSeconds || null,
-              distance: set.distance || null,
-              restSeconds: set.restSeconds || null,
-              intensity: set.intensity || null,
-              notes: set.notes || null,
-            })
-            .run()
+          await tx.insert(exerciseSets).values({
+            id: generateId('set'),
+            sessionExerciseId: sessExId,
+            setNumber: set.setNumber,
+            reps: set.reps || null,
+            weight: set.weight || null,
+            durationSeconds: set.durationSeconds || null,
+            distance: set.distance || null,
+            restSeconds: set.restSeconds || null,
+            intensity: set.intensity || null,
+            notes: set.notes || null,
+          })
         }
       }
     })
@@ -1182,10 +1167,11 @@ export const saveWorkoutProgram = createServerFn({ method: 'POST' })
       }
     }
 
-    db.transaction((tx) => {
+    await db.transaction(async (tx) => {
       if (isEdit) {
         // 1. Update program header
-        tx.update(workoutPrograms)
+        await tx
+          .update(workoutPrograms)
           .set({
             title: data.title,
             notes: data.notes || null,
@@ -1194,63 +1180,55 @@ export const saveWorkoutProgram = createServerFn({ method: 'POST' })
           .where(
             and(eq(workoutPrograms.id, programId), eq(workoutPrograms.createdByUserId, trainerId)),
           )
-          .run()
 
         // 2. Delete existing exercises and sets
-        const oldExs = tx
+        const oldExs = await tx
           .select()
           .from(workoutProgramExercises)
           .where(eq(workoutProgramExercises.programId, programId))
-          .all()
         for (const ex of oldExs) {
-          tx.delete(workoutProgramSets).where(eq(workoutProgramSets.programExerciseId, ex.id)).run()
+          await tx.delete(workoutProgramSets).where(eq(workoutProgramSets.programExerciseId, ex.id))
         }
-        tx.delete(workoutProgramExercises)
+        await tx
+          .delete(workoutProgramExercises)
           .where(eq(workoutProgramExercises.programId, programId))
-          .run()
       } else {
         // Create program header
-        tx.insert(workoutPrograms)
-          .values({
-            id: programId,
-            createdByUserId: trainerId,
-            title: data.title,
-            notes: data.notes || null,
-            createdAt: now,
-            updatedAt: now,
-          })
-          .run()
+        await tx.insert(workoutPrograms).values({
+          id: programId,
+          createdByUserId: trainerId,
+          title: data.title,
+          notes: data.notes || null,
+          createdAt: now,
+          updatedAt: now,
+        })
       }
 
       // 3. Insert new exercises and sets
       for (const ex of data.exercises) {
         const progExId = generateId('progex')
-        tx.insert(workoutProgramExercises)
-          .values({
-            id: progExId,
-            programId: programId,
-            exerciseId: ex.exerciseId,
-            orderIndex: ex.orderIndex,
-            notes: ex.notes || null,
-          })
-          .run()
+        await tx.insert(workoutProgramExercises).values({
+          id: progExId,
+          programId: programId,
+          exerciseId: ex.exerciseId,
+          orderIndex: ex.orderIndex,
+          notes: ex.notes || null,
+        })
 
         for (const set of ex.sets) {
           const setId = generateId('progset')
-          tx.insert(workoutProgramSets)
-            .values({
-              id: setId,
-              programExerciseId: progExId,
-              setNumber: set.setNumber,
-              reps: set.reps || null,
-              weight: set.weight || null,
-              durationSeconds: set.durationSeconds || null,
-              distance: set.distance || null,
-              restSeconds: set.restSeconds || null,
-              intensity: set.intensity || null,
-              notes: set.notes || null,
-            })
-            .run()
+          await tx.insert(workoutProgramSets).values({
+            id: setId,
+            programExerciseId: progExId,
+            setNumber: set.setNumber,
+            reps: set.reps || null,
+            weight: set.weight || null,
+            durationSeconds: set.durationSeconds || null,
+            distance: set.distance || null,
+            restSeconds: set.restSeconds || null,
+            intensity: set.intensity || null,
+            notes: set.notes || null,
+          })
         }
       }
     })
@@ -1278,8 +1256,8 @@ export const deleteWorkoutProgram = createServerFn({ method: 'POST' })
       throw new Error('Unauthorized or program not found.')
     }
 
-    db.transaction((tx) => {
-      tx.delete(workoutPrograms).where(eq(workoutPrograms.id, data.programId)).run()
+    await db.transaction(async (tx) => {
+      await tx.delete(workoutPrograms).where(eq(workoutPrograms.id, data.programId))
     })
 
     return { success: true }

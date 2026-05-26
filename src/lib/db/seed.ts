@@ -1,6 +1,5 @@
 import { db } from './index'
 import { exercises } from './schema'
-import { sql } from 'drizzle-orm'
 
 const globalExercises = [
   { id: 'ex-1', name: 'Barbell Back Squat', category: 'strength', defaultUnit: 'kg', isGlobal: 1 },

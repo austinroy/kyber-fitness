@@ -16,16 +16,16 @@ Welcome, Agent! This document serves as the single source of truth for the **Kyb
 
 Kyber Fitness utilizes a highly optimized typescript stack:
 
-| Layer              | Technology                                      | Configuration Details                                                          |
-| ------------------ | ----------------------------------------------- | ------------------------------------------------------------------------------ |
-| **Framework**      | **TanStack Start** (React 19 + Vinxi + Vite)    | High-performance isomorphic rendering.                                         |
-| **Routing**        | **TanStack Router**                             | File-system-based routing with automatic code splitting and typesafe links.    |
-| **Authentication** | **Clerk** (`@clerk/tanstack-start`)             | Secure, robust, multi-tenant session management.                               |
-| **Database**       | **Drizzle ORM** + **SQLite** (`better-sqlite3`) | Local file database (`fitness.db`) with lightweight Drizzle driver.            |
-| **Styles**         | **Tailwind CSS v4** + **Vanilla CSS**           | Performance-first custom styling with dynamic dark mode and custom animations. |
-| **Icons**          | **Lucide React**                                | Sleek and minimal iconography.                                                 |
-| **Charts**         | **Recharts** / Inline SVGs                      | Clean trend lines for health metric tracking.                                  |
-| **Quality**        | **Oxlint** + **Prettier**                       | Fast linting and repo-wide formatting via pnpm scripts.                        |
+| Layer              | Technology                                   | Configuration Details                                                          |
+| ------------------ | -------------------------------------------- | ------------------------------------------------------------------------------ |
+| **Framework**      | **TanStack Start** (React 19 + Vinxi + Vite) | High-performance isomorphic rendering.                                         |
+| **Routing**        | **TanStack Router**                          | File-system-based routing with automatic code splitting and typesafe links.    |
+| **Authentication** | **Clerk** (`@clerk/tanstack-start`)          | Secure, robust, multi-tenant session management.                               |
+| **Database**       | **Drizzle ORM** + **Turso/libSQL**           | Durable hosted SQLite in production, local `fitness.db` fallback in dev.       |
+| **Styles**         | **Tailwind CSS v4** + **Vanilla CSS**        | Performance-first custom styling with dynamic dark mode and custom animations. |
+| **Icons**          | **Lucide React**                             | Sleek and minimal iconography.                                                 |
+| **Charts**         | **Recharts** / Inline SVGs                   | Clean trend lines for health metric tracking.                                  |
+| **Quality**        | **Oxlint** + **Prettier**                    | Fast linting and repo-wide formatting via pnpm scripts.                        |
 
 ---
 
@@ -33,7 +33,7 @@ Kyber Fitness utilizes a highly optimized typescript stack:
 
 1. **Separation of Concerns**: Keep authentication (Clerk) and application persistence (SQLite) separate.
 2. **Identity Source of Truth**: Clerk is the absolute source of truth for user identity.
-3. **Application Persistence Source of Truth**: SQLite via Drizzle ORM acts as the secure, local database of record.
+3. **Application Persistence Source of Truth**: Turso/libSQL via Drizzle ORM acts as the durable database of record in production.
 4. **Clerk User IDs**: Store Clerk user IDs as `text` in the SQLite database to avoid relational mapping overhead.
 5. **Server-Side Boundaries**: Keep all Drizzle/database access server-side.
 6. **Isomorphic Server Functions**: Use TanStack Start server functions (`createServerFn`) for protected mutations and sensitive reads.
@@ -54,13 +54,17 @@ VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 VITE_CLERK_SIGN_IN_URL=/sign-in
 VITE_CLERK_SIGN_UP_URL=/sign-up
+TURSO_DATABASE_URL=libsql://your-db.turso.io
+TURSO_AUTH_TOKEN=...
 ```
 
 ### Rules:
 
 - `VITE_CLERK_PUBLISHABLE_KEY` and redirect URLs may be used on the client-side.
 - `CLERK_SECRET_KEY` is highly sensitive and must only be accessed in server-side blocks.
-- **No Database URL Required**: The local SQLite database resolves dynamically to the file `fitness.db` in the workspace root. Do not commit secrets.
+- **Local Fallback**: If Turso credentials are absent locally, the app uses `fitness.db` in the workspace root via libSQL's file driver.
+- **Production Database**: Netlify production must define `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`. `LIBSQL_DATABASE_URL` and `LIBSQL_AUTH_TOKEN` are supported aliases.
+- Do not commit secrets or production database files.
 
 ---
 
@@ -107,7 +111,7 @@ kyber-fitness/
         $sessionId.tsx  # Dedicated session detail review with edit/delete controls
 
   drizzle.config.ts     # Drizzle Kit migration configuration
-  fitness.db            # SQLite database file (Local)
+  fitness.db            # SQLite database file (Local seed/default)
   package.json          # Dependency configurations
   tsconfig.json         # TypeScript configuration
   vite.config.ts        # Vite/Vinxi packaging configuration
@@ -422,7 +426,6 @@ We use `pnpm` as the package manager for the workspace. Due to security restrict
 allowBuilds:
   '@clerk/shared': true
   '@parcel/watcher': true
-  'better-sqlite3': true
   'esbuild': true
   'lightningcss': true
   'sharp': true
@@ -465,15 +468,18 @@ Whenever a branch adds or changes a feature, route, schema table, server action 
 
 ### Database Operations
 
-If you edit `schema.ts`, you need to sync the SQLite file:
+If you edit `schema.ts`, sync the target database:
 
 ```bash
-# Push changes to SQLite DB
-npx drizzle-kit push
+# Push changes to Turso when TURSO_DATABASE_URL is set,
+# or to the local SQLite fallback when it is not.
+pnpm run db:push
 
 # Re-run seed script to load exercises and demo trainers
 pnpm run db:seed
 ```
+
+For production, set `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` before running Drizzle commands so schema pushes and seed data target the same hosted database used by the server runtime.
 
 ---
 
@@ -487,6 +493,7 @@ Kyber Fitness is configured for serverless hosting on **Netlify** using `@netlif
 2. **Settings**: Configured build steps inside `netlify.toml` targeting `pnpm run build` and publishing `dist/client`.
 3. **Strict Dependency Resolution**: Added `unctx` as a direct dependency in `package.json` to resolve Rolldown compilation import resolution errors on Netlify due to pnpm's strict layout structure.
 4. **Environment Configuration**: You MUST supply the Clerk credentials (`CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`, `VITE_CLERK_SIGN_IN_URL`, `VITE_CLERK_SIGN_UP_URL`) as Site environment variables on Netlify.
+5. **Turso Persistence**: Netlify's function filesystem is ephemeral, so production persistence uses Turso/libSQL through `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`.
 
 ---
 
