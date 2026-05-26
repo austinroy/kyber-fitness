@@ -174,6 +174,7 @@ erDiagram
     users ||--o{ health_metrics : "logs metrics"
     users ||--o{ workout_programs : "creates"
     users ||--o{ program_assignments : "receives / assigns"
+    users ||--o{ coaching_notes : "writes / receives private context"
     workout_sessions ||--o{ session_exercises : "contains"
     exercises ||--o{ session_exercises : "is added to"
     session_exercises ||--o{ exercise_sets : "has sets"
@@ -314,6 +315,17 @@ erDiagram
         text assignedAt
         text completedAt
     }
+
+    coaching_notes {
+        text id PK
+        text trainerId FK "Trainer users.id"
+        text clientId FK "Client users.id"
+        text title
+        text body
+        integer pinned "0 | 1"
+        text createdAt
+        text updatedAt
+    }
 ```
 
 ---
@@ -391,6 +403,10 @@ Kyber Fitness enforces a secure Trainer-Client permission system inside `src/lib
   - A trainer can only view data or log sessions for an athlete if there is an active contract inside `trainerClients` with `status = 'active'`.
   - Permissions are serialized inside a JSON column in `trainer_clients.permissions` (e.g., `{"canViewHealthData": true, "canAddSessions": true}`).
   - Before performing any trainer actions, agents must execute the server-side validation hook `verifyTrainerClientAccess(trainerId, clientId)`.
+- **Trainer Coaching Notes**:
+  - Coaching notes are trainer-private records scoped to `trainerId` and `clientId`.
+  - Trainers can create, edit, list, pin, or delete notes only for active client relationships verified by `verifyTrainerClientAccess`.
+  - Athletes do not have a route or server action contract for reading trainer-private notes unless a future product decision explicitly changes visibility.
 - **Program Templates and Assignments**:
   - Trainers can create, edit, and delete only workout programs where `workoutPrograms.createdByUserId` matches their Clerk user ID.
   - Athletes can load a program only through a pending or historical assignment that belongs to their own user ID.
@@ -494,6 +510,38 @@ Kyber Fitness is configured for serverless hosting on **Netlify** using `@netlif
 3. **Strict Dependency Resolution**: Added `unctx` as a direct dependency in `package.json` to resolve Rolldown compilation import resolution errors on Netlify due to pnpm's strict layout structure.
 4. **Environment Configuration**: You MUST supply the Clerk credentials (`CLERK_SECRET_KEY`, `VITE_CLERK_PUBLISHABLE_KEY`, `VITE_CLERK_SIGN_IN_URL`, `VITE_CLERK_SIGN_UP_URL`) as Site environment variables on Netlify.
 5. **Turso Persistence**: Netlify's function filesystem is ephemeral, so production persistence uses Turso/libSQL through `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`.
+
+---
+
+## 11. Future Premium / Paywall Considerations
+
+These are product-planning candidates only. Do not gate existing functionality without an explicit product decision, pricing model, and server-side entitlement enforcement.
+
+### Recommended Tier Shape
+
+- **Free Athlete**: Workout logging, health metric logging, basic dashboard access, trainer invitations, and essential account/profile settings.
+- **Premium Athlete**: Advanced analytics, PR tracking, calendar views, full data import/export, durable cloud sync, progress media, and richer historical reporting.
+- **Trainer Pro**: Client management, program assignment, coaching notes, adherence dashboards, client notifications, roster exports, and client progress reports.
+
+### Strong Paywall Candidates
+
+1. **Trainer Client Management**: Keep a small free client cap, then require Trainer Pro for unlimited clients, advanced filters, relationship history, and richer client dashboards.
+2. **Program Builder and Assignments**: Allow limited free templates, then require premium for unlimited reusable programs, assignment scheduling, completion tracking, reusable program blocks, and progression plans.
+3. **Trainer Coaching Notes**: Gate private client notes, session-linked notes, pinned reminders, note history, and follow-up prompts behind Trainer Pro.
+4. **Advanced Analytics**: Gate PR trends, workout volume by movement/category, adherence analytics, strength progression, and body composition trend projections.
+5. **Calendar and Scheduling**: Gate program calendars, trainer-assigned sessions, missed workout detection, recurring routines, and schedule-aware dashboard prompts.
+6. **Notifications / In-App Inbox**: Keep essential auth, invite, and safety messages free; gate assignment alerts, coach feedback alerts, client inactivity alerts, and weekly summaries.
+7. **Data Import / Export**: Offer basic portability if desired, but gate full-history exports, client reports, trainer roster exports, and PDF progress reports.
+8. **Persistent Cloud Database / Sync**: Gate durable hosted storage, cross-device sync, backups, and production-grade persistence beyond local/demo data.
+9. **Progress Media**: Gate secure progress photos, measurements, private media timelines, and trainer-shared media with explicit consent.
+10. **AI / Smart Coaching Assist**: Gate workout summaries, program suggestions, anomaly detection, and goal-based progression hints after core data quality is strong.
+
+### Implementation Rules for Premium Features
+
+- Entitlements must be checked server-side in TanStack Start server functions before returning premium data or executing premium mutations.
+- Never rely on hidden buttons, client-only route guards, or UI state as the source of truth for premium access.
+- Keep billing/provider integrations isolated from Clerk identity and Drizzle application persistence; Clerk remains identity source of truth, while SQLite/Drizzle stores app-specific entitlement state only if needed.
+- Update `AGENTS.md` and `README.md` whenever premium tiers, entitlement rules, paywalled routes, schema, or deployment requirements materially change.
 
 ---
 
