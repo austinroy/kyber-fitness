@@ -2,10 +2,6 @@
   command = "pnpm run build"
   publish = "dist/client"
 
-[functions]
-  included_files = ["fitness.db"]
-
-
 [dev]
   command = "pnpm run dev"
   port = 3000

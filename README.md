@@ -11,7 +11,7 @@ Kyber Fitness utilizes an isomorphic, typesafe React 19 stack built on the edge:
 - **App Framework:** [TanStack Start](https://tanstack.com/start) (React 19 + Vinxi SSR) for high-performance isomorphic rendering and server functions.
 - **Routing System:** [TanStack Router](https://tanstack.com/router) for typesafe, file-system-based navigation and automatic code splitting.
 - **Identity & Authentication:** [Clerk](https://clerk.com) (`@clerk/tanstack-start`) for seamless user sessions and multi-tenant portal gates.
-- **Database & Persistence:** [Drizzle ORM](https://orm.drizzle.team) + local **SQLite** (`better-sqlite3`) resolving directly to the local database file `fitness.db`.
+- **Database & Persistence:** [Drizzle ORM](https://orm.drizzle.team) + **Turso/libSQL** for durable production SQLite, with a local `fitness.db` fallback for development.
 - **Design & Layout:** [Tailwind CSS v4](https://tailwindcss.com) + custom **Vanilla CSS** tokens providing glassmorphic bento blocks, dynamic grid layouts, and custom micro-animations.
 - **Telemetry Visuals:** Glowing custom **SVG trendlines** and Lucide React icons for advanced biometric charting.
 - **Quality Tooling:** [Oxlint](https://oxc.rs/docs/guide/usage/linter) for fast JavaScript/TypeScript linting and [Prettier](https://prettier.io) for repo-wide formatting.
@@ -46,7 +46,7 @@ The application strictly implements the Kinetic design principles to create a vi
 
 ## Relational Database Schema
 
-The database uses a lightweight SQLite store mapped with Drizzle. The structural architecture resolves user records directly to Clerk identities via the unique `userId` key:
+The database uses a SQLite-compatible Turso/libSQL store mapped with Drizzle. The structural architecture resolves user records directly to Clerk identities via the unique `userId` key:
 
 ```mermaid
 erDiagram
@@ -126,11 +126,11 @@ VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 VITE_CLERK_SIGN_IN_URL=/sign-in
 VITE_CLERK_SIGN_UP_URL=/sign-up
-KYBER_DATABASE_PATH=/absolute/path/to/persistent/fitness.db # optional
+TURSO_DATABASE_URL=libsql://your-db.turso.io
+TURSO_AUTH_TOKEN=...
 ```
 
-_Note: SQLite database points directly to `fitness.db` in the workspace root. No database URL configuration is needed._
-For production deployments that provide durable mounted storage, set `KYBER_DATABASE_PATH` to that persistent SQLite file path. If omitted in serverless environments, Kyber Fitness falls back to `/tmp/fitness.db`, which is writable but ephemeral between cold starts and deploys.
+_Note: If Turso credentials are omitted locally, the app falls back to `fitness.db` in the workspace root. Production should always use `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`._
 
 ### 2. Install Dependencies & Build
 
@@ -145,8 +145,9 @@ pnpm run build
 ### 3. Database Initialization & Seeding
 
 ```bash
-# Push schema migrations to the local SQLite database file
-npx drizzle-kit push
+# Push schema changes to Turso when TURSO_DATABASE_URL is set,
+# or to the local SQLite fallback when it is not.
+pnpm run db:push
 
 # Populate database with standard exercise sets and mock trainers
 pnpm run db:seed
@@ -216,13 +217,12 @@ Build settings are declared inside `netlify.toml` in the project root:
 
 ### 3. pnpm Workspace Build Permissions
 
-To support **pnpm v11+** workspace security controls, we configured `pnpm-workspace.yaml` to explicitly permit local script builds for key packages (like `better-sqlite3`, `lightningcss`, `esbuild`, and `sharp`):
+To support **pnpm v11+** workspace security controls, we configured `pnpm-workspace.yaml` to explicitly permit local script builds for key packages (like `lightningcss`, `esbuild`, and `sharp`):
 
 ```yaml
 allowBuilds:
   '@clerk/shared': true
   '@parcel/watcher': true
-  'better-sqlite3': true
   'esbuild': true
   'lightningcss': true
   'sharp': true
@@ -236,7 +236,8 @@ To complete the build and runtime pipeline, navigate to **Site configuration > E
 - `CLERK_SECRET_KEY`: Clerk's private API key.
 - `VITE_CLERK_SIGN_IN_URL`: `/sign-in`
 - `VITE_CLERK_SIGN_UP_URL`: `/sign-up`
-- `KYBER_DATABASE_PATH` (optional): Absolute path to a durable SQLite database file when the host provides persistent mounted storage.
+- `TURSO_DATABASE_URL`: Turso/libSQL database URL, for example `libsql://...`.
+- `TURSO_AUTH_TOKEN`: Turso database auth token.
 
 ### 5. Strict Dependency Resolution (`unctx`)
 
