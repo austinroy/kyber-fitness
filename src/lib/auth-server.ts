@@ -4,9 +4,7 @@ import { getRequest } from '@tanstack/react-start/server'
 function createAuthRequest(request: Request) {
   return new Request(request.url, {
     headers: request.headers,
-    method: request.method,
-    redirect: request.redirect,
-    cache: request.cache,
+    method: 'GET',
   })
 }
 
