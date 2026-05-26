@@ -128,11 +128,12 @@ kyber-fitness/
 
 ## 5. Stitch Kinetic Aesthetic System
 
-Kyber Fitness features a highly responsive, modern dark-themed dashboard. Agents must strictly adhere to the following visual design guidelines:
+Kyber Fitness features a highly responsive, modern themeable dashboard. Agents must strictly adhere to the following visual design guidelines:
 
 ### Theme Palette (Stitch Kinetic)
 
-- **Backgrounds**: Deep Charcoal (`#0a0a0a` / `#121212` / `#131313`) for container cards and base frames, generating a sleek, premium contrast.
+- **Backgrounds**: Deep Charcoal (`#0a0a0a` / `#121212` / `#131313`) for dark-mode container cards and base frames, plus bright frost surfaces for light mode, generating sleek premium contrast in both modes.
+- **Theme Modes**: The app supports light, dark, and system-auto modes through `ThemeToggle.tsx`. Preserve the pre-hydration theme boot script in `src/routes/__root.tsx` so the stored/system theme is applied before React hydrates.
 - **Accents**:
   - **Electric Lime (`#c3f400`)**: Core high-energy highlight used for CTA buttons, success rings, active tabs, and primary metrics.
   - **Cyan (`#00eefc`)**: Tech highlight used for secondary interactions, data nodes, chart lines, and informative borders.

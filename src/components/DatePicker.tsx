@@ -134,15 +134,15 @@ export default function DatePicker({
         <button
           type="button"
           disabled={disabled}
-          className={`w-full flex items-center justify-between px-4 py-2 bg-[#201f1f] text-white/40 border border-white/10 rounded-xl cursor-not-allowed ${className}`}
+          className={`w-full flex items-center justify-between px-4 py-2 bg-[var(--surface-container-low)] text-[var(--on-surface-variant)]/60 border border-[var(--line)] rounded-xl cursor-not-allowed ${className}`}
         >
           <span className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#c4c9ac] opacity-50 text-lg">
+            <span className="material-symbols-outlined text-[var(--on-surface-variant)] opacity-50 text-lg">
               calendar_today
             </span>
             <span>{value ? formatDateDisplay(value) : placeholder}</span>
           </span>
-          <span className="material-symbols-outlined text-[#c4c9ac] opacity-50 text-lg">
+          <span className="material-symbols-outlined text-[var(--on-surface-variant)] opacity-50 text-lg">
             expand_more
           </span>
         </button>
@@ -205,41 +205,45 @@ export default function DatePicker({
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between px-4 py-2.5 bg-[#201f1f] text-on-surface border border-white/10 rounded-xl hover:border-[#c3f400]/50 transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+        className={`w-full flex items-center justify-between px-4 py-2.5 bg-[var(--surface-container-low)] text-[var(--on-surface)] border border-[var(--line)] rounded-xl hover:border-[var(--primary-container)]/50 transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
       >
         <span className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[#abd600] text-lg select-none">
+          <span className="material-symbols-outlined text-[var(--primary-container)] text-lg select-none">
             calendar_today
           </span>
-          <span className={value ? 'text-white font-medium' : 'text-white/40'}>
+          <span
+            className={
+              value ? 'text-[var(--on-surface)] font-medium' : 'text-[var(--on-surface-variant)]/60'
+            }
+          >
             {value ? formatDateDisplay(value) : placeholder}
           </span>
         </span>
-        <span className="material-symbols-outlined text-[#c4c9ac] text-lg select-none">
+        <span className="material-symbols-outlined text-[var(--on-surface-variant)] text-lg select-none">
           expand_more
         </span>
       </button>
 
       {/* Desktop Calendar Dropdown */}
       {isOpen && !isMobile && (
-        <div className="absolute left-0 md:right-0 mt-2 w-[320px] bg-[#1e1e1ec0] backdrop-blur-md border border-white/10 rounded-xl shadow-2xl z-[60] p-4 transition-all duration-200">
+        <div className="absolute left-0 md:right-0 mt-2 w-[320px] bg-[var(--surface-container)] backdrop-blur-md border border-[var(--line)] rounded-xl shadow-2xl z-[60] p-4 transition-all duration-200">
           {/* Summary Display */}
-          <div className="text-center py-2 bg-white/5 rounded-xl border border-white/5 mb-3 flex justify-center items-center gap-1.5 font-bold text-white text-sm tracking-wide">
-            <span className="text-[#c3f400]">{SHORT_MONTHS[selectedMonth]}</span>
-            <span className="text-[#00eefc]">{selectedDay}</span>
-            <span className="text-white/60">,</span>
-            <span className="text-[#c3f400]">{selectedYear}</span>
+          <div className="text-center py-2 bg-[var(--surface-container-low)] rounded-xl border border-[var(--line)] mb-3 flex justify-center items-center gap-1.5 font-bold text-[var(--on-surface)] text-sm tracking-wide">
+            <span className="text-[var(--primary-container)]">{SHORT_MONTHS[selectedMonth]}</span>
+            <span className="text-[var(--secondary-container)]">{selectedDay}</span>
+            <span className="text-[var(--on-surface-variant)]">,</span>
+            <span className="text-[var(--primary-container)]">{selectedYear}</span>
           </div>
 
           {/* Tab Selector Bar */}
-          <div className="flex bg-[#131313] p-1 rounded-xl border border-white/5 mb-3">
+          <div className="flex bg-[var(--surface-container-lowest)] p-1 rounded-xl border border-[var(--line)] mb-3">
             <button
               type="button"
               onClick={() => setActiveTab('month')}
               className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
                 activeTab === 'month'
-                  ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                  : 'text-[#e5e2e1] hover:bg-white/5'
+                  ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                  : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
               }`}
             >
               Month
@@ -249,8 +253,8 @@ export default function DatePicker({
               onClick={() => setActiveTab('date')}
               className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
                 activeTab === 'date'
-                  ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                  : 'text-[#e5e2e1] hover:bg-white/5'
+                  ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                  : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
               }`}
             >
               Date
@@ -260,8 +264,8 @@ export default function DatePicker({
               onClick={() => setActiveTab('year')}
               className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
                 activeTab === 'year'
-                  ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                  : 'text-[#e5e2e1] hover:bg-white/5'
+                  ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                  : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
               }`}
             >
               Year
@@ -280,8 +284,8 @@ export default function DatePicker({
                     onClick={() => handleSelectMonth(idx)}
                     className={`py-2 text-xs rounded-lg font-semibold transition-all ${
                       isSelected
-                        ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                        : 'text-[#e5e2e1] bg-white/5 hover:bg-white/10'
+                        ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                        : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
                     }`}
                   >
                     {m}
@@ -308,10 +312,10 @@ export default function DatePicker({
                     onClick={() => setSelectedDay(d)}
                     className={`py-1.5 text-xs rounded-lg font-semibold transition-all ${
                       isSelected
-                        ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                        ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
                         : isToday
-                          ? 'border border-[#c3f400] text-[#c3f400] bg-[#c3f400]/5'
-                          : 'text-[#e5e2e1] bg-white/5 hover:bg-white/10'
+                          ? 'border border-[var(--primary-container)] text-[var(--primary-container)] bg-[var(--primary-container)]/10'
+                          : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
                     }`}
                   >
                     {d}
@@ -333,8 +337,8 @@ export default function DatePicker({
                     onClick={() => handleSelectYear(y)}
                     className={`py-1.5 text-xs rounded-lg font-semibold transition-all ${
                       isSelected
-                        ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                        : 'text-[#e5e2e1] bg-white/5 hover:bg-white/10'
+                        ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                        : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
                     }`}
                   >
                     {y}
@@ -345,11 +349,11 @@ export default function DatePicker({
           )}
 
           {/* Action Footer */}
-          <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between">
+          <div className="mt-4 pt-3 border-t border-[var(--line)] flex items-center justify-between">
             <button
               type="button"
               onClick={handleReset}
-              className="text-xs font-semibold text-[#c4c9ac] hover:text-white transition-colors"
+              className="text-xs font-semibold text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] transition-colors"
             >
               Reset
             </button>
@@ -357,14 +361,14 @@ export default function DatePicker({
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="text-xs font-semibold px-3 py-1.5 border border-white/10 hover:bg-white/5 rounded-lg text-white transition-colors"
+                className="text-xs font-semibold px-3 py-1.5 border border-[var(--line)] hover:bg-[var(--link-bg-hover)] rounded-lg text-[var(--on-surface)] transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleApply}
-                className="text-xs px-3 py-1.5 bg-[#c3f400] text-[#161e00] rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all"
+                className="text-xs px-3 py-1.5 bg-[var(--primary-container)] text-[var(--on-primary-container)] rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all"
               >
                 Apply
               </button>
@@ -379,24 +383,24 @@ export default function DatePicker({
           {/* Backdrop Blur Overlay */}
           <div
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 bg-[#131313cc] backdrop-blur-sm z-[9998] transition-opacity duration-300 opacity-100"
+            className="fixed inset-0 bg-[color-mix(in_srgb,var(--background)_78%,transparent)] backdrop-blur-sm z-[9998] transition-opacity duration-300 opacity-100"
           />
 
           {/* Slide-Up Bottom Sheet */}
-          <div className="fixed bottom-0 left-0 w-full z-[9999] bg-[#1e1e1e] rounded-t-[32px] overflow-hidden flex flex-col border-t border-white/10 max-h-[90vh]">
+          <div className="fixed bottom-0 left-0 w-full z-[9999] bg-[var(--surface-container)] rounded-t-[32px] overflow-hidden flex flex-col border-t border-[var(--line)] max-h-[90vh]">
             {/* Modal Header */}
-            <div className="flex justify-between items-center w-full px-6 h-16 border-b border-white/10 bg-[#131313]">
+            <div className="flex justify-between items-center w-full px-6 h-16 border-b border-[var(--line)] bg-[var(--surface-container-lowest)]">
               <button
                 type="button"
                 className="p-2 active:scale-95 transition-transform"
                 onClick={() => setIsOpen(false)}
               >
-                <span className="material-symbols-outlined text-white">close</span>
+                <span className="material-symbols-outlined text-[var(--on-surface)]">close</span>
               </button>
-              <h2 className="text-lg font-bold text-white">Select Date</h2>
+              <h2 className="text-lg font-bold text-[var(--on-surface)]">Select Date</h2>
               <button
                 type="button"
-                className="text-sm font-semibold text-[#c3f400] px-4 py-2 hover:bg-white/5 rounded-lg active:scale-95 transition-transform"
+                className="text-sm font-semibold text-[var(--primary-container)] px-4 py-2 hover:bg-[var(--link-bg-hover)] rounded-lg active:scale-95 transition-transform"
                 onClick={handleApply}
               >
                 Done
@@ -406,22 +410,22 @@ export default function DatePicker({
             {/* Datepicker Content */}
             <div className="overflow-y-auto p-6 space-y-4">
               {/* Summary Display */}
-              <div className="text-center py-2.5 bg-white/5 rounded-xl border border-white/5 flex justify-center items-center gap-1.5 font-bold text-white text-md tracking-wide">
-                <span className="text-[#c3f400]">{MONTHS[selectedMonth]}</span>
-                <span className="text-[#00eefc]">{selectedDay}</span>
-                <span className="text-white/60">,</span>
-                <span className="text-[#c3f400]">{selectedYear}</span>
+              <div className="text-center py-2.5 bg-[var(--surface-container-low)] rounded-xl border border-[var(--line)] flex justify-center items-center gap-1.5 font-bold text-[var(--on-surface)] text-md tracking-wide">
+                <span className="text-[var(--primary-container)]">{MONTHS[selectedMonth]}</span>
+                <span className="text-[var(--secondary-container)]">{selectedDay}</span>
+                <span className="text-[var(--on-surface-variant)]">,</span>
+                <span className="text-[var(--primary-container)]">{selectedYear}</span>
               </div>
 
               {/* Tab Selector Bar */}
-              <div className="flex bg-[#131313] p-1 rounded-xl border border-white/5">
+              <div className="flex bg-[var(--surface-container-lowest)] p-1 rounded-xl border border-[var(--line)]">
                 <button
                   type="button"
                   onClick={() => setActiveTab('month')}
                   className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
                     activeTab === 'month'
-                      ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                      : 'text-[#e5e2e1] hover:bg-white/5'
+                      ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                      : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
                   }`}
                 >
                   Month
@@ -431,8 +435,8 @@ export default function DatePicker({
                   onClick={() => setActiveTab('date')}
                   className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
                     activeTab === 'date'
-                      ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                      : 'text-[#e5e2e1] hover:bg-white/5'
+                      ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                      : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
                   }`}
                 >
                   Date
@@ -442,8 +446,8 @@ export default function DatePicker({
                   onClick={() => setActiveTab('year')}
                   className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
                     activeTab === 'year'
-                      ? 'bg-[#c3f400] text-[#161e00] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                      : 'text-[#e5e2e1] hover:bg-white/5'
+                      ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                      : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
                   }`}
                 >
                   Year
@@ -462,8 +466,8 @@ export default function DatePicker({
                         onClick={() => handleSelectMonth(idx)}
                         className={`py-3 text-sm rounded-xl font-semibold transition-all ${
                           isSelected
-                            ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                            : 'text-[#e5e2e1] bg-white/5 hover:bg-white/10 active:scale-95'
+                            ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                            : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)] active:scale-95'
                         }`}
                       >
                         {MONTHS[idx]}
@@ -490,10 +494,10 @@ export default function DatePicker({
                         onClick={() => setSelectedDay(d)}
                         className={`h-11 flex items-center justify-center text-sm rounded-xl font-semibold transition-all ${
                           isSelected
-                            ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)] active:scale-95'
+                            ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)] active:scale-95'
                             : isToday
-                              ? 'border border-[#c3f400] text-[#c3f400] bg-[#c3f400]/5'
-                              : 'text-white bg-white/5 hover:bg-white/10'
+                              ? 'border border-[var(--primary-container)] text-[var(--primary-container)] bg-[var(--primary-container)]/10'
+                              : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
                         }`}
                       >
                         {d}
@@ -515,8 +519,8 @@ export default function DatePicker({
                         onClick={() => handleSelectYear(y)}
                         className={`py-3 text-sm rounded-xl font-semibold transition-all ${
                           isSelected
-                            ? 'bg-[#c3f400] text-[#161e00] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                            : 'text-white bg-white/5 hover:bg-white/10 active:scale-95'
+                            ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                            : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)] active:scale-95'
                         }`}
                       >
                         {y}
@@ -531,21 +535,21 @@ export default function DatePicker({
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="flex-1 py-3 bg-white/5 text-white font-semibold rounded-xl border border-white/10 active:scale-95 transition-transform"
+                  className="flex-1 py-3 bg-[var(--surface-container-low)] text-[var(--on-surface)] font-semibold rounded-xl border border-[var(--line)] active:scale-95 transition-transform"
                 >
                   Reset
                 </button>
                 <button
                   type="button"
                   onClick={handleApply}
-                  className="flex-1 py-3 bg-[#c3f400] text-[#161e00] font-bold rounded-xl shadow-[0_0_20px_rgba(195,244,0,0.3)] hover:opacity-90 active:scale-95 transition-transform"
+                  className="flex-1 py-3 bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold rounded-xl shadow-[0_0_20px_rgba(195,244,0,0.3)] hover:opacity-90 active:scale-95 transition-transform"
                 >
                   Apply
                 </button>
               </div>
             </div>
             {/* Bottom safe area padding */}
-            <div className="h-8 bg-[#1e1e1e]" />
+            <div className="h-8 bg-[var(--surface-container)]" />
           </div>
         </>
       )}
