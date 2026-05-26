@@ -130,6 +130,10 @@ VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 VITE_CLERK_SIGN_IN_URL=/sign-in
 VITE_CLERK_SIGN_UP_URL=/sign-up
+VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL=/dashboard
+VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL=/onboarding
+VITE_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/dashboard
+VITE_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/onboarding
 TURSO_DATABASE_URL=libsql://your-db.turso.io
 TURSO_AUTH_TOKEN=...
 ```
@@ -240,6 +244,10 @@ To complete the build and runtime pipeline, navigate to **Site configuration > E
 - `CLERK_SECRET_KEY`: Clerk's private API key.
 - `VITE_CLERK_SIGN_IN_URL`: `/sign-in`
 - `VITE_CLERK_SIGN_UP_URL`: `/sign-up`
+- `VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL`: `/dashboard`
+- `VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL`: `/onboarding`
+- `VITE_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL`: `/dashboard`
+- `VITE_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL`: `/onboarding`
 - `TURSO_DATABASE_URL`: Turso/libSQL database URL, for example `libsql://...`.
 - `TURSO_AUTH_TOKEN`: Turso database auth token.
 

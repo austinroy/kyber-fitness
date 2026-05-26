@@ -54,6 +54,10 @@ VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 VITE_CLERK_SIGN_IN_URL=/sign-in
 VITE_CLERK_SIGN_UP_URL=/sign-up
+VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL=/dashboard
+VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL=/onboarding
+VITE_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/dashboard
+VITE_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/onboarding
 TURSO_DATABASE_URL=libsql://your-db.turso.io
 TURSO_AUTH_TOKEN=...
 ```
@@ -61,6 +65,7 @@ TURSO_AUTH_TOKEN=...
 ### Rules:
 
 - `VITE_CLERK_PUBLISHABLE_KEY` and redirect URLs may be used on the client-side.
+- `VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL` and `VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL` should be set on Netlify to prevent stale or invalid `redirect_url` query strings from triggering auth redirect loops.
 - `CLERK_SECRET_KEY` is highly sensitive and must only be accessed in server-side blocks.
 - **Local Fallback**: If Turso credentials are absent locally, the app uses `fitness.db` in the workspace root via libSQL's file driver.
 - **Production Database**: Netlify production must define `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`. `LIBSQL_DATABASE_URL` and `LIBSQL_AUTH_TOKEN` are supported aliases.

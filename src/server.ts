@@ -172,7 +172,11 @@ CLERK_PUBLISHABLE_KEY=pk_test_...
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 VITE_CLERK_SIGN_IN_URL=/sign-in
-VITE_CLERK_SIGN_UP_URL=/sign-up</div>
+VITE_CLERK_SIGN_UP_URL=/sign-up
+VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL=/dashboard
+VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL=/onboarding
+VITE_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/dashboard
+VITE_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/onboarding</div>
 
     <ol class="steps">
       <li>Log in to your <strong>Netlify Dashboard</strong>.</li>

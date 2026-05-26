@@ -28,7 +28,10 @@ function SignUpPage() {
             routing="path"
             path="/sign-up"
             signInUrl="/sign-in"
+            forceRedirectUrl="/onboarding"
+            signInForceRedirectUrl="/dashboard"
             fallbackRedirectUrl="/onboarding"
+            signInFallbackRedirectUrl="/dashboard"
           />
         </div>
       </div>

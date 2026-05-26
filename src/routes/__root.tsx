@@ -11,6 +11,10 @@ import appCss from '../styles.css?url'
 
 // Fetch the Clerk publishable key
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_placeholder'
+const signInUrl = import.meta.env.VITE_CLERK_SIGN_IN_URL || '/sign-in'
+const signUpUrl = import.meta.env.VITE_CLERK_SIGN_UP_URL || '/sign-up'
+const signInRedirectUrl = import.meta.env.VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL || '/dashboard'
+const signUpRedirectUrl = import.meta.env.VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL || '/onboarding'
 const themeBootScript = `
 (() => {
   try {
@@ -118,7 +122,15 @@ function RootDocument() {
   }
 
   return (
-    <ClerkProvider publishableKey={publishableKey}>
+    <ClerkProvider
+      publishableKey={publishableKey}
+      signInUrl={signInUrl}
+      signUpUrl={signUpUrl}
+      signInForceRedirectUrl={signInRedirectUrl}
+      signUpForceRedirectUrl={signUpRedirectUrl}
+      signInFallbackRedirectUrl={signInRedirectUrl}
+      signUpFallbackRedirectUrl={signUpRedirectUrl}
+    >
       <html lang="en" suppressHydrationWarning>
         <head>
           <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
