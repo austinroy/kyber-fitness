@@ -6,10 +6,31 @@ import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { getCurrentUserProfile } from '../lib/actions'
 import type { UserRecord } from '../types/domain'
+import ThemeToggle from '../components/ThemeToggle'
 import appCss from '../styles.css?url'
 
 // Fetch the Clerk publishable key
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_placeholder'
+const themeBootScript = `
+(() => {
+  try {
+    const mode = window.localStorage.getItem('theme') || 'auto'
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const resolved = mode === 'auto' ? (prefersDark ? 'dark' : 'light') : mode
+    document.documentElement.classList.remove('light', 'dark')
+    document.documentElement.classList.add(resolved)
+    if (mode === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', mode)
+    }
+    document.documentElement.style.colorScheme = resolved
+  } catch {
+    document.documentElement.classList.add('dark')
+    document.documentElement.style.colorScheme = 'dark'
+  }
+})()
+`
 
 export const Route = createRootRoute({
   head: () => ({
@@ -59,17 +80,18 @@ function NotFoundComponent() {
   )
 }
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootDocument() {
   const isClerkConfigured = publishableKey && publishableKey !== 'pk_test_placeholder'
 
   if (!isClerkConfigured) {
     return (
-      <html lang="en" className="dark" suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning>
         <head>
+          <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
           <HeadContent />
         </head>
         <body
-          className="font-sans antialiased selection:bg-[rgba(195,244,0,0.2)] selection:text-white bg-[#0a0a0a]"
+          className="font-sans antialiased selection:bg-[rgba(195,244,0,0.2)] selection:text-[var(--on-surface)]"
           suppressHydrationWarning
         >
           <div className="flex flex-col items-center justify-center min-h-screen text-center px-4 max-w-lg mx-auto relative">
@@ -97,15 +119,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
   return (
     <ClerkProvider publishableKey={publishableKey}>
-      <html lang="en" className="dark" suppressHydrationWarning>
+      <html lang="en" suppressHydrationWarning>
         <head>
+          <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
           <HeadContent />
         </head>
         <body
           className="font-sans antialiased selection:bg-[rgba(195,244,0,0.2)] selection:text-white"
           suppressHydrationWarning
         >
-          <AppLayout>{children}</AppLayout>
+          <AppLayout />
           <TanStackDevtools
             config={{ position: 'bottom-right' }}
             plugins={[
@@ -122,8 +145,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   )
 }
 
-function AppLayout({ children }: { children: React.ReactNode }) {
-  const { isLoaded, isSignedIn } = useUser()
+function AppLayout() {
+  const { isSignedIn } = useUser()
   const [dbUser, setDbUser] = useState<UserRecord | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -220,11 +243,11 @@ function AppLayout({ children }: { children: React.ReactNode }) {
           </nav>
 
           {/* Sidebar Footer with Clerk User Button */}
-          <div className="border-t border-white/5 pt-4 flex items-center justify-between mt-auto">
+          <div className="border-t border-[var(--line)] pt-4 flex items-center justify-between mt-auto gap-3">
             <div className="flex items-center gap-3">
               <UserButton afterSignOutUrl="/" />
               <div className="text-left">
-                <p className="text-xs font-semibold text-white truncate max-w-[150px] m-0">
+                <p className="text-xs font-semibold text-[var(--on-surface)] truncate max-w-[150px] m-0">
                   {dbUser?.name || 'Kyber Athlete'}
                 </p>
                 <p className="text-[10px] text-[var(--on-surface-variant)] capitalize m-0">
@@ -232,6 +255,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
                 </p>
               </div>
             </div>
+            <ThemeToggle />
           </div>
         </aside>
       </SignedIn>
@@ -240,16 +264,17 @@ function AppLayout({ children }: { children: React.ReactNode }) {
       <main className="main-content flex-1">
         {/* Render a top navigation header for public/anonymous users */}
         <SignedOut>
-          <header className="flex justify-between items-center py-4 px-6 border-b border-white/5 bg-[var(--surface-container-lowest)] mb-6 rounded-[var(--rounded-lg)]">
+          <header className="flex justify-between items-center py-4 px-6 border-b border-[var(--line)] bg-[var(--surface-container-lowest)] mb-6 rounded-[var(--rounded-lg)]">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl">
                 bolt
               </span>
-              <span className="headline-md font-bold tracking-tight text-white m-0">
+              <span className="headline-md font-bold tracking-tight text-[var(--on-surface)] m-0">
                 KYBER FITNESS
               </span>
             </div>
             <div className="flex items-center gap-4">
+              <ThemeToggle />
               <Link to="/sign-in" className="btn btn-secondary py-1.5 px-4 text-xs">
                 Sign In
               </Link>

@@ -7,6 +7,8 @@
 }
 
 :root {
+  color-scheme: dark;
+
   /* Kinetic Styling Theme (Dark Mode First) */
   --surface: #131313;
   --surface-dim: #131313;
@@ -55,6 +57,20 @@
   --background: #131313;
   --on-background: #e5e2e1;
   --surface-variant: #353534;
+  --line: rgba(255, 255, 255, 0.08);
+  --glass-line: rgba(255, 255, 255, 0.08);
+  --glass-line-strong: rgba(255, 255, 255, 0.15);
+  --header-bg: rgba(14, 14, 14, 0.82);
+  --chip-bg: rgba(195, 244, 0, 0.1);
+  --chip-line: rgba(195, 244, 0, 0.2);
+  --sea-ink: var(--on-surface);
+  --sea-ink-soft: var(--on-surface-variant);
+  --link-bg-hover: rgba(255, 255, 255, 0.06);
+  --disabled-fg: rgba(255, 255, 255, 0.3);
+  --body-gradient:
+    radial-gradient(circle at 10% 10%, rgba(195, 244, 0, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(0, 238, 252, 0.04) 0%, transparent 40%),
+    linear-gradient(180deg, #131313 0%, #0e0e0e 100%);
 
   /* Font Styling Variables */
   --font-family: 'Lexend', sans-serif;
@@ -114,6 +130,75 @@
   --rounded-full: 9999px;
 }
 
+html.light {
+  color-scheme: light;
+  --surface: #f8faf3;
+  --surface-dim: #e2e6d6;
+  --surface-bright: #ffffff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f3f6eb;
+  --surface-container: rgba(255, 255, 255, 0.86);
+  --surface-container-high: #ecf1df;
+  --surface-container-highest: #dfe7cd;
+  --on-surface: #172016;
+  --on-surface-variant: #58624c;
+  --inverse-surface: #20251d;
+  --inverse-on-surface: #f5f8ec;
+  --outline: #717b62;
+  --outline-variant: #d4dcc4;
+  --surface-tint: #7e9e00;
+  --primary: #263500;
+  --on-primary: #ffffff;
+  --primary-container: #8fb500;
+  --on-primary-container: #101800;
+  --inverse-primary: #c3f400;
+  --secondary: #005a60;
+  --on-secondary: #ffffff;
+  --secondary-container: #00a9b4;
+  --on-secondary-container: #001f22;
+  --tertiary: #7f260b;
+  --on-tertiary: #ffffff;
+  --tertiary-container: #ffdad2;
+  --on-tertiary-container: #3c0700;
+  --error: #ba1a1a;
+  --on-error: #ffffff;
+  --error-container: #ffdad6;
+  --on-error-container: #410002;
+  --primary-fixed: #8fb500;
+  --primary-fixed-dim: #759500;
+  --on-primary-fixed: #101800;
+  --on-primary-fixed-variant: #303f00;
+  --secondary-fixed: #00a9b4;
+  --secondary-fixed-dim: #008b94;
+  --on-secondary-fixed: #001f22;
+  --on-secondary-fixed-variant: #004f54;
+  --tertiary-fixed: #ffdad2;
+  --tertiary-fixed-dim: #ffb4a2;
+  --on-tertiary-fixed: #3c0700;
+  --on-tertiary-fixed-variant: #8a1d00;
+  --background: #f6f9ee;
+  --on-background: #172016;
+  --surface-variant: #e0e7cf;
+  --line: rgba(24, 32, 20, 0.12);
+  --glass-line: rgba(24, 32, 20, 0.12);
+  --glass-line-strong: rgba(24, 32, 20, 0.22);
+  --header-bg: rgba(255, 255, 255, 0.82);
+  --chip-bg: rgba(143, 181, 0, 0.12);
+  --chip-line: rgba(143, 181, 0, 0.26);
+  --sea-ink: var(--on-surface);
+  --sea-ink-soft: var(--on-surface-variant);
+  --link-bg-hover: rgba(24, 32, 20, 0.06);
+  --disabled-fg: rgba(24, 32, 20, 0.38);
+  --body-gradient:
+    radial-gradient(circle at 12% 12%, rgba(143, 181, 0, 0.12) 0%, transparent 36%),
+    radial-gradient(circle at 88% 78%, rgba(0, 169, 180, 0.1) 0%, transparent 38%),
+    linear-gradient(180deg, #fbfff4 0%, #edf4df 100%);
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
 /* Base resets & styles */
 body {
   font-family: var(--font-family);
@@ -121,10 +206,7 @@ body {
   color: var(--on-background);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  background-image:
-    radial-gradient(circle at 10% 10%, rgba(195, 244, 0, 0.04) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(0, 238, 252, 0.04) 0%, transparent 40%),
-    linear-gradient(180deg, #131313 0%, #0e0e0e 100%);
+  background-image: var(--body-gradient);
   min-height: 100vh;
 }
 
@@ -134,7 +216,7 @@ body {
   font-weight: var(--font-weight-display-lg);
   line-height: var(--line-height-display-lg);
   letter-spacing: var(--letter-spacing-display-lg);
-  color: #ffffff;
+  color: var(--on-surface);
 }
 
 .headline-lg {
@@ -142,7 +224,7 @@ body {
   font-weight: var(--font-weight-headline-lg);
   line-height: var(--line-height-headline-lg);
   letter-spacing: var(--letter-spacing-headline-lg);
-  color: #ffffff;
+  color: var(--on-surface);
 }
 
 @media (max-width: 768px) {
@@ -157,7 +239,7 @@ body {
   font-size: var(--font-size-headline-md);
   font-weight: var(--font-weight-headline-md);
   line-height: var(--line-height-headline-md);
-  color: #ffffff;
+  color: var(--on-surface);
 }
 
 .body-lg {
@@ -187,7 +269,7 @@ body {
   font-weight: var(--font-weight-metric-xl);
   line-height: var(--line-height-metric-xl);
   letter-spacing: var(--letter-spacing-metric-xl);
-  color: #ffffff;
+  color: var(--on-surface);
 }
 
 /* UI Components */
@@ -235,7 +317,7 @@ body {
 
 .btn-disabled {
   background-color: var(--surface-container-high);
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--disabled-fg);
   cursor: not-allowed;
   box-shadow: none !important;
 }
@@ -243,7 +325,7 @@ body {
 /* Cards */
 .card {
   background-color: var(--surface-container);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-line);
   border-radius: var(--rounded-lg);
   padding: var(--space-md);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -251,7 +333,7 @@ body {
 }
 
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--glass-line-strong);
 }
 
 .card-featured {
@@ -280,7 +362,7 @@ body {
 
 .input-field {
   background-color: var(--surface-container-low);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-line);
   border-radius: var(--rounded-default);
   color: var(--on-surface);
   font-size: var(--font-size-body-md);
@@ -336,7 +418,7 @@ body {
 
 .progress-ring-track {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.06);
+  stroke: var(--line);
   stroke-width: 8;
 }
 
@@ -351,7 +433,7 @@ body {
 /* Divider */
 .divider {
   height: 1px;
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: var(--line);
   margin: var(--space-sm) 0;
   border: none;
 }
@@ -365,7 +447,7 @@ body {
 .sidebar {
   width: 280px;
   background-color: var(--surface-container-lowest);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid var(--line);
   display: flex;
   flex-direction: column;
   padding: var(--space-md);
@@ -400,7 +482,7 @@ body {
 
 .sidebar-link:hover {
   background-color: var(--surface-container);
-  color: #ffffff;
+  color: var(--on-surface);
 }
 
 .sidebar-link.active {
@@ -422,7 +504,7 @@ body {
   .sidebar {
     width: 100%;
     border-right: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--line);
   }
   .sidebar-nav {
     flex-direction: row;
