@@ -251,7 +251,7 @@ To complete the build and runtime pipeline, navigate to **Site configuration > E
 - `TURSO_DATABASE_URL`: Turso/libSQL database URL, for example `libsql://...`.
 - `TURSO_AUTH_TOKEN`: Turso database auth token.
 
-The app sends Clerk's immediate force redirect through `/auth/complete?target=...` before the final destination. That route strips auth query parameters from the URL and then performs a second clean redirect to the configured final target.
+The app sends Clerk's immediate force redirect back through the client-side auth page with a small app-owned target parameter. A shared redirect utility strips auth query parameters from the URL and then performs a second clean redirect to the configured final target.
 
 ### 5. Strict Dependency Resolution (`unctx`)
 

@@ -65,7 +65,7 @@ TURSO_AUTH_TOKEN=...
 ### Rules:
 
 - `VITE_CLERK_PUBLISHABLE_KEY` and redirect URLs may be used on the client-side.
-- `VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL` and `VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL` define final post-auth destinations. The app wraps them through `/auth/complete?target=...` before final navigation so Clerk query parameters are cleared in a second redirect.
+- `VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL` and `VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL` define final post-auth destinations. The auth pages wrap them through the shared client redirect utility so Clerk query parameters are cleared before the second redirect.
 - `CLERK_SECRET_KEY` is highly sensitive and must only be accessed in server-side blocks.
 - **Local Fallback**: If Turso credentials are absent locally, the app uses `fitness.db` in the workspace root via libSQL's file driver.
 - **Production Database**: Netlify production must define `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`. `LIBSQL_DATABASE_URL` and `LIBSQL_AUTH_TOKEN` are supported aliases.

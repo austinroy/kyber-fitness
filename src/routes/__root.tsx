@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { getCurrentUserProfile } from '../lib/actions'
 import type { UserRecord } from '../types/domain'
 import ThemeToggle from '../components/ThemeToggle'
+import { createPostAuthRedirectUrl } from '../lib/auth-redirects'
 import appCss from '../styles.css?url'
 
 // Fetch the Clerk publishable key
@@ -16,8 +17,8 @@ const signUpUrl = import.meta.env.VITE_CLERK_SIGN_UP_URL || '/sign-up'
 const signInFinalRedirectUrl = import.meta.env.VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL || '/dashboard'
 const signUpFinalRedirectUrl =
   import.meta.env.VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL || '/onboarding'
-const signInRedirectUrl = `/auth/complete?target=${encodeURIComponent(signInFinalRedirectUrl)}`
-const signUpRedirectUrl = `/auth/complete?target=${encodeURIComponent(signUpFinalRedirectUrl)}`
+const signInRedirectUrl = createPostAuthRedirectUrl(signInUrl, signInFinalRedirectUrl)
+const signUpRedirectUrl = createPostAuthRedirectUrl(signUpUrl, signUpFinalRedirectUrl)
 const themeBootScript = `
 (() => {
   try {

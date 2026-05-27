@@ -25,7 +25,6 @@ import { Route as WorkoutsSessionIdRouteImport } from './routes/workouts/$sessio
 import { Route as SignUpSplatRouteImport } from './routes/sign-up/$'
 import { Route as SignInSplatRouteImport } from './routes/sign-in/$'
 import { Route as ProgramsNewRouteImport } from './routes/programs/new'
-import { Route as AuthCompleteRouteImport } from './routes/auth/complete'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -107,18 +106,12 @@ const ProgramsNewRoute = ProgramsNewRouteImport.update({
   path: '/programs/new',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthCompleteRoute = AuthCompleteRouteImport.update({
-  id: '/auth/complete',
-  path: '/auth/complete',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
   '/settings': typeof SettingsRoute
-  '/auth/complete': typeof AuthCompleteRoute
   '/programs/new': typeof ProgramsNewRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
@@ -137,7 +130,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
   '/settings': typeof SettingsRoute
-  '/auth/complete': typeof AuthCompleteRoute
   '/programs/new': typeof ProgramsNewRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
@@ -157,7 +149,6 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/onboarding': typeof OnboardingRoute
   '/settings': typeof SettingsRoute
-  '/auth/complete': typeof AuthCompleteRoute
   '/programs/new': typeof ProgramsNewRoute
   '/sign-in/$': typeof SignInSplatRoute
   '/sign-up/$': typeof SignUpSplatRoute
@@ -178,7 +169,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/settings'
-    | '/auth/complete'
     | '/programs/new'
     | '/sign-in/$'
     | '/sign-up/$'
@@ -197,7 +187,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/settings'
-    | '/auth/complete'
     | '/programs/new'
     | '/sign-in/$'
     | '/sign-up/$'
@@ -216,7 +205,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/onboarding'
     | '/settings'
-    | '/auth/complete'
     | '/programs/new'
     | '/sign-in/$'
     | '/sign-up/$'
@@ -236,7 +224,6 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   OnboardingRoute: typeof OnboardingRoute
   SettingsRoute: typeof SettingsRoute
-  AuthCompleteRoute: typeof AuthCompleteRoute
   ProgramsNewRoute: typeof ProgramsNewRoute
   SignInSplatRoute: typeof SignInSplatRoute
   SignUpSplatRoute: typeof SignUpSplatRoute
@@ -365,13 +352,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgramsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/complete': {
-      id: '/auth/complete'
-      path: '/auth/complete'
-      fullPath: '/auth/complete'
-      preLoaderRoute: typeof AuthCompleteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -380,7 +360,6 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   OnboardingRoute: OnboardingRoute,
   SettingsRoute: SettingsRoute,
-  AuthCompleteRoute: AuthCompleteRoute,
   ProgramsNewRoute: ProgramsNewRoute,
   SignInSplatRoute: SignInSplatRoute,
   SignUpSplatRoute: SignUpSplatRoute,
