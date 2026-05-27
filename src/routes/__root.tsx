@@ -13,8 +13,11 @@ import appCss from '../styles.css?url'
 const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || 'pk_test_placeholder'
 const signInUrl = import.meta.env.VITE_CLERK_SIGN_IN_URL || '/sign-in'
 const signUpUrl = import.meta.env.VITE_CLERK_SIGN_UP_URL || '/sign-up'
-const signInRedirectUrl = import.meta.env.VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL || '/dashboard'
-const signUpRedirectUrl = import.meta.env.VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL || '/onboarding'
+const signInFinalRedirectUrl = import.meta.env.VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL || '/dashboard'
+const signUpFinalRedirectUrl =
+  import.meta.env.VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL || '/onboarding'
+const signInRedirectUrl = `/auth/complete?target=${encodeURIComponent(signInFinalRedirectUrl)}`
+const signUpRedirectUrl = `/auth/complete?target=${encodeURIComponent(signUpFinalRedirectUrl)}`
 const themeBootScript = `
 (() => {
   try {

@@ -177,6 +177,9 @@ VITE_CLERK_SIGN_IN_FORCE_REDIRECT_URL=/dashboard
 VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL=/onboarding
 VITE_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/dashboard
 VITE_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/onboarding</div>
+    <p>
+      Kyber routes Clerk through <strong>/auth/complete</strong> after login/sign-up to clear auth query parameters before sending users to the final dashboard or onboarding screen.
+    </p>
 
     <ol class="steps">
       <li>Log in to your <strong>Netlify Dashboard</strong>.</li>

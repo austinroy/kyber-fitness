@@ -1,6 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { SignIn } from '@clerk/tanstack-start'
 
+const signInRedirectUrl = '/auth/complete?target=%2Fdashboard'
+const signUpRedirectUrl = '/auth/complete?target=%2Fonboarding'
+
 export const Route = createFileRoute('/sign-in/')({
   ssr: false,
   component: SignInPage,
@@ -24,10 +27,10 @@ function SignInPage() {
             routing="path"
             path="/sign-in"
             signUpUrl="/sign-up"
-            forceRedirectUrl="/dashboard"
-            signUpForceRedirectUrl="/onboarding"
-            fallbackRedirectUrl="/dashboard"
-            signUpFallbackRedirectUrl="/onboarding"
+            forceRedirectUrl={signInRedirectUrl}
+            signUpForceRedirectUrl={signUpRedirectUrl}
+            fallbackRedirectUrl={signInRedirectUrl}
+            signUpFallbackRedirectUrl={signUpRedirectUrl}
           />
         </div>
       </div>
