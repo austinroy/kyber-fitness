@@ -31,6 +31,7 @@ Shared TypeScript data-transfer and form/editor shapes live under `src/types`. C
 - **Trainer coaching notes:** Trainer-private client notes with pinned follow-ups, update/delete controls, and active relationship enforcement.
 - **Program builder:** Trainer-only program templates with ordered exercises and target sets.
 - **Program assignment flow:** Trainers assign programs to active clients; athletes can open pending assignments, preload the routine into `/workouts/new`, record the actual session, and complete the assignment through a server-validated workflow.
+- **In-app notifications:** A persisted `/notifications` inbox captures trainer invites and assigned-routine alerts with unread badges and mark-read controls.
 
 ---
 
@@ -60,6 +61,7 @@ erDiagram
     users ||--o{ workout_programs : "creates"
     users ||--o{ program_assignments : "receives / assigns"
     users ||--o{ coaching_notes : "writes / receives private context"
+    users ||--o{ notifications : "receives alerts"
     workout_sessions ||--o{ session_exercises : "contains"
     exercises ||--o{ session_exercises : "is added to"
     session_exercises ||--o{ exercise_sets : "has sets"
@@ -78,6 +80,7 @@ erDiagram
 8.  **`workout_programs`, `workout_program_exercises`, `workout_program_sets`:** Trainer-owned reusable routine templates with ordered movements, target sets, and coaching instructions.
 9.  **`program_assignments`:** Direct trainer-to-athlete routine assignments with `pending` and `completed` states.
 10. **`coaching_notes`:** Trainer-private client notes with pinned status and update timestamps, guarded by active trainer-client relationships.
+11. **`notifications`:** In-app inbox records for invites, assignments, coaching alerts, unread status, and deep links back to the relevant workflow.
 
 ---
 

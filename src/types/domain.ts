@@ -165,3 +165,16 @@ export interface CoachingNoteRecord {
   createdAt: string
   updatedAt: string
 }
+
+export interface NotificationRecord {
+  id: string
+  userId: string
+  actorUserId?: string | null
+  actorName?: string | null
+  type: 'client_invite' | 'program_assignment' | 'coach_feedback' | string
+  title: string
+  body: string
+  href?: string | null
+  readAt?: string | null
+  createdAt: string
+}
