@@ -365,8 +365,10 @@ function AppLayout() {
                 KYBER FITNESS
               </span>
             </div>
-            <div className="grid grid-cols-[auto_1fr_1fr] sm:flex sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
-              <ThemeToggle />
+            <div className="grid grid-cols-[2.25rem_minmax(0,1fr)_minmax(0,1fr)] sm:flex sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
+              <div className="h-9 w-9 shrink-0">
+                <ThemeToggle />
+              </div>
               <Link to="/sign-in" className="btn btn-secondary py-1.5 px-3 sm:px-4 text-xs w-full">
                 Sign In
               </Link>
