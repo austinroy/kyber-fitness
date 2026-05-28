@@ -251,99 +251,105 @@ function AppLayout() {
     }
   }, [mobileNavOpen])
 
+  const canRenderSignedInNav = isLoaded && isSignedIn && !loading
+
   return (
     <div className="app-layout">
       {/* Sidebar - Visible only when signed in */}
       <SignedIn>
-        <header className="mobile-nav-header">
-          <button
-            type="button"
-            className="mobile-menu-button"
-            aria-label="Open navigation menu"
-            aria-expanded={mobileNavOpen}
-            onClick={() => setMobileNavOpen(true)}
-          >
-            <span className="material-symbols-outlined">menu</span>
-          </button>
+        {canRenderSignedInNav && (
+          <>
+            <header className="mobile-nav-header">
+              <button
+                type="button"
+                className="mobile-menu-button"
+                aria-label="Open navigation menu"
+                aria-expanded={mobileNavOpen}
+                onClick={() => setMobileNavOpen(true)}
+              >
+                <span className="material-symbols-outlined">menu</span>
+              </button>
 
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl">
-              bolt
-            </span>
-            <span className="headline-md text-lg font-extrabold tracking-tight m-0 text-[var(--on-surface)]">
-              KYBER
-            </span>
-          </div>
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl">
+                  bolt
+                </span>
+                <span className="headline-md text-lg font-extrabold tracking-tight m-0 text-[var(--on-surface)]">
+                  KYBER
+                </span>
+              </div>
 
-          <ThemeToggle />
-        </header>
+              <ThemeToggle />
+            </header>
 
-        <div
-          className={`mobile-nav-backdrop ${mobileNavOpen ? 'open' : ''}`}
-          onClick={() => setMobileNavOpen(false)}
-        />
-
-        <aside className={`mobile-nav-drawer ${mobileNavOpen ? 'open' : ''}`}>
-          <div className="sidebar-header">
-            <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
-              bolt
-            </span>
-            <div>
-              <h1 className="headline-md font-extrabold tracking-tight m-0 text-[var(--on-surface)] leading-none">
-                KYBER
-              </h1>
-              <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0 tracking-wider">
-                KINETIC PERFORMANCE
-              </p>
-            </div>
-            <button
-              type="button"
-              className="mobile-menu-button ml-auto"
-              aria-label="Close navigation menu"
+            <div
+              className={`mobile-nav-backdrop ${mobileNavOpen ? 'open' : ''}`}
               onClick={() => setMobileNavOpen(false)}
-            >
-              <span className="material-symbols-outlined">close</span>
-            </button>
-          </div>
-
-          <nav className="sidebar-nav mobile-drawer-nav">
-            <NavLinks
-              dbUser={dbUser}
-              unreadNotifications={unreadNotifications}
-              loading={loading}
-              onNavigate={() => setMobileNavOpen(false)}
             />
-          </nav>
 
-          <SidebarFooter dbUser={dbUser} />
-        </aside>
+            <aside className={`mobile-nav-drawer ${mobileNavOpen ? 'open' : ''}`}>
+              <div className="sidebar-header">
+                <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
+                  bolt
+                </span>
+                <div>
+                  <h1 className="headline-md font-extrabold tracking-tight m-0 text-[var(--on-surface)] leading-none">
+                    KYBER
+                  </h1>
+                  <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0 tracking-wider">
+                    KINETIC PERFORMANCE
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="mobile-menu-button ml-auto"
+                  aria-label="Close navigation menu"
+                  onClick={() => setMobileNavOpen(false)}
+                >
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              </div>
 
-        <aside className="sidebar">
-          <div className="sidebar-header">
-            <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
-              bolt
-            </span>
-            <div>
-              <h1 className="headline-md font-extrabold tracking-tight m-0 text-white leading-none">
-                KYBER
-              </h1>
-              <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0 tracking-wider">
-                KINETIC PERFORMANCE
-              </p>
-            </div>
-          </div>
+              <nav className="sidebar-nav mobile-drawer-nav">
+                <NavLinks
+                  dbUser={dbUser}
+                  unreadNotifications={unreadNotifications}
+                  loading={loading}
+                  onNavigate={() => setMobileNavOpen(false)}
+                />
+              </nav>
 
-          <nav className="sidebar-nav">
-            <NavLinks
-              dbUser={dbUser}
-              unreadNotifications={unreadNotifications}
-              loading={loading}
-            />
-          </nav>
+              <SidebarFooter dbUser={dbUser} />
+            </aside>
 
-          {/* Sidebar Footer with Clerk User Button */}
-          <SidebarFooter dbUser={dbUser} />
-        </aside>
+            <aside className="sidebar">
+              <div className="sidebar-header">
+                <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
+                  bolt
+                </span>
+                <div>
+                  <h1 className="headline-md font-extrabold tracking-tight m-0 text-white leading-none">
+                    KYBER
+                  </h1>
+                  <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0 tracking-wider">
+                    KINETIC PERFORMANCE
+                  </p>
+                </div>
+              </div>
+
+              <nav className="sidebar-nav">
+                <NavLinks
+                  dbUser={dbUser}
+                  unreadNotifications={unreadNotifications}
+                  loading={loading}
+                />
+              </nav>
+
+              {/* Sidebar Footer with Clerk User Button */}
+              <SidebarFooter dbUser={dbUser} />
+            </aside>
+          </>
+        )}
       </SignedIn>
 
       {/* Main Panel Content */}
