@@ -287,6 +287,7 @@ erDiagram
         text createdByUserId FK "Trainer users.id"
         text title
         text notes
+        text progressionPlan
         text createdAt
         text updatedAt
     }
@@ -296,6 +297,7 @@ erDiagram
         text programId FK "Cascade references workout_programs.id"
         text exerciseId FK "Cascade references exercises.id"
         integer orderIndex
+        text blockName
         text notes
     }
 
@@ -319,6 +321,10 @@ erDiagram
         text assignedByUserId FK "Trainer users.id"
         text status "pending | completed"
         text notes
+        text scheduledFor
+        text dueAt
+        text recurrence "none | weekly | biweekly | monthly"
+        text completedWorkoutSessionId FK "References workout_sessions.id"
         text assignedAt
         text completedAt
     }

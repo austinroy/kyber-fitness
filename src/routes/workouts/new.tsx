@@ -114,7 +114,9 @@ function LogWorkoutPage() {
                     name: ex.name,
                     category: ex.category,
                     defaultUnit: ex.defaultUnit || 'kg',
-                    notes: ex.notes || '',
+                    notes: [ex.blockName ? `${ex.blockName} block` : '', ex.notes || '']
+                      .filter(Boolean)
+                      .join(': '),
                     orderIndex: ex.orderIndex,
                     sets: ex.sets.map((s) => ({
                       setNumber: s.setNumber,
