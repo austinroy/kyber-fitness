@@ -181,6 +181,7 @@ erDiagram
     users ||--o{ workout_programs : "creates"
     users ||--o{ program_assignments : "receives / assigns"
     users ||--o{ coaching_notes : "writes / receives private context"
+    users ||--o{ notifications : "receives alerts"
     workout_sessions ||--o{ session_exercises : "contains"
     exercises ||--o{ session_exercises : "is added to"
     session_exercises ||--o{ exercise_sets : "has sets"
@@ -331,6 +332,18 @@ erDiagram
         integer pinned "0 | 1"
         text createdAt
         text updatedAt
+    }
+
+    notifications {
+        text id PK
+        text userId FK "Recipient users.id"
+        text actorUserId FK "Optional actor users.id"
+        text type "client_invite | program_assignment | coach_feedback"
+        text title
+        text body
+        text href
+        text readAt
+        text createdAt
     }
 ```
 

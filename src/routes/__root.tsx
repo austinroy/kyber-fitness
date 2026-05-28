@@ -4,7 +4,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ClerkProvider, SignedIn, SignedOut, UserButton, useUser } from '@clerk/tanstack-start'
 import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { getCurrentUserProfile } from '../lib/actions'
+import { getCurrentUserProfile, getUnreadNotificationCount } from '../lib/actions'
 import type { UserRecord } from '../types/domain'
 import ThemeToggle from '../components/ThemeToggle'
 import { createPostAuthRedirectUrl } from '../lib/auth-redirects'
@@ -166,6 +166,7 @@ function AppLayout() {
   const [dbUser, setDbUser] = useState<UserRecord | null>(null)
   const [loading, setLoading] = useState(true)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  const [unreadNotifications, setUnreadNotifications] = useState(0)
 
   // Check onboarding / db user status
   useEffect(() => {
@@ -174,6 +175,11 @@ function AppLayout() {
         .then((res) => {
           if (res && res.authenticated) {
             setDbUser(res.user || null)
+            if (res.user) {
+              getUnreadNotificationCount()
+                .then((count) => setUnreadNotifications(count || 0))
+                .catch(() => setUnreadNotifications(0))
+            }
           }
           setLoading(false)
         })
@@ -182,6 +188,7 @@ function AppLayout() {
         })
     } else {
       setDbUser(null)
+      setUnreadNotifications(0)
       setLoading(false)
     }
   }, [isSignedIn])
@@ -256,6 +263,7 @@ function AppLayout() {
           <nav className="sidebar-nav mobile-drawer-nav">
             <NavLinks
               dbUser={dbUser}
+              unreadNotifications={unreadNotifications}
               loading={loading}
               onNavigate={() => setMobileNavOpen(false)}
             />
@@ -280,7 +288,11 @@ function AppLayout() {
           </div>
 
           <nav className="sidebar-nav">
-            <NavLinks dbUser={dbUser} loading={loading} />
+            <NavLinks
+              dbUser={dbUser}
+              unreadNotifications={unreadNotifications}
+              loading={loading}
+            />
           </nav>
 
           {/* Sidebar Footer with Clerk User Button */}
@@ -321,10 +333,12 @@ function AppLayout() {
 
 function NavLinks({
   dbUser,
+  unreadNotifications,
   loading,
   onNavigate,
 }: {
   dbUser: UserRecord | null
+  unreadNotifications: number
   loading: boolean
   onNavigate?: () => void
 }) {
@@ -390,6 +404,23 @@ function NavLinks({
         >
           <span className="material-symbols-outlined">badge</span>
           <span>My Trainers</span>
+        </Link>
+      )}
+
+      {dbUser && (
+        <Link
+          to="/notifications"
+          className="sidebar-link"
+          activeProps={{ className: 'active' }}
+          onClick={onNavigate}
+        >
+          <span className="material-symbols-outlined">notifications</span>
+          <span>Notifications</span>
+          {unreadNotifications > 0 && (
+            <span className="ml-auto rounded-full bg-[var(--secondary-container)] px-2 py-0.5 text-[10px] font-black text-black">
+              {unreadNotifications}
+            </span>
+          )}
         </Link>
       )}
 

@@ -15,6 +15,7 @@ import {
   workoutProgramSets,
   programAssignments,
   coachingNotes,
+  notifications,
 } from './db/schema'
 import { eq, and, or, desc, sql } from 'drizzle-orm'
 import { getAuthUser, requireAuthUser } from './auth-server'
@@ -22,6 +23,26 @@ import { getAuthUser, requireAuthUser } from './auth-server'
 // Generate a random string ID helper
 function generateId(prefix: string) {
   return `${prefix}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+async function createNotification(data: {
+  userId: string
+  actorUserId?: string
+  type: string
+  title: string
+  body: string
+  href?: string
+}) {
+  await db.insert(notifications).values({
+    id: generateId('ntf'),
+    userId: data.userId,
+    actorUserId: data.actorUserId || null,
+    type: data.type,
+    title: data.title,
+    body: data.body,
+    href: data.href || null,
+    createdAt: new Date().toISOString(),
+  })
 }
 
 // 1. Get Current User Profile and DB Sync Status
@@ -64,6 +85,75 @@ export const getCurrentUserProfile = createServerFn({ method: 'GET' }).handler(a
     profile,
     trainerProfile,
   }
+})
+
+export const getNotifications = createServerFn({ method: 'GET' })
+  .inputValidator((data?: { unreadOnly?: boolean }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser()
+    const userId = auth.userId
+
+    const rows = await db
+      .select({
+        id: notifications.id,
+        userId: notifications.userId,
+        actorUserId: notifications.actorUserId,
+        actorName: users.name,
+        type: notifications.type,
+        title: notifications.title,
+        body: notifications.body,
+        href: notifications.href,
+        readAt: notifications.readAt,
+        createdAt: notifications.createdAt,
+      })
+      .from(notifications)
+      .leftJoin(users, eq(notifications.actorUserId, users.id))
+      .where(
+        data?.unreadOnly
+          ? and(eq(notifications.userId, userId), sql`${notifications.readAt} is null`)
+          : eq(notifications.userId, userId),
+      )
+      .orderBy(desc(notifications.createdAt))
+
+    return rows
+  })
+
+export const getUnreadNotificationCount = createServerFn({ method: 'GET' }).handler(async () => {
+  const auth = await requireAuthUser()
+  const userId = auth.userId
+
+  const rows = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(notifications)
+    .where(and(eq(notifications.userId, userId), sql`${notifications.readAt} is null`))
+
+  return rows[0]?.count || 0
+})
+
+export const markNotificationRead = createServerFn({ method: 'POST' })
+  .inputValidator((data: { notificationId: string }) => data)
+  .handler(async ({ data }) => {
+    const auth = await requireAuthUser()
+    const userId = auth.userId
+
+    await db
+      .update(notifications)
+      .set({ readAt: new Date().toISOString() })
+      .where(and(eq(notifications.id, data.notificationId), eq(notifications.userId, userId)))
+
+    return { success: true }
+  })
+
+export const markAllNotificationsRead = createServerFn({ method: 'POST' }).handler(async () => {
+  const auth = await requireAuthUser()
+  const userId = auth.userId
+
+  await db
+    .update(notifications)
+    .set({ readAt: new Date().toISOString() })
+    .where(and(eq(notifications.userId, userId), sql`${notifications.readAt} is null`))
+
+  return { success: true }
 })
 
 // 2. Onboard User (Select role and set initial parameters)
@@ -881,6 +971,15 @@ export const inviteClientByEmail = createServerFn({ method: 'POST' })
           .update(trainerClients)
           .set({ status: 'pending', updatedAt: now })
           .where(eq(trainerClients.id, current.id))
+        const trainer = await db.select().from(users).where(eq(users.id, trainerId)).limit(1)
+        await createNotification({
+          userId: clientUser.id,
+          actorUserId: trainerId,
+          type: 'client_invite',
+          title: 'Trainer invite re-sent',
+          body: `${trainer[0]?.name || 'Your trainer'} re-sent a client connection request.`,
+          href: '/my-trainers',
+        })
         return { success: true, message: 'Invite request re-sent!' }
       }
     }
@@ -895,6 +994,16 @@ export const inviteClientByEmail = createServerFn({ method: 'POST' })
       permissions: JSON.stringify({ canViewHealthData: true, canAddSessions: true }),
       createdAt: now,
       updatedAt: now,
+    })
+
+    const trainer = await db.select().from(users).where(eq(users.id, trainerId)).limit(1)
+    await createNotification({
+      userId: clientUser.id,
+      actorUserId: trainerId,
+      type: 'client_invite',
+      title: 'New trainer invite',
+      body: `${trainer[0]?.name || 'A trainer'} invited you to connect on Kyber Fitness.`,
+      href: '/my-trainers',
     })
 
     return { success: true, message: 'Invitation sent successfully! Awaiting individual approval.' }
@@ -1416,6 +1525,16 @@ export const assignProgramToClient = createServerFn({ method: 'POST' })
       status: 'pending',
       notes: data.notes || null,
       assignedAt: now,
+    })
+
+    const trainer = await db.select().from(users).where(eq(users.id, trainerId)).limit(1)
+    await createNotification({
+      userId: data.clientId,
+      actorUserId: trainerId,
+      type: 'program_assignment',
+      title: 'New program assignment',
+      body: `${trainer[0]?.name || 'Your trainer'} assigned "${progs[0].title}" to your console.`,
+      href: '/dashboard',
     })
 
     return { success: true, assignmentId }

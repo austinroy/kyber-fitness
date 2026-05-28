@@ -200,3 +200,18 @@ export const coachingNotes = sqliteTable('coaching_notes', {
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 })
+
+// 15. In-App Notifications
+export const notifications = sqliteTable('notifications', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
+    .references(() => users.id, { onDelete: 'cascade' })
+    .notNull(),
+  actorUserId: text('actor_user_id').references(() => users.id, { onDelete: 'set null' }),
+  type: text('type').notNull(), // "client_invite" | "program_assignment" | "coach_feedback"
+  title: text('title').notNull(),
+  body: text('body').notNull(),
+  href: text('href'),
+  readAt: text('read_at'),
+  createdAt: text('created_at').notNull(),
+})
