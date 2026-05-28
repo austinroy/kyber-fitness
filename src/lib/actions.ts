@@ -36,7 +36,8 @@ function isMissingNotificationsTableError(error: unknown) {
   return (
     message.includes('no such table: notifications') ||
     message.includes('SQLITE_ERROR: no such table: notifications') ||
-    message.includes('sqlite3 result code 1: no such table: notifications')
+    message.includes('sqlite3 result code 1: no such table: notifications') ||
+    (message.includes('Failed query:') && message.includes('"notifications"'))
   )
 }
 
