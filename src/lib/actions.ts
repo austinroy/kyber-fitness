@@ -86,6 +86,56 @@ async function createNotification(data: {
   }
 }
 
+async function syncPendingTrainerInviteNotifications(clientId: string) {
+  try {
+    const pendingInvites = await db
+      .select({
+        relationshipId: trainerClients.id,
+        trainerId: trainerClients.trainerId,
+        trainerName: users.name,
+        createdAt: trainerClients.createdAt,
+      })
+      .from(trainerClients)
+      .innerJoin(users, eq(trainerClients.trainerId, users.id))
+      .where(and(eq(trainerClients.clientId, clientId), eq(trainerClients.status, 'pending')))
+
+    for (const invite of pendingInvites) {
+      const existing = await db
+        .select({ id: notifications.id })
+        .from(notifications)
+        .where(
+          and(
+            eq(notifications.userId, clientId),
+            eq(notifications.actorUserId, invite.trainerId),
+            eq(notifications.type, 'client_invite'),
+          ),
+        )
+        .limit(1)
+
+      if (existing.length > 0) {
+        continue
+      }
+
+      await db.insert(notifications).values({
+        id: generateId('ntf'),
+        userId: clientId,
+        actorUserId: invite.trainerId,
+        type: 'client_invite',
+        title: 'New trainer invite',
+        body: `${invite.trainerName || 'A trainer'} invited you to connect on Kyber Fitness.`,
+        href: '/my-trainers',
+        createdAt: invite.createdAt,
+      })
+    }
+  } catch (error) {
+    if (isMissingNotificationsTableError(error)) {
+      return
+    }
+
+    throw error
+  }
+}
+
 // 1. Get Current User Profile and DB Sync Status
 export const getCurrentUserProfile = createServerFn({ method: 'GET' }).handler(async () => {
   const auth = await getAuthUser()
@@ -135,6 +185,8 @@ export const getNotifications = createServerFn({ method: 'GET' })
     const userId = auth.userId
 
     try {
+      await syncPendingTrainerInviteNotifications(userId)
+
       const rows = await db
         .select({
           id: notifications.id,
@@ -164,8 +216,30 @@ export const getNotifications = createServerFn({ method: 'GET' })
       }
 
       throw error
+  }
+})
+
+export const getReceivedNotificationCount = createServerFn({ method: 'GET' }).handler(async () => {
+  const auth = await requireAuthUser()
+  const userId = auth.userId
+
+  try {
+    await syncPendingTrainerInviteNotifications(userId)
+
+    const rows = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+
+    return rows[0]?.count || 0
+  } catch (error) {
+    if (isMissingNotificationsTableError(error)) {
+      return 0
     }
-  })
+
+    throw error
+  }
+})
 
 export const getUnreadNotificationCount = createServerFn({ method: 'GET' }).handler(async () => {
   const auth = await requireAuthUser()

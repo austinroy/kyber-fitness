@@ -4,7 +4,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ClerkProvider, SignedIn, SignedOut, UserButton, useUser } from '@clerk/tanstack-start'
 import { Link } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { getCurrentUserProfile, getUnreadNotificationCount } from '../lib/actions'
+import { getCurrentUserProfile, getReceivedNotificationCount } from '../lib/actions'
 import type { UserRecord } from '../types/domain'
 import ThemeToggle from '../components/ThemeToggle'
 import { createPostAuthRedirectUrl } from '../lib/auth-redirects'
@@ -22,7 +22,7 @@ const signUpRedirectUrl = createPostAuthRedirectUrl(signUpUrl, signUpFinalRedire
 let cachedNavAuthState: {
   clerkUserId: string
   dbUser: UserRecord | null
-  unreadNotifications: number
+  receivedNotifications: number
 } | null = null
 const themeBootScript = `
 (() => {
@@ -174,8 +174,8 @@ function AppLayout() {
   })
   const [loading, setLoading] = useState(() => !cachedNavAuthState)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
-  const [unreadNotifications, setUnreadNotifications] = useState(() => {
-    return cachedNavAuthState?.unreadNotifications || 0
+  const [receivedNotifications, setReceivedNotifications] = useState(() => {
+    return cachedNavAuthState?.receivedNotifications || 0
   })
 
   // Check onboarding / db user status
@@ -185,7 +185,7 @@ function AppLayout() {
     if (!isSignedIn || !clerkUserId) {
       cachedNavAuthState = null
       setDbUser(null)
-      setUnreadNotifications(0)
+      setReceivedNotifications(0)
       setLoading(false)
       return
     }
@@ -194,13 +194,13 @@ function AppLayout() {
 
     if (cachedNavAuthState?.clerkUserId === clerkUserId) {
       setDbUser(cachedNavAuthState.dbUser)
-      setUnreadNotifications(cachedNavAuthState.unreadNotifications)
+      setReceivedNotifications(cachedNavAuthState.receivedNotifications)
       setLoading(false)
       return
     }
 
     setDbUser(null)
-    setUnreadNotifications(0)
+    setReceivedNotifications(0)
     setLoading(true)
 
     getCurrentUserProfile()
@@ -209,23 +209,23 @@ function AppLayout() {
 
         if (res && res.authenticated) {
           const nextDbUser = res.user || null
-          let nextUnreadNotifications = 0
+          let nextReceivedNotifications = 0
 
           if (nextDbUser) {
             try {
-              nextUnreadNotifications = (await getUnreadNotificationCount()) || 0
+              nextReceivedNotifications = (await getReceivedNotificationCount()) || 0
             } catch {
-              nextUnreadNotifications = 0
+              nextReceivedNotifications = 0
             }
           }
 
           cachedNavAuthState = {
             clerkUserId,
             dbUser: nextDbUser,
-            unreadNotifications: nextUnreadNotifications,
+            receivedNotifications: nextReceivedNotifications,
           }
           setDbUser(nextDbUser)
-          setUnreadNotifications(nextUnreadNotifications)
+          setReceivedNotifications(nextReceivedNotifications)
         }
       })
       .finally(() => {
@@ -313,7 +313,7 @@ function AppLayout() {
               <nav className="sidebar-nav mobile-drawer-nav">
                 <NavLinks
                   dbUser={dbUser}
-                  unreadNotifications={unreadNotifications}
+                  receivedNotifications={receivedNotifications}
                   loading={loading}
                   onNavigate={() => setMobileNavOpen(false)}
                 />
@@ -340,7 +340,7 @@ function AppLayout() {
               <nav className="sidebar-nav">
                 <NavLinks
                   dbUser={dbUser}
-                  unreadNotifications={unreadNotifications}
+                  receivedNotifications={receivedNotifications}
                   loading={loading}
                 />
               </nav>
@@ -393,12 +393,12 @@ function AppLayout() {
 
 function NavLinks({
   dbUser,
-  unreadNotifications,
+  receivedNotifications,
   loading,
   onNavigate,
 }: {
   dbUser: UserRecord | null
-  unreadNotifications: number
+  receivedNotifications: number
   loading: boolean
   onNavigate?: () => void
 }) {
@@ -476,9 +476,9 @@ function NavLinks({
         >
           <span className="material-symbols-outlined">notifications</span>
           <span>Notifications</span>
-          {unreadNotifications > 0 && (
+          {receivedNotifications > 0 && (
             <span className="ml-auto rounded-full bg-[var(--secondary-container)] px-2 py-0.5 text-[10px] font-black text-black">
-              {unreadNotifications}
+              {receivedNotifications}
             </span>
           )}
         </Link>
