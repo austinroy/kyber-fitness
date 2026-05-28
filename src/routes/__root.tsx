@@ -19,6 +19,11 @@ const signUpFinalRedirectUrl =
   import.meta.env.VITE_CLERK_SIGN_UP_FORCE_REDIRECT_URL || '/onboarding'
 const signInRedirectUrl = createPostAuthRedirectUrl(signInUrl, signInFinalRedirectUrl)
 const signUpRedirectUrl = createPostAuthRedirectUrl(signUpUrl, signUpFinalRedirectUrl)
+let cachedNavAuthState: {
+  clerkUserId: string
+  dbUser: UserRecord | null
+  unreadNotifications: number
+} | null = null
 const themeBootScript = `
 (() => {
   try {
@@ -162,36 +167,77 @@ function RootDocument() {
 }
 
 function AppLayout() {
-  const { isSignedIn } = useUser()
-  const [dbUser, setDbUser] = useState<UserRecord | null>(null)
-  const [loading, setLoading] = useState(true)
+  const { isLoaded, isSignedIn, user } = useUser()
+  const clerkUserId = user?.id
+  const [dbUser, setDbUser] = useState<UserRecord | null>(() => {
+    return cachedNavAuthState?.dbUser || null
+  })
+  const [loading, setLoading] = useState(() => !cachedNavAuthState)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
-  const [unreadNotifications, setUnreadNotifications] = useState(0)
+  const [unreadNotifications, setUnreadNotifications] = useState(() => {
+    return cachedNavAuthState?.unreadNotifications || 0
+  })
 
   // Check onboarding / db user status
   useEffect(() => {
-    if (isSignedIn) {
-      getCurrentUserProfile()
-        .then((res) => {
-          if (res && res.authenticated) {
-            setDbUser(res.user || null)
-            if (res.user) {
-              getUnreadNotificationCount()
-                .then((count) => setUnreadNotifications(count || 0))
-                .catch(() => setUnreadNotifications(0))
-            }
-          }
-          setLoading(false)
-        })
-        .catch(() => {
-          setLoading(false)
-        })
-    } else {
+    if (!isLoaded) return
+
+    if (!isSignedIn || !clerkUserId) {
+      cachedNavAuthState = null
       setDbUser(null)
       setUnreadNotifications(0)
       setLoading(false)
+      return
     }
-  }, [isSignedIn])
+
+    let cancelled = false
+
+    if (cachedNavAuthState?.clerkUserId === clerkUserId) {
+      setDbUser(cachedNavAuthState.dbUser)
+      setUnreadNotifications(cachedNavAuthState.unreadNotifications)
+      setLoading(false)
+      return
+    }
+
+    setDbUser(null)
+    setUnreadNotifications(0)
+    setLoading(true)
+
+    getCurrentUserProfile()
+      .then(async (res) => {
+        if (cancelled) return
+
+        if (res && res.authenticated) {
+          const nextDbUser = res.user || null
+          let nextUnreadNotifications = 0
+
+          if (nextDbUser) {
+            try {
+              nextUnreadNotifications = (await getUnreadNotificationCount()) || 0
+            } catch {
+              nextUnreadNotifications = 0
+            }
+          }
+
+          cachedNavAuthState = {
+            clerkUserId,
+            dbUser: nextDbUser,
+            unreadNotifications: nextUnreadNotifications,
+          }
+          setDbUser(nextDbUser)
+          setUnreadNotifications(nextUnreadNotifications)
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [isLoaded, isSignedIn, clerkUserId])
 
   useEffect(() => {
     if (mobileNavOpen) {
@@ -304,21 +350,21 @@ function AppLayout() {
       <main className="main-content flex-1">
         {/* Render a top navigation header for public/anonymous users */}
         <SignedOut>
-          <header className="flex justify-between items-center py-4 px-6 border-b border-[var(--line)] bg-[var(--surface-container-lowest)] mb-6 rounded-[var(--rounded-lg)]">
-            <div className="flex items-center gap-2">
+          <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 py-4 px-4 sm:px-6 border-b border-[var(--line)] bg-[var(--surface-container-lowest)] mb-6 rounded-[var(--rounded-lg)]">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl">
                 bolt
               </span>
-              <span className="headline-md font-bold tracking-tight text-[var(--on-surface)] m-0">
+              <span className="headline-md font-bold tracking-tight text-[var(--on-surface)] m-0 text-lg sm:text-2xl truncate">
                 KYBER FITNESS
               </span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="grid grid-cols-[auto_1fr_1fr] sm:flex sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
               <ThemeToggle />
-              <Link to="/sign-in" className="btn btn-secondary py-1.5 px-4 text-xs">
+              <Link to="/sign-in" className="btn btn-secondary py-1.5 px-3 sm:px-4 text-xs w-full">
                 Sign In
               </Link>
-              <Link to="/sign-up" className="btn btn-primary py-1.5 px-4 text-xs">
+              <Link to="/sign-up" className="btn btn-primary py-1.5 px-3 sm:px-4 text-xs w-full">
                 Sign Up
               </Link>
             </div>
