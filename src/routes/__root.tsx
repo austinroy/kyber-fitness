@@ -165,6 +165,7 @@ function AppLayout() {
   const { isSignedIn } = useUser()
   const [dbUser, setDbUser] = useState<UserRecord | null>(null)
   const [loading, setLoading] = useState(true)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
 
   // Check onboarding / db user status
   useEffect(() => {
@@ -185,10 +186,84 @@ function AppLayout() {
     }
   }, [isSignedIn])
 
+  useEffect(() => {
+    if (mobileNavOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [mobileNavOpen])
+
   return (
     <div className="app-layout">
       {/* Sidebar - Visible only when signed in */}
       <SignedIn>
+        <header className="mobile-nav-header">
+          <button
+            type="button"
+            className="mobile-menu-button"
+            aria-label="Open navigation menu"
+            aria-expanded={mobileNavOpen}
+            onClick={() => setMobileNavOpen(true)}
+          >
+            <span className="material-symbols-outlined">menu</span>
+          </button>
+
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl">
+              bolt
+            </span>
+            <span className="headline-md text-lg font-extrabold tracking-tight m-0 text-[var(--on-surface)]">
+              KYBER
+            </span>
+          </div>
+
+          <ThemeToggle />
+        </header>
+
+        <div
+          className={`mobile-nav-backdrop ${mobileNavOpen ? 'open' : ''}`}
+          onClick={() => setMobileNavOpen(false)}
+        />
+
+        <aside className={`mobile-nav-drawer ${mobileNavOpen ? 'open' : ''}`}>
+          <div className="sidebar-header">
+            <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
+              bolt
+            </span>
+            <div>
+              <h1 className="headline-md font-extrabold tracking-tight m-0 text-[var(--on-surface)] leading-none">
+                KYBER
+              </h1>
+              <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0 tracking-wider">
+                KINETIC PERFORMANCE
+              </p>
+            </div>
+            <button
+              type="button"
+              className="mobile-menu-button ml-auto"
+              aria-label="Close navigation menu"
+              onClick={() => setMobileNavOpen(false)}
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+
+          <nav className="sidebar-nav mobile-drawer-nav">
+            <NavLinks
+              dbUser={dbUser}
+              loading={loading}
+              onNavigate={() => setMobileNavOpen(false)}
+            />
+          </nav>
+
+          <SidebarFooter dbUser={dbUser} />
+        </aside>
+
         <aside className="sidebar">
           <div className="sidebar-header">
             <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
@@ -205,74 +280,11 @@ function AppLayout() {
           </div>
 
           <nav className="sidebar-nav">
-            <Link to="/dashboard" className="sidebar-link" activeProps={{ className: 'active' }}>
-              <span className="material-symbols-outlined">dashboard</span>
-              <span>Dashboard</span>
-            </Link>
-            <Link to="/workouts" className="sidebar-link" activeProps={{ className: 'active' }}>
-              <span className="material-symbols-outlined">fitness_center</span>
-              <span>Workouts</span>
-            </Link>
-            <Link to="/health" className="sidebar-link" activeProps={{ className: 'active' }}>
-              <span className="material-symbols-outlined">monitoring</span>
-              <span>Health Metrics</span>
-            </Link>
-
-            {/* Role-based navigation */}
-            {dbUser && dbUser.role === 'trainer' && (
-              <>
-                <Link to="/clients" className="sidebar-link" activeProps={{ className: 'active' }}>
-                  <span className="material-symbols-outlined">groups</span>
-                  <span>My Clients</span>
-                </Link>
-                <Link to="/programs" className="sidebar-link" activeProps={{ className: 'active' }}>
-                  <span className="material-symbols-outlined">edit_note</span>
-                  <span>Program Builder</span>
-                </Link>
-              </>
-            )}
-
-            {dbUser && dbUser.role === 'individual' && (
-              <Link
-                to="/my-trainers"
-                className="sidebar-link"
-                activeProps={{ className: 'active' }}
-              >
-                <span className="material-symbols-outlined">badge</span>
-                <span>My Trainers</span>
-              </Link>
-            )}
-
-            {dbUser && (
-              <Link to="/settings" className="sidebar-link" activeProps={{ className: 'active' }}>
-                <span className="material-symbols-outlined">settings</span>
-                <span>Settings</span>
-              </Link>
-            )}
-
-            {!loading && !dbUser && (
-              <Link to="/onboarding" className="sidebar-link" activeProps={{ className: 'active' }}>
-                <span className="material-symbols-outlined">assignment_ind</span>
-                <span>Setup Profile</span>
-              </Link>
-            )}
+            <NavLinks dbUser={dbUser} loading={loading} />
           </nav>
 
           {/* Sidebar Footer with Clerk User Button */}
-          <div className="border-t border-[var(--line)] pt-4 flex items-center justify-between mt-auto gap-3">
-            <div className="flex items-center gap-3">
-              <UserButton afterSignOutUrl="/" />
-              <div className="text-left">
-                <p className="text-xs font-semibold text-[var(--on-surface)] truncate max-w-[150px] m-0">
-                  {dbUser?.name || 'Kyber Athlete'}
-                </p>
-                <p className="text-[10px] text-[var(--on-surface-variant)] capitalize m-0">
-                  {dbUser?.role || 'Onboarding'}
-                </p>
-              </div>
-            </div>
-            <ThemeToggle />
-          </div>
+          <SidebarFooter dbUser={dbUser} />
         </aside>
       </SignedIn>
 
@@ -303,6 +315,126 @@ function AppLayout() {
 
         <Outlet />
       </main>
+    </div>
+  )
+}
+
+function NavLinks({
+  dbUser,
+  loading,
+  onNavigate,
+}: {
+  dbUser: UserRecord | null
+  loading: boolean
+  onNavigate?: () => void
+}) {
+  return (
+    <>
+      <Link
+        to="/dashboard"
+        className="sidebar-link"
+        activeProps={{ className: 'active' }}
+        onClick={onNavigate}
+      >
+        <span className="material-symbols-outlined">dashboard</span>
+        <span>Dashboard</span>
+      </Link>
+      <Link
+        to="/workouts"
+        className="sidebar-link"
+        activeProps={{ className: 'active' }}
+        onClick={onNavigate}
+      >
+        <span className="material-symbols-outlined">fitness_center</span>
+        <span>Workouts</span>
+      </Link>
+      <Link
+        to="/health"
+        className="sidebar-link"
+        activeProps={{ className: 'active' }}
+        onClick={onNavigate}
+      >
+        <span className="material-symbols-outlined">monitoring</span>
+        <span>Health Metrics</span>
+      </Link>
+
+      {dbUser && dbUser.role === 'trainer' && (
+        <>
+          <Link
+            to="/clients"
+            className="sidebar-link"
+            activeProps={{ className: 'active' }}
+            onClick={onNavigate}
+          >
+            <span className="material-symbols-outlined">groups</span>
+            <span>My Clients</span>
+          </Link>
+          <Link
+            to="/programs"
+            className="sidebar-link"
+            activeProps={{ className: 'active' }}
+            onClick={onNavigate}
+          >
+            <span className="material-symbols-outlined">edit_note</span>
+            <span>Program Builder</span>
+          </Link>
+        </>
+      )}
+
+      {dbUser && dbUser.role === 'individual' && (
+        <Link
+          to="/my-trainers"
+          className="sidebar-link"
+          activeProps={{ className: 'active' }}
+          onClick={onNavigate}
+        >
+          <span className="material-symbols-outlined">badge</span>
+          <span>My Trainers</span>
+        </Link>
+      )}
+
+      {dbUser && (
+        <Link
+          to="/settings"
+          className="sidebar-link"
+          activeProps={{ className: 'active' }}
+          onClick={onNavigate}
+        >
+          <span className="material-symbols-outlined">settings</span>
+          <span>Settings</span>
+        </Link>
+      )}
+
+      {!loading && !dbUser && (
+        <Link
+          to="/onboarding"
+          className="sidebar-link"
+          activeProps={{ className: 'active' }}
+          onClick={onNavigate}
+        >
+          <span className="material-symbols-outlined">assignment_ind</span>
+          <span>Setup Profile</span>
+        </Link>
+      )}
+    </>
+  )
+}
+
+function SidebarFooter({ dbUser }: { dbUser: UserRecord | null }) {
+  return (
+    <div className="border-t border-[var(--line)] pt-4 flex items-center justify-between mt-auto gap-3">
+      <div className="flex items-center gap-3 min-w-0">
+        <UserButton afterSignOutUrl="/" />
+        <div className="text-left min-w-0">
+          <p className="text-xs font-semibold text-[var(--on-surface)] truncate max-w-[150px] m-0">
+            {dbUser?.name || 'Kyber Athlete'}
+          </p>
+          <p className="text-[10px] text-[var(--on-surface-variant)] capitalize m-0">
+            {dbUser?.role || 'Onboarding'}
+          </p>
+        </div>
+      </div>
+      <ThemeToggle />
     </div>
   )
 }
