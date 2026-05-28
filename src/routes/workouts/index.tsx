@@ -60,12 +60,14 @@ function WorkoutsPage() {
   return (
     <div className="space-y-6 py-2">
       {/* Page Header */}
-      <div className="flex items-center justify-between border-b border-white/5 pb-4">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/5 pb-4">
+        <div className="min-w-0">
           <div className="chip mb-1">PERFORMANCE ARCHIVES</div>
-          <h1 className="headline-lg font-black text-white m-0">WORKOUT HISTORY</h1>
+          <h1 className="headline-lg font-black text-white m-0 text-2xl sm:text-3xl break-words">
+            WORKOUT HISTORY
+          </h1>
         </div>
-        <Link to="/workouts/new" className="btn btn-primary">
+        <Link to="/workouts/new" className="btn btn-primary w-full sm:w-auto">
           <span className="material-symbols-outlined mr-2">add</span>
           Log Session
         </Link>
@@ -86,13 +88,13 @@ function WorkoutsPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* List panel */}
           <div className="lg:col-span-1 space-y-4">
             <h3 className="label-md text-[var(--on-surface-variant)] text-xs mb-2">
               Logs ({sessions.length})
             </h3>
-            <div className="space-y-3 overflow-y-auto max-h-[70vh] pr-2">
+            <div className="space-y-3 overflow-y-auto max-h-none lg:max-h-[70vh] lg:pr-2">
               {sessions.map((sess) => (
                 <div
                   key={sess.id}
@@ -103,8 +105,10 @@ function WorkoutsPage() {
                       : 'border-white/5 bg-[var(--surface-container)] hover:border-white/20'
                   }`}
                 >
-                  <div className="flex justify-between items-start gap-3">
-                    <h4 className="font-bold text-white text-base truncate m-0">{sess.title}</h4>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-3">
+                    <h4 className="font-bold text-white text-base break-words m-0 min-w-0">
+                      {sess.title}
+                    </h4>
                     <span className="text-[10px] text-[var(--on-surface-variant)] whitespace-nowrap">
                       {sess.sessionDate}
                     </span>
@@ -116,7 +120,7 @@ function WorkoutsPage() {
 
                   <div className="flex flex-wrap gap-1">
                     {sess.exercises.map((ex) => (
-                      <span key={ex.id} className="chip py-0.5 px-2 text-[8px]">
+                      <span key={ex.id} className="chip py-0.5 px-2 text-[8px] max-w-full break-words">
                         {ex.name}
                       </span>
                     ))}
@@ -139,12 +143,12 @@ function WorkoutsPage() {
             {selectedSession ? (
               <div className="card space-y-6">
                 {/* Detail Header */}
-                <div className="flex flex-wrap justify-between items-start gap-4 border-b border-white/5 pb-4">
-                  <div>
-                    <h2 className="headline-lg text-2xl font-black text-white m-0">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 border-b border-white/5 pb-4">
+                  <div className="min-w-0">
+                    <h2 className="headline-lg text-xl sm:text-2xl font-black text-white m-0 break-words">
                       {selectedSession.title}
                     </h2>
-                    <p className="body-md text-xs text-[var(--on-surface-variant)] mt-1.5 flex items-center gap-2">
+                    <p className="body-md text-xs text-[var(--on-surface-variant)] mt-1.5 flex flex-wrap items-center gap-2">
                       <span className="material-symbols-outlined text-sm">calendar_month</span>
                       {selectedSession.sessionDate}
                       {selectedSession.durationMinutes && (
@@ -163,7 +167,7 @@ function WorkoutsPage() {
                       )}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-left sm:text-right">
                     <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0">
                       Recorded By
                     </p>
@@ -195,13 +199,13 @@ function WorkoutsPage() {
                   {selectedSession.exercises.map((ex, idx) => (
                     <div
                       key={ex.id}
-                      className="p-4 rounded-md border border-white/5 bg-[var(--surface-container-low)] space-y-4"
+                      className="p-3 sm:p-4 rounded-md border border-white/5 bg-[var(--surface-container-low)] space-y-4"
                     >
                       {/* Exercise Name and category */}
-                      <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                        <div className="flex items-center gap-2">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-b border-white/5 pb-2">
+                        <div className="flex items-center gap-2 min-w-0">
                           <span className="label-md text-xs text-white/40">#{idx + 1}</span>
-                          <h4 className="headline-md text-white font-bold text-base m-0">
+                          <h4 className="headline-md text-white font-bold text-base m-0 break-words">
                             {ex.name}
                           </h4>
                         </div>
@@ -218,67 +222,71 @@ function WorkoutsPage() {
                       )}
 
                       {/* Sets table */}
-                      <table className="w-full text-left border-collapse text-xs">
-                        <thead>
-                          <tr className="border-b border-white/5 text-[var(--on-surface-variant)]">
-                            <th className="py-2 font-semibold">Set</th>
-                            {ex.category === 'cardio' ? (
-                              <>
-                                <th className="py-2 font-semibold">Duration</th>
-                                <th className="py-2 font-semibold">Distance</th>
-                              </>
-                            ) : (
-                              <>
-                                <th className="py-2 font-semibold">Reps</th>
-                                <th className="py-2 font-semibold">Weight</th>
-                              </>
-                            )}
-                            <th className="py-2 font-semibold">Rest</th>
-                            <th className="py-2 font-semibold">Intensity</th>
-                            <th className="py-2 font-semibold">Notes</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {ex.sets.map((set) => (
-                            <tr
-                              key={set.id}
-                              className="border-b border-white/[0.02] hover:bg-white/[0.01]"
-                            >
-                              <td className="py-2 font-bold text-white">#{set.setNumber}</td>
+                      <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
+                        <table className="w-full min-w-[560px] text-left border-collapse text-xs">
+                          <thead>
+                            <tr className="border-b border-white/5 text-[var(--on-surface-variant)]">
+                              <th className="py-2 font-semibold">Set</th>
                               {ex.category === 'cardio' ? (
                                 <>
-                                  <td className="py-2 text-[var(--on-surface)]">
-                                    {set.durationSeconds
-                                      ? `${Math.floor(set.durationSeconds / 60)}m ${set.durationSeconds % 60}s`
-                                      : '--'}
-                                  </td>
-                                  <td className="py-2 text-[var(--on-surface)]">
-                                    {set.distance
-                                      ? `${set.distance} ${ex.defaultUnit || 'km'}`
-                                      : '--'}
-                                  </td>
+                                  <th className="py-2 font-semibold">Duration</th>
+                                  <th className="py-2 font-semibold">Distance</th>
                                 </>
                               ) : (
                                 <>
-                                  <td className="py-2 text-[var(--on-surface)]">
-                                    {set.reps ?? '--'}
-                                  </td>
-                                  <td className="py-2 text-[var(--on-surface)]">
-                                    {set.weight ? `${set.weight} ${ex.defaultUnit || 'kg'}` : '--'}
-                                  </td>
+                                  <th className="py-2 font-semibold">Reps</th>
+                                  <th className="py-2 font-semibold">Weight</th>
                                 </>
                               )}
-                              <td className="py-2 text-white/50">
-                                {set.restSeconds ? `${set.restSeconds}s` : '--'}
-                              </td>
-                              <td className="py-2 text-white/70">{set.intensity || '--'}</td>
-                              <td className="py-2 text-white/50 italic truncate max-w-[120px]">
-                                {set.notes || '--'}
-                              </td>
+                              <th className="py-2 font-semibold">Rest</th>
+                              <th className="py-2 font-semibold">Intensity</th>
+                              <th className="py-2 font-semibold">Notes</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {ex.sets.map((set) => (
+                              <tr
+                                key={set.id}
+                                className="border-b border-white/[0.02] hover:bg-white/[0.01]"
+                              >
+                                <td className="py-2 font-bold text-white">#{set.setNumber}</td>
+                                {ex.category === 'cardio' ? (
+                                  <>
+                                    <td className="py-2 text-[var(--on-surface)]">
+                                      {set.durationSeconds
+                                        ? `${Math.floor(set.durationSeconds / 60)}m ${set.durationSeconds % 60}s`
+                                        : '--'}
+                                    </td>
+                                    <td className="py-2 text-[var(--on-surface)]">
+                                      {set.distance
+                                        ? `${set.distance} ${ex.defaultUnit || 'km'}`
+                                        : '--'}
+                                    </td>
+                                  </>
+                                ) : (
+                                  <>
+                                    <td className="py-2 text-[var(--on-surface)]">
+                                      {set.reps ?? '--'}
+                                    </td>
+                                    <td className="py-2 text-[var(--on-surface)]">
+                                      {set.weight
+                                        ? `${set.weight} ${ex.defaultUnit || 'kg'}`
+                                        : '--'}
+                                    </td>
+                                  </>
+                                )}
+                                <td className="py-2 text-white/50">
+                                  {set.restSeconds ? `${set.restSeconds}s` : '--'}
+                                </td>
+                                <td className="py-2 text-white/70">{set.intensity || '--'}</td>
+                                <td className="py-2 text-white/50 italic max-w-[180px] whitespace-normal">
+                                  {set.notes || '--'}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   ))}
                 </div>
