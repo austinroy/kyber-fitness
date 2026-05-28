@@ -369,10 +369,16 @@ function AppLayout() {
               <div className="h-9 w-9 shrink-0">
                 <ThemeToggle />
               </div>
-              <Link to="/sign-in" className="btn btn-secondary py-1.5 px-3 sm:px-4 text-xs w-full">
+              <Link
+                to="/sign-in"
+                className="btn btn-secondary !h-9 !py-0 px-3 sm:px-4 text-xs w-full sm:w-auto whitespace-nowrap"
+              >
                 Sign In
               </Link>
-              <Link to="/sign-up" className="btn btn-primary py-1.5 px-3 sm:px-4 text-xs w-full">
+              <Link
+                to="/sign-up"
+                className="btn btn-primary !h-9 !py-0 px-3 sm:px-4 text-xs w-full sm:w-auto whitespace-nowrap"
+              >
                 Sign Up
               </Link>
             </div>
