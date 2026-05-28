@@ -177,7 +177,16 @@ export interface NotificationRecord {
   userId: string
   actorUserId?: string | null
   actorName?: string | null
-  type: 'client_invite' | 'program_assignment' | 'coach_feedback' | string
+  type:
+    | 'client_invite'
+    | 'client_invite_accepted'
+    | 'client_invite_declined'
+    | 'program_assignment'
+    | 'program_completed'
+    | 'coach_feedback'
+    | 'trainer_logged_workout'
+    | 'trainer_logged_metric'
+    | string
   title: string
   body: string
   href?: string | null

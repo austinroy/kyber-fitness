@@ -136,6 +136,11 @@ async function syncPendingTrainerInviteNotifications(clientId: string) {
   }
 }
 
+async function getUserName(userId: string) {
+  const rows = await db.select({ name: users.name }).from(users).where(eq(users.id, userId)).limit(1)
+  return rows[0]?.name || 'Kyber user'
+}
+
 // 1. Get Current User Profile and DB Sync Status
 export const getCurrentUserProfile = createServerFn({ method: 'GET' }).handler(async () => {
   const auth = await getAuthUser()
@@ -720,6 +725,29 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
       }
     })
 
+    if (data.clientId) {
+      const trainerName = await getUserName(currentUserId)
+      await createNotification({
+        userId: data.clientId,
+        actorUserId: currentUserId,
+        type: 'trainer_logged_workout',
+        title: 'Workout logged by trainer',
+        body: `${trainerName} logged "${data.title}" to your workout history.`,
+        href: `/workouts/${sessionId}`,
+      })
+    }
+
+    if (assignment) {
+      await createNotification({
+        userId: assignment.assignedByUserId,
+        actorUserId: currentUserId,
+        type: 'program_completed',
+        title: 'Program assignment completed',
+        body: `${await getUserName(currentUserId)} completed an assigned workout.`,
+        href: '/clients',
+      })
+    }
+
     return { success: true, sessionId }
   })
 
@@ -1068,6 +1096,15 @@ export const saveCoachingNote = createServerFn({ method: 'POST' })
         })
         .where(eq(coachingNotes.id, data.noteId))
 
+      await createNotification({
+        userId: data.clientId,
+        actorUserId: trainerId,
+        type: 'coach_feedback',
+        title: 'Coaching note updated',
+        body: `${await getUserName(trainerId)} updated a private coaching note: "${data.title}".`,
+        href: '/notifications',
+      })
+
       return { success: true, noteId: data.noteId }
     }
 
@@ -1081,6 +1118,15 @@ export const saveCoachingNote = createServerFn({ method: 'POST' })
       pinned: data.pinned ? 1 : 0,
       createdAt: now,
       updatedAt: now,
+    })
+
+    await createNotification({
+      userId: data.clientId,
+      actorUserId: trainerId,
+      type: 'coach_feedback',
+      title: 'New coaching note',
+      body: `${await getUserName(trainerId)} added a private coaching note: "${data.title}".`,
+      href: '/notifications',
     })
 
     return { success: true, noteId }
@@ -1257,6 +1303,15 @@ export const respondToTrainerInvitation = createServerFn({ method: 'POST' })
       .set({ status, updatedAt: now })
       .where(eq(trainerClients.id, rel.id))
 
+    await createNotification({
+      userId: rel.trainerId,
+      actorUserId: clientId,
+      type: data.accept ? 'client_invite_accepted' : 'client_invite_declined',
+      title: data.accept ? 'Client invite accepted' : 'Client invite declined',
+      body: `${await getUserName(clientId)} ${data.accept ? 'accepted' : 'declined'} your client connection invite.`,
+      href: '/clients',
+    })
+
     return { success: true, status }
   })
 
@@ -1297,6 +1352,17 @@ export const logHealthMetric = createServerFn({ method: 'POST' })
       recordedByUserId: currentUserId,
       notes: data.notes || null,
     })
+
+    if (data.clientId) {
+      await createNotification({
+        userId: data.clientId,
+        actorUserId: currentUserId,
+        type: 'trainer_logged_metric',
+        title: 'Health metric logged by trainer',
+        body: `${await getUserName(currentUserId)} logged ${data.value} ${data.unit} for your ${data.metricType.replace('_', ' ')} timeline.`,
+        href: '/health',
+      })
+    }
 
     return { success: true, metricId }
   })
