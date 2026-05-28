@@ -372,7 +372,7 @@ function AppLayout() {
               <Link to="/sign-in" className="btn btn-secondary py-1.5 px-3 sm:px-4 text-xs w-full">
                 Sign In
               </Link>
-              <Link to="/sign-up" className="btn btn-secondary py-1.5 px-3 sm:px-4 text-xs w-full">
+              <Link to="/sign-up" className="btn btn-primary py-1.5 px-3 sm:px-4 text-xs w-full">
                 Sign Up
               </Link>
             </div>
