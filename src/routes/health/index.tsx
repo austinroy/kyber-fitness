@@ -286,9 +286,11 @@ function HealthDashboardPage() {
   const generateTrendChart = () => {
     if (metricsHistory.length < 2) {
       return (
-        <div className="flex flex-col items-center justify-center h-[240px] border border-white/5 bg-white/[0.01] rounded-[var(--rounded-md)] text-center p-6">
-          <span className="material-symbols-outlined text-white/10 text-5xl mb-2">insights</span>
-          <h4 className="headline-md font-bold text-white/50 text-sm">
+        <div className="flex flex-col items-center justify-center h-[240px] border border-[var(--glass-line-strong)] bg-[var(--surface-container-low)] rounded-[var(--rounded-md)] text-center p-6 shadow-sm">
+          <span className="material-symbols-outlined text-[var(--secondary-container)] text-5xl mb-2 opacity-80">
+            insights
+          </span>
+          <h4 className="headline-md font-bold text-[var(--on-surface)] text-sm">
             Awaiting sufficient timeline data
           </h4>
           <p className="body-md text-[var(--on-surface-variant)] text-xs mt-1 max-w-xs">
@@ -500,13 +502,13 @@ function HealthDashboardPage() {
       </div>
 
       {/* Tabs configuration */}
-      <div className="flex border-b border-white/5 gap-2">
+      <div className="flex border-b border-[var(--line)] gap-2 overflow-x-auto pb-px">
         <button
           onClick={() => setActiveMetric('weight')}
-          className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 flex items-center gap-2 transition-all ${
+          className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 flex items-center gap-2 transition-all whitespace-nowrap rounded-t-md ${
             activeMetric === 'weight'
-              ? 'border-[var(--primary-container)] text-white bg-white/[0.02]'
-              : 'border-transparent text-[var(--on-surface-variant)] hover:text-white'
+              ? 'border-[var(--primary-container)] text-[var(--on-surface)] bg-[var(--surface-container-high)]'
+              : 'border-transparent text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
           }`}
         >
           <span className="material-symbols-outlined text-sm">scale</span>
@@ -514,10 +516,10 @@ function HealthDashboardPage() {
         </button>
         <button
           onClick={() => setActiveMetric('body_fat')}
-          className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 flex items-center gap-2 transition-all ${
+          className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 flex items-center gap-2 transition-all whitespace-nowrap rounded-t-md ${
             activeMetric === 'body_fat'
-              ? 'border-[var(--secondary-container)] text-white bg-white/[0.02]'
-              : 'border-transparent text-[var(--on-surface-variant)] hover:text-white'
+              ? 'border-[var(--secondary-container)] text-[var(--on-surface)] bg-[var(--surface-container-high)]'
+              : 'border-transparent text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
           }`}
         >
           <span className="material-symbols-outlined text-sm">percent</span>
@@ -525,10 +527,10 @@ function HealthDashboardPage() {
         </button>
         <button
           onClick={() => setActiveMetric('resting_hr')}
-          className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 flex items-center gap-2 transition-all ${
+          className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 flex items-center gap-2 transition-all whitespace-nowrap rounded-t-md ${
             activeMetric === 'resting_hr'
-              ? 'border-[var(--secondary-container)] text-white bg-white/[0.02]'
-              : 'border-transparent text-[var(--on-surface-variant)] hover:text-white'
+              ? 'border-[var(--secondary-container)] text-[var(--on-surface)] bg-[var(--surface-container-high)]'
+              : 'border-transparent text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
           }`}
         >
           <span className="material-symbols-outlined text-sm">favorite</span>
