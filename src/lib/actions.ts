@@ -26,18 +26,34 @@ function generateId(prefix: string) {
 }
 
 function isMissingNotificationsTableError(error: unknown) {
-  const message =
-    error instanceof Error
-      ? error.message
-      : typeof error === 'object' && error && 'message' in error
-        ? String((error as { message?: unknown }).message)
-        : String(error)
+  const message = getErrorMessage(error)
 
   return (
     message.includes('no such table: notifications') ||
     message.includes('SQLITE_ERROR: no such table: notifications') ||
     message.includes('sqlite3 result code 1: no such table: notifications') ||
     (message.includes('Failed query:') && message.includes('"notifications"'))
+  )
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error
+    ? error.message
+    : typeof error === 'object' && error && 'message' in error
+      ? String((error as { message?: unknown }).message)
+      : String(error)
+}
+
+function isProgramDepthSchemaDriftError(error: unknown) {
+  const message = getErrorMessage(error)
+
+  return (
+    message.includes('progression_plan') ||
+    message.includes('block_name') ||
+    message.includes('scheduled_for') ||
+    message.includes('due_at') ||
+    message.includes('recurrence') ||
+    message.includes('completed_workout_session_id')
   )
 }
 
@@ -408,15 +424,36 @@ async function verifyTrainerClientAccess(trainerId: string, clientId: string) {
 }
 
 async function getProgramDetailsById(programId: string) {
-  const progs = await db
+  let progs = await db
     .select()
     .from(workoutPrograms)
     .where(eq(workoutPrograms.id, programId))
     .limit(1)
+    .catch(async (error) => {
+      if (!isProgramDepthSchemaDriftError(error)) {
+        throw error
+      }
+
+      return db
+        .select({
+          id: workoutPrograms.id,
+          createdByUserId: workoutPrograms.createdByUserId,
+          title: workoutPrograms.title,
+          notes: workoutPrograms.notes,
+          createdAt: workoutPrograms.createdAt,
+          updatedAt: workoutPrograms.updatedAt,
+        })
+        .from(workoutPrograms)
+        .where(eq(workoutPrograms.id, programId))
+        .limit(1)
+    })
   if (progs.length === 0) {
     throw new Error('Program template not found.')
   }
-  const program = progs[0]
+  const program = {
+    ...progs[0],
+    progressionPlan: 'progressionPlan' in progs[0] ? progs[0].progressionPlan : null,
+  }
 
   const exercisesList = await db
     .select({
@@ -433,6 +470,26 @@ async function getProgramDetailsById(programId: string) {
     .innerJoin(exercises, eq(workoutProgramExercises.exerciseId, exercises.id))
     .where(eq(workoutProgramExercises.programId, programId))
     .orderBy(workoutProgramExercises.orderIndex)
+    .catch(async (error) => {
+      if (!isProgramDepthSchemaDriftError(error)) {
+        throw error
+      }
+
+      return db
+        .select({
+          id: workoutProgramExercises.id,
+          orderIndex: workoutProgramExercises.orderIndex,
+          notes: workoutProgramExercises.notes,
+          exerciseId: exercises.id,
+          name: exercises.name,
+          category: exercises.category,
+          defaultUnit: exercises.defaultUnit,
+        })
+        .from(workoutProgramExercises)
+        .innerJoin(exercises, eq(workoutProgramExercises.exerciseId, exercises.id))
+        .where(eq(workoutProgramExercises.programId, programId))
+        .orderBy(workoutProgramExercises.orderIndex)
+    })
 
   const fullExercises = []
   for (const ex of exercisesList) {
@@ -444,6 +501,7 @@ async function getProgramDetailsById(programId: string) {
 
     fullExercises.push({
       ...ex,
+      blockName: 'blockName' in ex ? ex.blockName : null,
       sets,
     })
   }
@@ -1300,6 +1358,24 @@ export const getWorkoutPrograms = createServerFn({ method: 'GET' }).handler(asyn
     .from(workoutPrograms)
     .where(eq(workoutPrograms.createdByUserId, trainerId))
     .orderBy(desc(workoutPrograms.createdAt))
+    .catch(async (error) => {
+      if (!isProgramDepthSchemaDriftError(error)) {
+        throw error
+      }
+
+      return db
+        .select({
+          id: workoutPrograms.id,
+          createdByUserId: workoutPrograms.createdByUserId,
+          title: workoutPrograms.title,
+          notes: workoutPrograms.notes,
+          createdAt: workoutPrograms.createdAt,
+          updatedAt: workoutPrograms.updatedAt,
+        })
+        .from(workoutPrograms)
+        .where(eq(workoutPrograms.createdByUserId, trainerId))
+        .orderBy(desc(workoutPrograms.createdAt))
+    })
 
   const enrichedList = []
   for (const prog of list) {
@@ -1317,6 +1393,7 @@ export const getWorkoutPrograms = createServerFn({ method: 'GET' }).handler(asyn
 
     enrichedList.push({
       ...prog,
+      progressionPlan: 'progressionPlan' in prog ? prog.progressionPlan : null,
       exerciseCount: countRes[0]?.count || 0,
       assignmentCount: assignCount[0]?.count || 0,
     })
