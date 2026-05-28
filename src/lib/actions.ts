@@ -25,6 +25,21 @@ function generateId(prefix: string) {
   return `${prefix}_${Math.random().toString(36).substr(2, 9)}`
 }
 
+function isMissingNotificationsTableError(error: unknown) {
+  const message =
+    error instanceof Error
+      ? error.message
+      : typeof error === 'object' && error && 'message' in error
+        ? String((error as { message?: unknown }).message)
+        : String(error)
+
+  return (
+    message.includes('no such table: notifications') ||
+    message.includes('SQLITE_ERROR: no such table: notifications') ||
+    message.includes('sqlite3 result code 1: no such table: notifications')
+  )
+}
+
 async function createNotification(data: {
   userId: string
   actorUserId?: string
@@ -33,16 +48,25 @@ async function createNotification(data: {
   body: string
   href?: string
 }) {
-  await db.insert(notifications).values({
-    id: generateId('ntf'),
-    userId: data.userId,
-    actorUserId: data.actorUserId || null,
-    type: data.type,
-    title: data.title,
-    body: data.body,
-    href: data.href || null,
-    createdAt: new Date().toISOString(),
-  })
+  try {
+    await db.insert(notifications).values({
+      id: generateId('ntf'),
+      userId: data.userId,
+      actorUserId: data.actorUserId || null,
+      type: data.type,
+      title: data.title,
+      body: data.body,
+      href: data.href || null,
+      createdAt: new Date().toISOString(),
+    })
+  } catch (error) {
+    if (isMissingNotificationsTableError(error)) {
+      console.warn('Notifications table is not available yet; skipping notification insert.')
+      return
+    }
+
+    throw error
+  }
 }
 
 // 1. Get Current User Profile and DB Sync Status
@@ -93,41 +117,57 @@ export const getNotifications = createServerFn({ method: 'GET' })
     const auth = await requireAuthUser()
     const userId = auth.userId
 
-    const rows = await db
-      .select({
-        id: notifications.id,
-        userId: notifications.userId,
-        actorUserId: notifications.actorUserId,
-        actorName: users.name,
-        type: notifications.type,
-        title: notifications.title,
-        body: notifications.body,
-        href: notifications.href,
-        readAt: notifications.readAt,
-        createdAt: notifications.createdAt,
-      })
-      .from(notifications)
-      .leftJoin(users, eq(notifications.actorUserId, users.id))
-      .where(
-        data?.unreadOnly
-          ? and(eq(notifications.userId, userId), sql`${notifications.readAt} is null`)
-          : eq(notifications.userId, userId),
-      )
-      .orderBy(desc(notifications.createdAt))
+    try {
+      const rows = await db
+        .select({
+          id: notifications.id,
+          userId: notifications.userId,
+          actorUserId: notifications.actorUserId,
+          actorName: users.name,
+          type: notifications.type,
+          title: notifications.title,
+          body: notifications.body,
+          href: notifications.href,
+          readAt: notifications.readAt,
+          createdAt: notifications.createdAt,
+        })
+        .from(notifications)
+        .leftJoin(users, eq(notifications.actorUserId, users.id))
+        .where(
+          data?.unreadOnly
+            ? and(eq(notifications.userId, userId), sql`${notifications.readAt} is null`)
+            : eq(notifications.userId, userId),
+        )
+        .orderBy(desc(notifications.createdAt))
 
-    return rows
+      return rows
+    } catch (error) {
+      if (isMissingNotificationsTableError(error)) {
+        return []
+      }
+
+      throw error
+    }
   })
 
 export const getUnreadNotificationCount = createServerFn({ method: 'GET' }).handler(async () => {
   const auth = await requireAuthUser()
   const userId = auth.userId
 
-  const rows = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(notifications)
-    .where(and(eq(notifications.userId, userId), sql`${notifications.readAt} is null`))
+  try {
+    const rows = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(notifications)
+      .where(and(eq(notifications.userId, userId), sql`${notifications.readAt} is null`))
 
-  return rows[0]?.count || 0
+    return rows[0]?.count || 0
+  } catch (error) {
+    if (isMissingNotificationsTableError(error)) {
+      return 0
+    }
+
+    throw error
+  }
 })
 
 export const markNotificationRead = createServerFn({ method: 'POST' })
@@ -136,10 +176,18 @@ export const markNotificationRead = createServerFn({ method: 'POST' })
     const auth = await requireAuthUser()
     const userId = auth.userId
 
-    await db
-      .update(notifications)
-      .set({ readAt: new Date().toISOString() })
-      .where(and(eq(notifications.id, data.notificationId), eq(notifications.userId, userId)))
+    try {
+      await db
+        .update(notifications)
+        .set({ readAt: new Date().toISOString() })
+        .where(and(eq(notifications.id, data.notificationId), eq(notifications.userId, userId)))
+    } catch (error) {
+      if (isMissingNotificationsTableError(error)) {
+        return { success: true }
+      }
+
+      throw error
+    }
 
     return { success: true }
   })
@@ -148,10 +196,18 @@ export const markAllNotificationsRead = createServerFn({ method: 'POST' }).handl
   const auth = await requireAuthUser()
   const userId = auth.userId
 
-  await db
-    .update(notifications)
-    .set({ readAt: new Date().toISOString() })
-    .where(and(eq(notifications.userId, userId), sql`${notifications.readAt} is null`))
+  try {
+    await db
+      .update(notifications)
+      .set({ readAt: new Date().toISOString() })
+      .where(and(eq(notifications.userId, userId), sql`${notifications.readAt} is null`))
+  } catch (error) {
+    if (isMissingNotificationsTableError(error)) {
+      return { success: true }
+    }
+
+    throw error
+  }
 
   return { success: true }
 })
