@@ -86,6 +86,61 @@ async function createNotification(data: {
   }
 }
 
+async function syncPendingTrainerInviteNotifications(clientId: string) {
+  try {
+    const pendingInvites = await db
+      .select({
+        relationshipId: trainerClients.id,
+        trainerId: trainerClients.trainerId,
+        trainerName: users.name,
+        createdAt: trainerClients.createdAt,
+      })
+      .from(trainerClients)
+      .innerJoin(users, eq(trainerClients.trainerId, users.id))
+      .where(and(eq(trainerClients.clientId, clientId), eq(trainerClients.status, 'pending')))
+
+    for (const invite of pendingInvites) {
+      const existing = await db
+        .select({ id: notifications.id })
+        .from(notifications)
+        .where(
+          and(
+            eq(notifications.userId, clientId),
+            eq(notifications.actorUserId, invite.trainerId),
+            eq(notifications.type, 'client_invite'),
+          ),
+        )
+        .limit(1)
+
+      if (existing.length > 0) {
+        continue
+      }
+
+      await db.insert(notifications).values({
+        id: generateId('ntf'),
+        userId: clientId,
+        actorUserId: invite.trainerId,
+        type: 'client_invite',
+        title: 'New trainer invite',
+        body: `${invite.trainerName || 'A trainer'} invited you to connect on Kyber Fitness.`,
+        href: '/my-trainers',
+        createdAt: invite.createdAt,
+      })
+    }
+  } catch (error) {
+    if (isMissingNotificationsTableError(error)) {
+      return
+    }
+
+    throw error
+  }
+}
+
+async function getUserName(userId: string) {
+  const rows = await db.select({ name: users.name }).from(users).where(eq(users.id, userId)).limit(1)
+  return rows[0]?.name || 'Kyber user'
+}
+
 // 1. Get Current User Profile and DB Sync Status
 export const getCurrentUserProfile = createServerFn({ method: 'GET' }).handler(async () => {
   const auth = await getAuthUser()
@@ -135,6 +190,8 @@ export const getNotifications = createServerFn({ method: 'GET' })
     const userId = auth.userId
 
     try {
+      await syncPendingTrainerInviteNotifications(userId)
+
       const rows = await db
         .select({
           id: notifications.id,
@@ -164,8 +221,30 @@ export const getNotifications = createServerFn({ method: 'GET' })
       }
 
       throw error
+  }
+})
+
+export const getReceivedNotificationCount = createServerFn({ method: 'GET' }).handler(async () => {
+  const auth = await requireAuthUser()
+  const userId = auth.userId
+
+  try {
+    await syncPendingTrainerInviteNotifications(userId)
+
+    const rows = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+
+    return rows[0]?.count || 0
+  } catch (error) {
+    if (isMissingNotificationsTableError(error)) {
+      return 0
     }
-  })
+
+    throw error
+  }
+})
 
 export const getUnreadNotificationCount = createServerFn({ method: 'GET' }).handler(async () => {
   const auth = await requireAuthUser()
@@ -646,6 +725,29 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
       }
     })
 
+    if (data.clientId) {
+      const trainerName = await getUserName(currentUserId)
+      await createNotification({
+        userId: data.clientId,
+        actorUserId: currentUserId,
+        type: 'trainer_logged_workout',
+        title: 'Workout logged by trainer',
+        body: `${trainerName} logged "${data.title}" to your workout history.`,
+        href: `/workouts/${sessionId}`,
+      })
+    }
+
+    if (assignment) {
+      await createNotification({
+        userId: assignment.assignedByUserId,
+        actorUserId: currentUserId,
+        type: 'program_completed',
+        title: 'Program assignment completed',
+        body: `${await getUserName(currentUserId)} completed an assigned workout.`,
+        href: '/clients',
+      })
+    }
+
     return { success: true, sessionId }
   })
 
@@ -994,6 +1096,15 @@ export const saveCoachingNote = createServerFn({ method: 'POST' })
         })
         .where(eq(coachingNotes.id, data.noteId))
 
+      await createNotification({
+        userId: data.clientId,
+        actorUserId: trainerId,
+        type: 'coach_feedback',
+        title: 'Coaching note updated',
+        body: `${await getUserName(trainerId)} updated a private coaching note: "${data.title}".`,
+        href: '/notifications',
+      })
+
       return { success: true, noteId: data.noteId }
     }
 
@@ -1007,6 +1118,15 @@ export const saveCoachingNote = createServerFn({ method: 'POST' })
       pinned: data.pinned ? 1 : 0,
       createdAt: now,
       updatedAt: now,
+    })
+
+    await createNotification({
+      userId: data.clientId,
+      actorUserId: trainerId,
+      type: 'coach_feedback',
+      title: 'New coaching note',
+      body: `${await getUserName(trainerId)} added a private coaching note: "${data.title}".`,
+      href: '/notifications',
     })
 
     return { success: true, noteId }
@@ -1183,6 +1303,15 @@ export const respondToTrainerInvitation = createServerFn({ method: 'POST' })
       .set({ status, updatedAt: now })
       .where(eq(trainerClients.id, rel.id))
 
+    await createNotification({
+      userId: rel.trainerId,
+      actorUserId: clientId,
+      type: data.accept ? 'client_invite_accepted' : 'client_invite_declined',
+      title: data.accept ? 'Client invite accepted' : 'Client invite declined',
+      body: `${await getUserName(clientId)} ${data.accept ? 'accepted' : 'declined'} your client connection invite.`,
+      href: '/clients',
+    })
+
     return { success: true, status }
   })
 
@@ -1223,6 +1352,17 @@ export const logHealthMetric = createServerFn({ method: 'POST' })
       recordedByUserId: currentUserId,
       notes: data.notes || null,
     })
+
+    if (data.clientId) {
+      await createNotification({
+        userId: data.clientId,
+        actorUserId: currentUserId,
+        type: 'trainer_logged_metric',
+        title: 'Health metric logged by trainer',
+        body: `${await getUserName(currentUserId)} logged ${data.value} ${data.unit} for your ${data.metricType.replace('_', ' ')} timeline.`,
+        href: '/health',
+      })
+    }
 
     return { success: true, metricId }
   })
