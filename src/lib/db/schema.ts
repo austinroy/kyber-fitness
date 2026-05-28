@@ -134,6 +134,7 @@ export const workoutPrograms = sqliteTable('workout_programs', {
     .notNull(), // Trainer ID
   title: text('title').notNull(),
   notes: text('notes'),
+  progressionPlan: text('progression_plan'),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 })
@@ -148,6 +149,7 @@ export const workoutProgramExercises = sqliteTable('workout_program_exercises', 
     .references(() => exercises.id, { onDelete: 'cascade' })
     .notNull(),
   orderIndex: integer('order_index').notNull(),
+  blockName: text('block_name'),
   notes: text('notes'),
 })
 
@@ -181,6 +183,10 @@ export const programAssignments = sqliteTable('program_assignments', {
     .notNull(), // Trainer ID
   status: text('status').notNull(), // "pending" | "completed"
   notes: text('notes'), // Custom instructions from trainer to client
+  scheduledFor: text('scheduled_for'),
+  dueAt: text('due_at'),
+  recurrence: text('recurrence').default('none').notNull(), // "none" | "weekly" | "biweekly" | "monthly"
+  completedWorkoutSessionId: text('completed_workout_session_id').references(() => workoutSessions.id),
   assignedAt: text('assigned_at').notNull(),
   completedAt: text('completed_at'),
 })

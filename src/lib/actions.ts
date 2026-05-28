@@ -365,6 +365,7 @@ async function getProgramDetailsById(programId: string) {
     .select({
       id: workoutProgramExercises.id,
       orderIndex: workoutProgramExercises.orderIndex,
+      blockName: workoutProgramExercises.blockName,
       notes: workoutProgramExercises.notes,
       exerciseId: exercises.id,
       name: exercises.name,
@@ -410,6 +411,7 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
       exercises: Array<{
         exerciseId: string
         notes?: string
+        blockName?: string
         orderIndex: number
         sets: Array<{
           setNumber: number
@@ -518,7 +520,7 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
       if (assignment) {
         await tx
           .update(programAssignments)
-          .set({ status: 'completed', completedAt: now })
+          .set({ status: 'completed', completedAt: now, completedWorkoutSessionId: sessionId })
           .where(
             and(
               eq(programAssignments.id, assignment.id),
@@ -1317,6 +1319,10 @@ export const getAssignedWorkoutProgramDetails = createServerFn({ method: 'GET' }
         notes: programAssignments.notes,
         assignedAt: programAssignments.assignedAt,
         completedAt: programAssignments.completedAt,
+        scheduledFor: programAssignments.scheduledFor,
+        dueAt: programAssignments.dueAt,
+        recurrence: programAssignments.recurrence,
+        completedWorkoutSessionId: programAssignments.completedWorkoutSessionId,
         programId: programAssignments.programId,
         trainerName: users.name,
       })
@@ -1353,9 +1359,11 @@ export const saveWorkoutProgram = createServerFn({ method: 'POST' })
       programId?: string // If editing
       title: string
       notes?: string
+      progressionPlan?: string
       exercises: Array<{
         exerciseId: string
         notes?: string
+        blockName?: string
         orderIndex: number
         sets: Array<{
           setNumber: number
@@ -1400,6 +1408,7 @@ export const saveWorkoutProgram = createServerFn({ method: 'POST' })
           .set({
             title: data.title,
             notes: data.notes || null,
+            progressionPlan: data.progressionPlan || null,
             updatedAt: now,
           })
           .where(
@@ -1424,6 +1433,7 @@ export const saveWorkoutProgram = createServerFn({ method: 'POST' })
           createdByUserId: trainerId,
           title: data.title,
           notes: data.notes || null,
+          progressionPlan: data.progressionPlan || null,
           createdAt: now,
           updatedAt: now,
         })
@@ -1437,6 +1447,7 @@ export const saveWorkoutProgram = createServerFn({ method: 'POST' })
           programId: programId,
           exerciseId: ex.exerciseId,
           orderIndex: ex.orderIndex,
+          blockName: ex.blockName || null,
           notes: ex.notes || null,
         })
 
@@ -1490,7 +1501,16 @@ export const deleteWorkoutProgram = createServerFn({ method: 'POST' })
 
 // 17. Direct Assignment of Program to Client
 export const assignProgramToClient = createServerFn({ method: 'POST' })
-  .inputValidator((data: { programId: string; clientId: string; notes?: string }) => data)
+  .inputValidator(
+    (data: {
+      programId: string
+      clientId: string
+      notes?: string
+      scheduledFor?: string
+      dueAt?: string
+      recurrence?: 'none' | 'weekly' | 'biweekly' | 'monthly'
+    }) => data,
+  )
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const trainerId = auth.userId
@@ -1524,6 +1544,9 @@ export const assignProgramToClient = createServerFn({ method: 'POST' })
       assignedByUserId: trainerId,
       status: 'pending',
       notes: data.notes || null,
+      scheduledFor: data.scheduledFor || null,
+      dueAt: data.dueAt || null,
+      recurrence: data.recurrence || 'none',
       assignedAt: now,
     })
 
@@ -1557,6 +1580,10 @@ export const getClientAssignedPrograms = createServerFn({ method: 'GET' })
         notes: programAssignments.notes,
         assignedAt: programAssignments.assignedAt,
         completedAt: programAssignments.completedAt,
+        scheduledFor: programAssignments.scheduledFor,
+        dueAt: programAssignments.dueAt,
+        recurrence: programAssignments.recurrence,
+        completedWorkoutSessionId: programAssignments.completedWorkoutSessionId,
         programId: workoutPrograms.id,
         programTitle: workoutPrograms.title,
         programNotes: workoutPrograms.notes,

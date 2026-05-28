@@ -63,6 +63,7 @@ export interface WorkoutExerciseRecord {
   category: ExerciseCategory
   defaultUnit?: string | null
   orderIndex: number
+  blockName?: string | null
   notes?: string | null
   sets: ExerciseSetRecord[]
 }
@@ -116,6 +117,7 @@ export interface WorkoutProgramSummary {
   createdByUserId: string
   title: string
   notes?: string | null
+  progressionPlan?: string | null
   createdAt: string
   updatedAt: string
   exerciseCount: number
@@ -135,6 +137,10 @@ export interface ProgramAssignmentRecord {
   notes?: string | null
   assignedAt: string
   completedAt?: string | null
+  scheduledFor?: string | null
+  dueAt?: string | null
+  recurrence?: 'none' | 'weekly' | 'biweekly' | 'monthly' | string
+  completedWorkoutSessionId?: string | null
   programId: string
   programTitle?: string
   programNotes?: string | null

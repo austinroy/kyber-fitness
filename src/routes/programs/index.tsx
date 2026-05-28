@@ -29,6 +29,9 @@ function ProgramsDashboardPage() {
   const [selectedProgram, setSelectedProgram] = useState<WorkoutProgramSummary | null>(null)
   const [selectedClientId, setSelectedClientId] = useState('')
   const [coachNotes, setCoachNotes] = useState('')
+  const [scheduledFor, setScheduledFor] = useState('')
+  const [dueAt, setDueAt] = useState('')
+  const [recurrence, setRecurrence] = useState<'none' | 'weekly' | 'biweekly' | 'monthly'>('none')
 
   const [assigning, setAssigning] = useState(false)
   const [assignSuccess, setAssignSuccess] = useState('')
@@ -102,6 +105,9 @@ function ProgramsDashboardPage() {
       setSelectedClientId('')
     }
     setCoachNotes('')
+    setScheduledFor('')
+    setDueAt('')
+    setRecurrence('none')
     setAssignSuccess('')
     setAssignError('')
     setShowAssignModal(true)
@@ -124,6 +130,9 @@ function ProgramsDashboardPage() {
           programId: selectedProgram.id,
           clientId: selectedClientId,
           notes: coachNotes.trim() || undefined,
+          scheduledFor: scheduledFor || undefined,
+          dueAt: dueAt || undefined,
+          recurrence,
         },
       })
 
@@ -251,6 +260,12 @@ function ProgramsDashboardPage() {
                   </p>
                 )}
 
+                {prog.progressionPlan && (
+                  <p className="body-md text-[var(--secondary-container)] text-xs line-clamp-3 m-0 bg-[rgba(0,238,252,0.04)] p-2.5 rounded border border-[var(--secondary-container)]/20">
+                    Progression: {prog.progressionPlan}
+                  </p>
+                )}
+
                 {/* Specs Chips */}
                 <div className="flex flex-wrap gap-2 pt-1">
                   <span className="chip chip-cyan py-0.5 px-2 text-[10px] flex items-center gap-1">
@@ -359,6 +374,49 @@ function ProgramsDashboardPage() {
                     onChange={(e) => setCoachNotes(e.target.value)}
                     className="input-field bg-[var(--surface-container-lowest)] text-white w-full min-h-[100px] resize-none text-xs"
                   />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="input-group">
+                    <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                      Scheduled For
+                    </label>
+                    <input
+                      type="date"
+                      value={scheduledFor}
+                      onChange={(e) => setScheduledFor(e.target.value)}
+                      className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                      Due Date
+                    </label>
+                    <input
+                      type="date"
+                      value={dueAt}
+                      onChange={(e) => setDueAt(e.target.value)}
+                      className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
+                    />
+                  </div>
+                </div>
+
+                <div className="input-group">
+                  <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                    Recurrence
+                  </label>
+                  <select
+                    value={recurrence}
+                    onChange={(e) =>
+                      setRecurrence(e.target.value as 'none' | 'weekly' | 'biweekly' | 'monthly')
+                    }
+                    className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
+                  >
+                    <option value="none">One-time assignment</option>
+                    <option value="weekly">Weekly routine</option>
+                    <option value="biweekly">Biweekly routine</option>
+                    <option value="monthly">Monthly routine</option>
+                  </select>
                 </div>
 
                 <div className="flex gap-3 justify-end pt-2 border-t border-white/5">

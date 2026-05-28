@@ -39,6 +39,7 @@ function ProgramBuilderPage() {
   // Form State
   const [title, setTitle] = useState('')
   const [programNotes, setProgramNotes] = useState('')
+  const [progressionPlan, setProgressionPlan] = useState('')
   const [addedExercises, setAddedExercises] = useState<ExerciseInput[]>([])
 
   // Search & custom exercise states
@@ -75,6 +76,7 @@ function ProgramBuilderPage() {
                     .then((details: WorkoutProgramDetails) => {
                       setTitle(details.title)
                       setProgramNotes(details.notes || '')
+                      setProgressionPlan(details.progressionPlan || '')
 
                       const mapped = details.exercises.map((ex) => ({
                         exerciseId: ex.exerciseId,
@@ -82,6 +84,7 @@ function ProgramBuilderPage() {
                         category: ex.category,
                         defaultUnit: ex.defaultUnit || 'kg',
                         notes: ex.notes || '',
+                        blockName: ex.blockName || '',
                         orderIndex: ex.orderIndex,
                         sets: ex.sets.map((s) => ({
                           setNumber: s.setNumber,
@@ -120,6 +123,7 @@ function ProgramBuilderPage() {
       category: ex.category,
       defaultUnit: ex.defaultUnit || 'kg',
       notes: '',
+      blockName: '',
       orderIndex: addedExercises.length,
       sets: [
         {
@@ -201,6 +205,12 @@ function ProgramBuilderPage() {
     setAddedExercises(updated)
   }
 
+  const handleExerciseBlockChange = (exIdx: number, value: string) => {
+    const updated = [...addedExercises]
+    updated[exIdx].blockName = value
+    setAddedExercises(updated)
+  }
+
   const handleCreateCustomExercise = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!customName) return
@@ -248,9 +258,11 @@ function ProgramBuilderPage() {
         programId: programId || undefined,
         title: title.trim(),
         notes: programNotes.trim() || undefined,
+        progressionPlan: progressionPlan.trim() || undefined,
         exercises: addedExercises.map((ex) => ({
           exerciseId: ex.exerciseId,
           notes: ex.notes || undefined,
+          blockName: ex.blockName || undefined,
           orderIndex: ex.orderIndex,
           sets: ex.sets.map((s) => ({
             setNumber: s.setNumber,
@@ -379,6 +391,18 @@ function ProgramBuilderPage() {
                 <span>Register Custom Exercise</span>
               </button>
             </div>
+
+            <div className="input-group">
+              <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                Progression Plan
+              </label>
+              <textarea
+                placeholder="e.g., Add 2.5kg weekly while RPE stays below 8, then deload after week 4."
+                value={progressionPlan}
+                onChange={(e) => setProgressionPlan(e.target.value)}
+                className="input-field bg-[var(--surface-container-lowest)] text-white w-full min-h-[110px] resize-none"
+              />
+            </div>
           </div>
 
           <div className="card space-y-4">
@@ -463,7 +487,8 @@ function ProgramBuilderPage() {
                         </span>
                       </div>
                       <p className="text-[10px] text-[var(--on-surface-variant)] m-0 mt-1 capitalize">
-                        Default Unit: {ex.defaultUnit}
+                        {ex.blockName ? `${ex.blockName} block • ` : ''}Default Unit:{' '}
+                        {ex.defaultUnit}
                       </p>
                     </div>
 
@@ -649,10 +674,14 @@ function ProgramBuilderPage() {
                       <span>Add Target Set</span>
                     </button>
 
-                    <div className="w-full md:max-w-md flex items-center gap-2">
-                      <span className="material-symbols-outlined text-xs text-[var(--on-surface-variant)]">
-                        notes
-                      </span>
+                    <div className="w-full md:max-w-xl grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <input
+                        type="text"
+                        placeholder="Reusable block, e.g. Week 1 Push A"
+                        value={ex.blockName}
+                        onChange={(e) => handleExerciseBlockChange(exIdx, e.target.value)}
+                        className="bg-transparent text-white placeholder-white/20 border-b border-white/5 hover:border-white/15 focus:border-[var(--secondary-container)] w-full py-1 text-xs outline-none transition-colors"
+                      />
                       <input
                         type="text"
                         placeholder="Exercise specific coaching instructions..."

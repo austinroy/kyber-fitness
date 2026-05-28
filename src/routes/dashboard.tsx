@@ -157,6 +157,11 @@ function DashboardPage() {
                   <span className="text-[10px] text-[var(--on-surface-variant)]">
                     Received {new Date(assign.assignedAt).toLocaleDateString()}
                   </span>
+                  {assign.recurrence && assign.recurrence !== 'none' && (
+                    <span className="chip py-0.5 px-2 text-[9px] bg-white/10 border border-white/5 text-white">
+                      {assign.recurrence}
+                    </span>
+                  )}
                 </div>
 
                 <h3 className="headline-md text-white font-black text-xl tracking-tight uppercase m-0">
@@ -167,6 +172,15 @@ function DashboardPage() {
                   <p className="body-md text-[var(--on-surface-variant)] text-xs m-0 italic bg-white/[0.02] p-3 rounded border border-white/5 max-w-2xl">
                     Coaching Note: "{assign.notes}"
                   </p>
+                )}
+
+                {(assign.scheduledFor || assign.dueAt) && (
+                  <div className="flex flex-wrap gap-2 text-[10px] text-[var(--on-surface-variant)] uppercase tracking-wider">
+                    {assign.scheduledFor && (
+                      <span>Scheduled {new Date(assign.scheduledFor).toLocaleDateString()}</span>
+                    )}
+                    {assign.dueAt && <span>Due {new Date(assign.dueAt).toLocaleDateString()}</span>}
+                  </div>
                 )}
               </div>
 

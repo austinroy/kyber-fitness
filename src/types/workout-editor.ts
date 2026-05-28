@@ -17,6 +17,7 @@ export interface ExerciseInput {
   category: ExerciseCategory
   defaultUnit: string
   notes: string
+  blockName: string
   orderIndex: number
   sets: SetInput[]
 }
@@ -37,6 +38,7 @@ export interface SaveExerciseSetPayload {
 export interface SaveExercisePayload {
   exerciseId: string
   notes?: string
+  blockName?: string
   orderIndex: number
   sets: SaveExerciseSetPayload[]
 }
@@ -56,5 +58,6 @@ export interface SaveWorkoutProgramPayload {
   programId?: string
   title: string
   notes?: string
+  progressionPlan?: string
   exercises: SaveExercisePayload[]
 }

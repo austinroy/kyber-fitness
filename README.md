@@ -29,8 +29,8 @@ Shared TypeScript data-transfer and form/editor shapes live under `src/types`. C
 - **Health metrics:** Timelines for weight, body fat, and resting heart rate, including trainer-supported client metric logging plus permission-checked metric correction and deletion when access allows.
 - **Trainer clients:** Client invitation, active relationship management, athlete profile/metric views, and permission-guarded client logging.
 - **Trainer coaching notes:** Trainer-private client notes with pinned follow-ups, update/delete controls, and active relationship enforcement.
-- **Program builder:** Trainer-only program templates with ordered exercises and target sets.
-- **Program assignment flow:** Trainers assign programs to active clients; athletes can open pending assignments, preload the routine into `/workouts/new`, record the actual session, and complete the assignment through a server-validated workflow.
+- **Program builder:** Trainer-only program templates with ordered exercises, reusable block labels, target sets, and progression-plan notes.
+- **Program assignment flow:** Trainers assign programs to active clients with scheduled dates, due dates, recurrence cadence, and coach notes; athletes can open pending assignments, preload the routine into `/workouts/new`, record the actual session, and complete the assignment through a server-validated workflow that links the completed workout session.
 - **In-app notifications:** A persisted `/notifications` inbox captures trainer invites and assigned-routine alerts with unread badges and mark-read controls.
 
 ---
@@ -77,8 +77,8 @@ erDiagram
 5.  **`workout_sessions`:** Workout containers cataloging date, title, duration, and notes.
 6.  **`exercises` & `exercise_sets`:** Logged movements preloaded with 15 global standard routines (strength, cardio, bodyweight) plus custom client-created sets tracking reps, weights, distances, durations, and intensity (RPE).
 7.  **`health_metrics`:** Historical timelines of athlete tracking (body weight, body fat %, resting heart rate).
-8.  **`workout_programs`, `workout_program_exercises`, `workout_program_sets`:** Trainer-owned reusable routine templates with ordered movements, target sets, and coaching instructions.
-9.  **`program_assignments`:** Direct trainer-to-athlete routine assignments with `pending` and `completed` states.
+8.  **`workout_programs`, `workout_program_exercises`, `workout_program_sets`:** Trainer-owned reusable routine templates with ordered movements, reusable block labels, progression plans, target sets, and coaching instructions.
+9.  **`program_assignments`:** Direct trainer-to-athlete routine assignments with `pending` and `completed` states, optional scheduling/due metadata, recurrence cadence, and completed session linkage.
 10. **`coaching_notes`:** Trainer-private client notes with pinned status and update timestamps, guarded by active trainer-client relationships.
 11. **`notifications`:** In-app inbox records for invites, assignments, coaching alerts, unread status, and deep links back to the relevant workflow.
 
