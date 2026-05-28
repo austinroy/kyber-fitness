@@ -117,12 +117,12 @@ function DashboardPage() {
   const isTrainer = dbUser?.role === 'trainer'
 
   return (
-    <div className="space-y-8 py-2">
+    <div className="space-y-6 md:space-y-8 py-2">
       {/* Top Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
-        <div>
+        <div className="min-w-0">
           <div className="chip chip-cyan mb-2">PORTAL ACTIVE</div>
-          <h1 className="display-lg text-3xl font-black m-0 text-white capitalize">
+          <h1 className="display-lg text-2xl sm:text-3xl font-black m-0 text-white capitalize break-words">
             {isTrainer ? 'COACH TERMINAL' : 'ATHLETE CONSOLE'}
           </h1>
           <p className="body-md text-[var(--on-surface-variant)] m-0">
@@ -130,8 +130,8 @@ function DashboardPage() {
             <span className="text-white font-bold">{dbUser?.name}</span>.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Link to="/workouts/new" className="btn btn-primary">
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Link to="/workouts/new" className="btn btn-primary w-full md:w-auto">
             <span className="material-symbols-outlined mr-2">add</span>
             Log Activity
           </Link>
@@ -144,13 +144,13 @@ function DashboardPage() {
           {assignedPrograms.map((assign) => (
             <div
               key={assign.id}
-              className="card relative overflow-hidden p-6 border border-[var(--secondary-container)] bg-gradient-to-r from-black/60 to-[rgba(0,238,252,0.03)] shadow-[0_0_20px_rgba(0,238,252,0.08)] flex flex-col md:flex-row justify-between items-start md:items-center gap-6"
+              className="card relative overflow-hidden p-4 sm:p-6 border border-[var(--secondary-container)] bg-gradient-to-r from-black/60 to-[rgba(0,238,252,0.03)] shadow-[0_0_20px_rgba(0,238,252,0.08)] flex flex-col md:flex-row justify-between items-start md:items-center gap-5 md:gap-6"
             >
               {/* Left design glow border overlay */}
               <div className="absolute top-0 left-0 w-1.5 h-full bg-[var(--secondary-container)]"></div>
 
-              <div className="space-y-2 flex-1 pl-2">
-                <div className="flex items-center gap-2">
+              <div className="space-y-2 flex-1 pl-2 min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
                   <span className="chip chip-cyan text-[9px] uppercase font-black tracking-widest">
                     ASSIGNED BY COACH {assign.trainerName}
                   </span>
@@ -164,7 +164,7 @@ function DashboardPage() {
                   )}
                 </div>
 
-                <h3 className="headline-md text-white font-black text-xl tracking-tight uppercase m-0">
+                <h3 className="headline-md text-white font-black text-lg sm:text-xl tracking-tight uppercase m-0 break-words">
                   {assign.programTitle}
                 </h3>
 
@@ -202,7 +202,7 @@ function DashboardPage() {
       )}
 
       {/* Profile Overview Widgets */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
         {isTrainer ? (
           <>
             <div className="card card-featured">
@@ -271,12 +271,12 @@ function DashboardPage() {
                 <span className="body-md text-[var(--on-surface-variant)] text-xs">cm</span>
               </div>
             </div>
-            <div className="card col-span-2">
+            <div className="card sm:col-span-2">
               <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
                 track_changes
               </span>
               <p className="label-md text-[var(--on-surface-variant)] m-0">Current Target Goal</p>
-              <h3 className="headline-md font-bold text-white text-base mt-2">
+              <h3 className="headline-md font-bold text-white text-base mt-2 break-words">
                 {profile?.fitnessGoal || 'No goal set yet. Modify in profile onboarding.'}
               </h3>
             </div>
@@ -285,11 +285,11 @@ function DashboardPage() {
       </div>
 
       {/* Main Body Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Left Column: Recent Logs */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="flex justify-between items-center">
-            <h3 className="headline-md text-xl font-bold flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+            <h3 className="headline-md text-lg sm:text-xl font-bold flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 receipt_long
               </span>
@@ -322,17 +322,17 @@ function DashboardPage() {
             <div className="space-y-4">
               {workouts.slice(0, 3).map((sess) => (
                 <div key={sess.id} className="card relative overflow-hidden">
-                  <div className="flex justify-between items-start gap-4">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <h4 className="headline-md text-white font-bold text-base m-0">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                        <h4 className="headline-md text-white font-bold text-base m-0 break-words">
                           {sess.title}
                         </h4>
                         <span className="chip py-0.5 px-2 text-[10px]">
                           {sess.exercises.length} Exercises
                         </span>
                       </div>
-                      <p className="body-md text-[var(--on-surface-variant)] text-xs m-0 flex items-center gap-1.5">
+                      <p className="body-md text-[var(--on-surface-variant)] text-xs m-0 flex flex-wrap items-center gap-1.5">
                         <span className="material-symbols-outlined text-xs">calendar_month</span>
                         {sess.sessionDate}
                         {sess.durationMinutes && (
@@ -353,7 +353,7 @@ function DashboardPage() {
                     </div>
                     <Link
                       to={`/workouts/${sess.id}`}
-                      className="btn btn-secondary py-1 px-3 text-[10px]"
+                      className="btn btn-secondary py-1.5 px-3 text-[10px] w-full sm:w-auto"
                     >
                       Details
                     </Link>
