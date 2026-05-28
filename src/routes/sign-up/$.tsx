@@ -1,5 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { SignUp } from '@clerk/tanstack-start'
+import { SignUp, useUser } from '@clerk/tanstack-start'
+import { createPostAuthRedirectUrl, useCleanPostAuthRedirect } from '../../lib/auth-redirects'
+
+const signInRedirectUrl = createPostAuthRedirectUrl('/sign-in', '/dashboard')
+const signUpRedirectUrl = createPostAuthRedirectUrl('/sign-up', '/onboarding')
 
 export const Route = createFileRoute('/sign-up/$')({
   ssr: false,
@@ -7,6 +11,18 @@ export const Route = createFileRoute('/sign-up/$')({
 })
 
 function SignUpPage() {
+  const { isLoaded, isSignedIn } = useUser()
+  useCleanPostAuthRedirect(isSignedIn)
+
+  if (isLoaded && isSignedIn) {
+    return (
+      <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
+        <div className="mb-6 h-12 w-12 animate-spin rounded-full border-2 border-[var(--line)] border-t-[var(--secondary-container)]" />
+        <p className="body-md text-[var(--on-surface-variant)]">Finalizing secure redirect...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] py-12 px-4 sm:px-6 lg:px-8 relative">
       {/* Mesh glow */}
@@ -28,7 +44,10 @@ function SignUpPage() {
             routing="path"
             path="/sign-up"
             signInUrl="/sign-in"
-            fallbackRedirectUrl="/onboarding"
+            forceRedirectUrl={signUpRedirectUrl}
+            signInForceRedirectUrl={signInRedirectUrl}
+            fallbackRedirectUrl={signUpRedirectUrl}
+            signInFallbackRedirectUrl={signInRedirectUrl}
           />
         </div>
       </div>
