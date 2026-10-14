@@ -142,7 +142,7 @@ Kyber Fitness features a highly responsive, modern themeable dashboard adhering 
 - **Theme Modes**: Supports dark, light, and system-auto modes through `ThemeToggle.tsx`. The pre-hydration theme boot script in `src/routes/__root.tsx` executes before React hydrates to prevent theme flash.
 - **Accents**:
   - **Volt Lime (`#D4FF00`)**: Core high-energy athletic highlight used for primary CTA buttons (`.btn-primary`), active workout timers, PR celebrations, and milestone progress.
-  - **Hyper Cyan (`#00F0FF`)**: Technical telemetry highlight used for secondary CTAs (`.btn-secondary`), bio data curves, notification badges, and coach sync indicators.
+  - **Hyper Cyan (`#00F0FF`)**: Technical highlight used for secondary CTAs (`.btn-secondary`), progress curves, notification badges, and coach sync indicators.
 - **Surfaces**: Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` with `backdrop-filter: blur(16px)`, subtle 1px white border highlight `rgba(255, 255, 255, 0.08)`, and soft ambient radial glow behind active cards).
 - **Shape Language & Radii**: Modern SaaS radii (16px `rounded-2xl` for container cards, 12px `rounded-md` / `rounded-xl` for buttons and inputs, pill `rounded-full` for chips and status badges).
 
@@ -150,7 +150,7 @@ Kyber Fitness features a highly responsive, modern themeable dashboard adhering 
 
 - **Display / Hero Titles**: `Lexend` (`font-display`) for high-impact athletic branding and section headlines.
 - **UI / Body / Forms**: `Geist` (`font-sans-ui` / `var(--font-family)`) for clean, highly legible SaaS dashboard data and forms.
-- **Telemetry / Numerics**: `Geist Mono` (`font-mono-data` / `var(--font-mono)`) with `tabular-nums` ensuring weight numbers, clock timers, and RPE readouts remain perfectly aligned without layout shifts.
+- **Numerics & Data**: `Geist Mono` (`font-mono-data` / `var(--font-mono)`) with `tabular-nums` ensuring weight numbers, clock timers, and RPE readouts remain perfectly aligned without layout shifts.
 
 ### Navigation Architecture
 
@@ -442,7 +442,7 @@ export async function getAuthUser(opts?: { shouldRedirect?: boolean }) {
 
 Kyber Fitness enforces a secure Trainer-Client permission system inside `src/lib/actions.ts`.
 
-- **Self-Access**: Individuals can always read, write, and update their own workouts and profiles. Profile / biometric and coaching credential updates are securely mapped through the `updateUserProfile` action under transaction safety.
+- **Self-Access**: Individuals can always read, write, and update their own workouts and profiles. Profile, health metric, and trainer credential updates are securely mapped through the `updateUserProfile` action under transaction safety.
 - **Workout / Metric Correction**: Logged workout sessions and health metrics support server-side update/delete flows. Individuals can correct their own records; trainers can correct client records only through the same active trainer-client access checks used for logging and viewing.
 - **Trainer-Client Relationship**:
   - A trainer can only view data or log sessions for an athlete if there is an active contract inside `trainerClients` with `status = 'active'`.

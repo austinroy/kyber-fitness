@@ -146,13 +146,15 @@ function TrainerClientsPage() {
     try {
       const res = await inviteClientByEmail({ data: { email: inviteEmail } })
       if (res && res.success) {
-        setInviteSuccess(res.message || 'Invitation successfully dispatched!')
+        setInviteSuccess(res.message || 'Invitation sent!')
         setInviteEmail('')
         loadClientsRegistry()
       }
     } catch (err: unknown) {
       console.error(err)
-      setInviteError(err instanceof Error ? err.message : 'Failed to dispatch client invitation.')
+      setInviteError(
+        err instanceof Error ? err.message : 'Could not send invitation. Please try again.',
+      )
     } finally {
       setInviting(false)
     }
@@ -178,7 +180,7 @@ function TrainerClientsPage() {
       })
 
       if (res && res.success) {
-        setSyncSuccess('Biometric data successfully written to athlete core!')
+        setSyncSuccess("Saved to client's health log.")
         setMetricValue('')
         setMetricNotes('')
 
@@ -194,7 +196,7 @@ function TrainerClientsPage() {
       }
     } catch (err: unknown) {
       console.error(err)
-      setSyncError(err instanceof Error ? err.message : 'Failed to sync client health metric.')
+      setSyncError(err instanceof Error ? err.message : 'Could not save health metric.')
     } finally {
       setSyncingMetric(false)
     }
@@ -272,9 +274,7 @@ function TrainerClientsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Connecting to elite athlete database...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading clients...</p>
       </div>
     )
   }
@@ -375,11 +375,10 @@ function TrainerClientsPage() {
     <div className="space-y-8 py-2">
       {/* Top Banner */}
       <div className="border-b border-white/5 pb-6">
-        <div className="chip chip-cyan mb-2">TRAINER REGISTRY TERMINAL</div>
-        <h1 className="display-lg text-3xl font-black m-0 text-white">COACHING DESK</h1>
+        <div className="chip chip-cyan mb-2">COACHING</div>
+        <h1 className="display-lg text-3xl font-black m-0 text-white">CLIENTS</h1>
         <p className="body-md text-[var(--on-surface-variant)] m-0">
-          Manage individual client partnerships, dispatch core invitations, log strength & cardio
-          sessions, and oversee biometric profiles.
+          Manage your clients, send email invites, log workouts, and track progress together.
         </p>
       </div>
 
@@ -392,10 +391,10 @@ function TrainerClientsPage() {
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 person_add
               </span>
-              Invite Athlete Client
+              Invite a Client
             </h3>
             <p className="body-md text-[var(--on-surface-variant)] text-xs">
-              Dispatch an electronic contract link. The user must be registered as an Individual.
+              Send an invite by email. The client must have a Kyber Fitness account.
             </p>
 
             {inviteSuccess && (
@@ -413,7 +412,7 @@ function TrainerClientsPage() {
             <form onSubmit={handleInviteSubmit} className="space-y-4">
               <div className="input-group">
                 <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                  Athlete Account Email
+                  Client's Email
                 </label>
                 <input
                   type="email"
@@ -429,7 +428,7 @@ function TrainerClientsPage() {
                 disabled={inviting}
                 className={`btn btn-primary w-full py-2 text-xs ${inviting ? 'btn-disabled' : ''}`}
               >
-                {inviting ? 'Sending Invite...' : 'Dispatch Connection Invite'}
+                {inviting ? 'Sending...' : 'Send Invite'}
               </button>
             </form>
           </div>
@@ -440,12 +439,12 @@ function TrainerClientsPage() {
               <span className="material-symbols-outlined text-[var(--secondary-container)]">
                 assignment_ind
               </span>
-              Athlete Registry ({activePartnerships.length})
+              Your Clients ({activePartnerships.length})
             </h3>
 
             {activePartnerships.length === 0 && pendingPartnerships.length === 0 ? (
               <p className="body-md text-xs text-[var(--on-surface-variant)] text-center py-6">
-                No active partnerships on record. Send an email invite above.
+                No active clients yet. Send an email invite above.
               </p>
             ) : (
               <div className="space-y-2">
@@ -501,12 +500,10 @@ function TrainerClientsPage() {
               <span className="material-symbols-outlined text-white/10 text-6xl mb-3">
                 monitoring
               </span>
-              <h4 className="headline-md font-bold text-white/50 text-base">
-                Select Athlete Core Terminal
-              </h4>
+              <h4 className="headline-md font-bold text-white/50 text-base">Select a Client</h4>
               <p className="body-md text-[var(--on-surface-variant)] text-xs mt-1 max-w-sm">
-                Click on any verified active athlete in your sidebar registry to sync and unlock
-                historical performance analytics, health metrics, and workout logs.
+                Click on any active client in the list to view their workout history, health
+                metrics, and coaching notes.
               </p>
             </div>
           ) : (
@@ -518,7 +515,7 @@ function TrainerClientsPage() {
 
                 <div className="flex flex-wrap justify-between items-start gap-4 border-b border-white/5 pb-4">
                   <div>
-                    <div className="chip chip-cyan mb-1.5">TELEMETRY ACCESS: GRANTED</div>
+                    <div className="chip chip-cyan mb-1.5">CAN VIEW HEALTH DATA</div>
                     <h2 className="headline-lg text-2xl font-black text-white m-0 uppercase">
                       {selectedRel?.client.name}
                     </h2>
@@ -534,7 +531,7 @@ function TrainerClientsPage() {
                       className="btn btn-primary py-1.5 px-4 text-xs font-bold"
                     >
                       <span className="material-symbols-outlined text-sm mr-1">add</span>
-                      Log Session
+                      Log Workout
                     </Link>
                   </div>
                 </div>
@@ -542,7 +539,7 @@ function TrainerClientsPage() {
                 {/* Bio Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
                   <div className="p-3 bg-white/[0.02] border border-white/5 rounded">
-                    <span className="text-[var(--on-surface-variant)] block">Height Details</span>
+                    <span className="text-[var(--on-surface-variant)] block">Height</span>
                     <span className="text-white font-bold text-sm block mt-1">
                       {selectedRel?.profile.height || '--'} cm
                     </span>
@@ -560,7 +557,7 @@ function TrainerClientsPage() {
                     </span>
                   </div>
                   <div className="p-3 bg-white/[0.02] border border-white/5 rounded">
-                    <span className="text-[var(--on-surface-variant)] block">Gender Identity</span>
+                    <span className="text-[var(--on-surface-variant)] block">Gender</span>
                     <span className="text-white font-bold text-sm block mt-1 capitalize">
                       {selectedRel?.profile.gender || '--'}
                     </span>
@@ -569,18 +566,16 @@ function TrainerClientsPage() {
 
                 <div className="p-3.5 bg-white/[0.01] border border-white/5 rounded text-xs">
                   <span className="text-[var(--on-surface-variant)] block font-semibold">
-                    Primary Fitness Goal Target
+                    Fitness Goal
                   </span>
                   <p className="text-white font-semibold mt-1.5 mb-0 text-sm leading-relaxed">
-                    {selectedRel?.profile.fitnessGoal || 'No targeted fitness goal specified yet.'}
+                    {selectedRel?.profile.fitnessGoal || 'No goal specified yet.'}
                   </p>
                 </div>
 
                 {selectedRel?.profile.notes && (
                   <div className="p-3.5 bg-yellow-950/20 border border-yellow-900/30 rounded text-xs text-[var(--on-surface-variant)]">
-                    <span className="text-yellow-400 font-bold block mb-1">
-                      Athlete Health Advisory Notes:
-                    </span>
+                    <span className="text-yellow-400 font-bold block mb-1">Health Notes:</span>
                     {selectedRel.profile.notes}
                   </div>
                 )}
@@ -597,7 +592,7 @@ function TrainerClientsPage() {
                   }`}
                 >
                   <span className="material-symbols-outlined text-sm">fitness_center</span>
-                  Session History ({selectedClientWorkouts.length})
+                  Workouts ({selectedClientWorkouts.length})
                 </button>
                 <button
                   onClick={() => setDetailTab('health')}
@@ -608,7 +603,7 @@ function TrainerClientsPage() {
                   }`}
                 >
                   <span className="material-symbols-outlined text-sm">monitoring</span>
-                  Biometric History
+                  Health Metrics
                 </button>
                 <button
                   onClick={() => setDetailTab('notes')}
@@ -619,7 +614,7 @@ function TrainerClientsPage() {
                   }`}
                 >
                   <span className="material-symbols-outlined text-sm">clinical_notes</span>
-                  Coach Notes ({selectedClientNotes.length})
+                  Coaching Notes ({selectedClientNotes.length})
                 </button>
                 <button
                   onClick={() => setDetailTab('sync')}
@@ -630,7 +625,7 @@ function TrainerClientsPage() {
                   }`}
                 >
                   <span className="material-symbols-outlined text-sm">add_box</span>
-                  Sync Biometrics
+                  Log Metric
                 </button>
               </div>
 
@@ -638,9 +633,7 @@ function TrainerClientsPage() {
               {detailLoading ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[var(--primary-container)] mx-auto"></div>
-                  <p className="text-xs text-[var(--on-surface-variant)] mt-2">
-                    Loading data packets...
-                  </p>
+                  <p className="text-xs text-[var(--on-surface-variant)] mt-2">Loading...</p>
                 </div>
               ) : (
                 <>
@@ -649,7 +642,7 @@ function TrainerClientsPage() {
                       {selectedClientWorkouts.length === 0 ? (
                         <div className="card text-center py-12 bg-white/[0.01]">
                           <p className="body-md text-xs text-[var(--on-surface-variant)]">
-                            No workout sessions logged for this athlete yet.
+                            No workouts logged for this client yet.
                           </p>
                         </div>
                       ) : (
@@ -737,7 +730,7 @@ function TrainerClientsPage() {
                       <div className="card">
                         {selectedClientMetrics.length === 0 ? (
                           <p className="text-center py-6 text-xs text-[var(--on-surface-variant)]">
-                            No biometric logs exist under this parameter.
+                            No health metrics recorded for this category yet.
                           </p>
                         ) : (
                           <table className="w-full text-left text-xs border-collapse">
@@ -759,9 +752,7 @@ function TrainerClientsPage() {
                                     {m.value} {m.unit}
                                   </td>
                                   <td className="py-2.5 text-[var(--on-surface-variant)]">
-                                    {m.recordedByUserId === m.userId
-                                      ? 'Athlete Self'
-                                      : 'Coach Entry'}
+                                    {m.recordedByUserId === m.userId ? 'Client' : 'Coach Entry'}
                                   </td>
                                   <td className="py-2.5 text-[var(--on-surface-variant)] truncate max-w-[150px]">
                                     {m.notes || '--'}
@@ -805,13 +796,13 @@ function TrainerClientsPage() {
                           </div>
                           <div className="input-group">
                             <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                              Coaching Context
+                              Notes
                             </label>
                             <textarea
                               value={noteBody}
                               onChange={(event) => setNoteBody(event.target.value)}
                               className="input-field min-h-[140px]"
-                              placeholder="Private trainer-only notes, cues, adherence patterns, or follow-up items."
+                              placeholder="Private notes, coaching cues, progress observations, or follow-up items."
                             />
                           </div>
                           <label className="flex items-center gap-2 text-xs text-[var(--on-surface)]">
@@ -847,7 +838,7 @@ function TrainerClientsPage() {
                         {selectedClientNotes.length === 0 ? (
                           <div className="card text-center py-12">
                             <p className="body-md text-xs text-[var(--on-surface-variant)]">
-                              No private coaching notes saved for this athlete yet.
+                              No private coaching notes saved for this client yet.
                             </p>
                           </div>
                         ) : (
@@ -900,7 +891,7 @@ function TrainerClientsPage() {
                         <span className="material-symbols-outlined text-[var(--primary-container)]">
                           add_box
                         </span>
-                        Sync Client Biometrics
+                        Log Health Metric
                       </h3>
 
                       {syncSuccess && (
@@ -919,7 +910,7 @@ function TrainerClientsPage() {
                         <div className="grid grid-cols-2 gap-4">
                           <div className="input-group">
                             <label className="label-md text-xs text-[var(--on-surface-variant)] font-bold">
-                              Biometric Type
+                              Metric Type
                             </label>
                             <select
                               value={activeMetricType}
@@ -950,12 +941,12 @@ function TrainerClientsPage() {
 
                         <div className="input-group">
                           <label className="label-md text-xs text-[var(--on-surface-variant)] font-bold font-sans">
-                            Verification / Coach Notes
+                            Notes
                           </label>
                           <textarea
                             value={metricNotes}
                             onChange={(e) => setMetricNotes(e.target.value)}
-                            placeholder="e.g. Tracked post-workout, notes from coaching session..."
+                            placeholder="e.g. Measured during coaching session"
                             className="input-field min-h-[80px]"
                           />
                         </div>
@@ -965,7 +956,7 @@ function TrainerClientsPage() {
                           disabled={syncingMetric}
                           className={`btn btn-primary w-full py-2.5 text-xs ${syncingMetric ? 'btn-disabled' : ''}`}
                         >
-                          {syncingMetric ? 'Writing to core...' : 'Sync Athlete Biometric Log'}
+                          {syncingMetric ? 'Saving...' : 'Save Metric'}
                         </button>
                       </form>
                     </div>

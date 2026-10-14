@@ -116,7 +116,7 @@ function WorkoutSessionDetailPage() {
   }
 
   const handleDelete = async () => {
-    if (!session || !window.confirm('Delete this workout session permanently?')) return
+    if (!session || !window.confirm('Are you sure you want to delete this workout?')) return
 
     setSaving(true)
     setErrorMsg('')
@@ -125,7 +125,7 @@ function WorkoutSessionDetailPage() {
       await deleteWorkoutSession({ data: { sessionId: session.id } })
       navigate({ to: '/workouts' })
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Unable to delete workout session.')
+      setErrorMsg(err instanceof Error ? err.message : 'Unable to delete workout.')
       setSaving(false)
     }
   }
@@ -134,7 +134,7 @@ function WorkoutSessionDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading session details...</p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading workout details...</p>
       </div>
     )
   }
@@ -142,10 +142,10 @@ function WorkoutSessionDetailPage() {
   if (!session) {
     return (
       <div className="card text-center py-16">
-        <h1 className="headline-md font-bold text-white">Workout session unavailable</h1>
+        <h1 className="headline-md font-bold text-white">Workout not found</h1>
         <p className="body-md text-[var(--on-surface-variant)]">{errorMsg}</p>
         <Link to="/workouts" className="btn btn-primary mt-4">
-          Back to History
+          Back to Workouts
         </Link>
       </div>
     )
@@ -155,10 +155,10 @@ function WorkoutSessionDetailPage() {
     <div className="space-y-6 py-2">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-4">
         <div>
-          <div className="chip mb-1">SESSION DETAIL</div>
+          <div className="chip mb-1">WORKOUT</div>
           <h1 className="headline-lg font-black text-white m-0">{session.title}</h1>
           <p className="body-md text-[var(--on-surface-variant)] text-xs mt-1">
-            {session.exercises.length} exercises / {totalSets} sets / recorded by{' '}
+            {session.exercises.length} exercises / {totalSets} sets / logged by{' '}
             {session.recordedByName}
           </p>
         </div>
@@ -231,7 +231,7 @@ function WorkoutSessionDetailPage() {
             />
           </div>
           <button className="btn btn-primary md:col-span-2" disabled={saving}>
-            {saving ? 'Saving...' : 'Save Session'}
+            {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </form>
       )}
@@ -254,7 +254,7 @@ function WorkoutSessionDetailPage() {
 
         {session.notes && (
           <div className="p-3 rounded-md bg-white/[0.02] border border-white/5">
-            <p className="label-md text-[var(--on-surface-variant)] text-[10px]">Session Notes</p>
+            <p className="label-md text-[var(--on-surface-variant)] text-[10px]">Notes</p>
             <p className="body-md text-sm text-white mt-1 m-0 italic">"{session.notes}"</p>
           </div>
         )}

@@ -65,21 +65,19 @@ function LandingPage() {
           <div className="lg:col-span-7 space-y-6 text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono tracking-wider text-zinc-300">
               <span className="w-2 h-2 rounded-full bg-[#D4FF00] animate-pulse" />
-              <span className="text-[#D4FF00] font-bold">KINETIC PERFORMANCE SYSTEM</span>
-              <span className="text-zinc-500">v2.0</span>
+              <span className="text-[#D4FF00] font-bold">FOR ATHLETES AND COACHES</span>
             </div>
 
             <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white leading-[1.08]">
-              ELEVATE YOUR <br />
+              Train hard. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4FF00] via-[#D4FF00] to-[#00F0FF]">
-                ATHLETIC POTENTIAL.
+                See the progress.
               </span>
             </h1>
 
             <p className="text-base sm:text-lg text-zinc-300 max-w-xl leading-relaxed">
-              The unified training platform engineered for high-performance athletes and
-              professional coaches. Sub-second set logging, consent-governed client telemetry, and
-              intelligent progression.
+              Log every set without slowing down, keep an eye on your weight and heart rate, and
+              work with a coach who only sees what you choose to share.
             </p>
 
             {/* Signed Out CTAs */}
@@ -89,14 +87,14 @@ function LandingPage() {
                   to="/sign-up"
                   className="btn btn-primary px-7 py-3.5 text-xs font-black tracking-wider flex items-center gap-2 shadow-[0_0_25px_rgba(212,255,0,0.35)]"
                 >
-                  <span>GET STARTED FREE</span>
+                  <span>Create an account</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link
                   to="/sign-in"
                   className="btn btn-secondary px-6 py-3.5 text-xs font-bold tracking-wider flex items-center gap-2"
                 >
-                  <span>OPEN APP PORTAL</span>
+                  <span>Sign in</span>
                 </Link>
               </div>
             </SignedOut>
@@ -108,46 +106,36 @@ function LandingPage() {
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#D4FF00]" />
                     <span className="text-xs font-bold text-white uppercase tracking-wider">
-                      Console Active &bull; Ready to Train
+                      Welcome back
                     </span>
                   </div>
                   <p className="text-xs text-zinc-400">
-                    Your performance telemetry is synced. Return to your active training dashboard.
+                    Pick up where you left off. Your workouts and stats are waiting.
                   </p>
                   <Link
                     to="/dashboard"
                     className="btn btn-primary w-full py-2.5 text-xs font-black flex items-center justify-center gap-2"
                   >
-                    <span>ENTER DASHBOARD</span>
+                    <span>Go to dashboard</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
               </div>
             </SignedIn>
 
-            {/* Credibility Stats Strip */}
-            <div className="pt-6 grid grid-cols-3 gap-4 border-t border-white/[0.08] max-w-md font-mono text-left">
+            {/* Feature highlights strip */}
+            <div className="pt-6 grid grid-cols-3 gap-4 border-t border-white/[0.08] max-w-md text-left">
               <div>
-                <div className="text-xl sm:text-2xl font-black text-white tabular-nums">0.15s</div>
-                <div className="text-[10px] text-zinc-400 tracking-wider uppercase font-semibold">
-                  Log Latency
-                </div>
+                <div className="text-sm sm:text-base font-bold text-white">Sets, reps & RPE</div>
+                <div className="text-[11px] text-zinc-400">Strength and cardio</div>
               </div>
               <div>
-                <div className="text-xl sm:text-2xl font-black text-[#D4FF00] tabular-nums">
-                  100%
-                </div>
-                <div className="text-[10px] text-zinc-400 tracking-wider uppercase font-semibold">
-                  Consent Driven
-                </div>
+                <div className="text-sm sm:text-base font-bold text-[#D4FF00]">Your call</div>
+                <div className="text-[11px] text-zinc-400">Coaches need your OK</div>
               </div>
               <div>
-                <div className="text-xl sm:text-2xl font-black text-[#00F0FF] tabular-nums">
-                  120k+
-                </div>
-                <div className="text-[10px] text-zinc-400 tracking-wider uppercase font-semibold">
-                  Sets Logged
-                </div>
+                <div className="text-sm sm:text-base font-bold text-[#00F0FF]">Trends</div>
+                <div className="text-[11px] text-zinc-400">Weight, body fat, resting HR</div>
               </div>
             </div>
           </div>
@@ -190,7 +178,7 @@ function LandingPage() {
                   <div className="flex items-center justify-between pb-3 border-b border-white/10">
                     <div>
                       <span className="text-[10px] font-mono font-bold text-[#00F0FF] uppercase tracking-wider">
-                        CIRCUIT A &bull; WORKING SET
+                        Squat day &bull; Set 4 of 5
                       </span>
                       <div className="text-base font-black text-white">Barbell Back Squat</div>
                     </div>
@@ -250,7 +238,7 @@ function LandingPage() {
                         <Timer className="w-4 h-4 text-[#00F0FF] animate-pulse" />
                         <span>{formatTimer(restSeconds)}</span>
                       </div>
-                      <div className="text-[10px] font-mono text-zinc-500 pb-1">COUNTDOWN</div>
+                      <div className="text-[10px] font-mono text-zinc-500 pb-1">TIMER</div>
                     </div>
                   </div>
 
@@ -258,11 +246,9 @@ function LandingPage() {
                   <div className="p-3 rounded-2xl bg-[#D4FF00]/10 border border-[#D4FF00]/25 flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <Zap className="w-4 h-4 text-[#D4FF00]" />
-                      <span className="font-extrabold text-[#D4FF00]">PERSONAL RECORD HIT!</span>
+                      <span className="font-extrabold text-[#D4FF00]">NEW PERSONAL RECORD!</span>
                     </div>
-                    <span className="font-mono text-zinc-300 font-semibold">
-                      +5.0 kg progression
-                    </span>
+                    <span className="font-mono text-zinc-300 font-semibold">+5.0 kg today</span>
                   </div>
 
                   {/* Quick Action Button */}
@@ -274,7 +260,7 @@ function LandingPage() {
                     {isLogged ? (
                       <>
                         <CheckCircle2 className="w-4 h-4 text-black" />
-                        <span>SET 4 RECORDED! 90S CLOCK STARTED</span>
+                        <span>SET 4 LOGGED &bull; RESTING FOR 90S</span>
                       </>
                     ) : (
                       <>
@@ -290,12 +276,12 @@ function LandingPage() {
                   <div className="flex items-center justify-between pb-3 border-b border-white/10">
                     <div>
                       <span className="text-[10px] font-mono font-bold text-[#00F0FF] uppercase tracking-wider">
-                        COACH NETWORK &bull; LIVE SYNC
+                        YOUR CLIENTS
                       </span>
                       <div className="text-base font-black text-white">Active Athletes (8)</div>
                     </div>
                     <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                      ALL CONSENTED
+                      CONNECTED
                     </span>
                   </div>
 
@@ -309,7 +295,7 @@ function LandingPage() {
                         <div>
                           <div className="text-xs font-bold text-white">Sarah Jenkins</div>
                           <div className="text-[10px] text-zinc-400">
-                            Hypertrophy Meso &bull; Week 3 of 6
+                            Hypertrophy Phase &bull; Week 3 of 6
                           </div>
                         </div>
                       </div>
@@ -318,7 +304,7 @@ function LandingPage() {
                       </span>
                     </div>
                     <div className="p-2 rounded-xl bg-black/40 border border-white/5 text-[11px] text-zinc-300 flex items-center justify-between">
-                      <span>Squat PR: 105 kg &times; 5 reps</span>
+                      <span>Squat: 105 kg &times; 5 reps</span>
                       <span className="font-mono text-[#D4FF00] font-bold">RPE 9.0</span>
                     </div>
                   </div>
@@ -348,7 +334,7 @@ function LandingPage() {
                     to="/programs"
                     className="w-full py-3 rounded-xl bg-[#00F0FF] hover:bg-[#3bf4ff] text-black font-black text-xs uppercase tracking-wider transition shadow-[0_0_20px_rgba(0,240,255,0.3)] flex items-center justify-center gap-2"
                   >
-                    <span>ASSIGN WORKOUT TEMPLATE</span>
+                    <span>ASSIGN A WORKOUT PROGRAM</span>
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
@@ -366,13 +352,13 @@ function LandingPage() {
         className="max-w-6xl mx-auto px-4 sm:px-6 py-16 border-t border-white/[0.08]"
       >
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="chip chip-lime mb-2">SYSTEM CAPABILITIES</div>
+          <div className="chip chip-lime mb-2">HOW IT WORKS</div>
           <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight">
-            BUILT FOR RELENTLESS EXECUTION
+            EVERYTHING YOU NEED TO TRAIN AND COACH
           </h2>
           <p className="text-sm text-zinc-400 mt-2">
-            Every feature is purpose-designed for high heart rates, sweaty hands, and surgical
-            coaching precision.
+            Fast enough to use between heavy sets, detailed enough for coaches who want real
+            insight.
           </p>
         </div>
 
@@ -383,14 +369,14 @@ function LandingPage() {
               <Dumbbell className="w-6 h-6" />
             </div>
             <h3 className="font-display font-black text-xl text-white tracking-tight">
-              Hyper Logger
+              Fast workout logging
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Track sets, kilo or pound increments, RPE scales, and countdown rest intervals with
-              zero friction between heavy working sets.
+              Track sets, reps, weight in kg or lbs, RPE, and rest times in seconds without breaking
+              your rhythm in the gym.
             </p>
             <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-[#D4FF00]">
-              <span>RAPID SUB-SECOND INPUT</span>
+              <span>QUICK & FRICTIONLESS</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -404,14 +390,14 @@ function LandingPage() {
               <ShieldCheck className="w-6 h-6" />
             </div>
             <h3 className="font-display font-black text-xl text-white tracking-tight">
-              Consent-Driven Coach Sync
+              Coaching with consent
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Granular permission matrix protects athlete data. Coaches only view metrics or assign
-              programs when explicitly authorized.
+              You stay in control of your data. Coaches only see your workouts and body stats when
+              you explicitly allow it.
             </p>
             <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-[#00F0FF]">
-              <span>CRYPTOGRAPHIC CONSENT</span>
+              <span>CLEAR PERMISSIONS</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -425,14 +411,14 @@ function LandingPage() {
               <Activity className="w-6 h-6" />
             </div>
             <h3 className="font-display font-black text-xl text-white tracking-tight">
-              Bio Telemetry
+              Progress & body stats
             </h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Monitor weight trends, resting heart rate curves, and cumulative strain volume with
-              high-precision glowing SVG dashboards.
+              Watch your strength climb and track your weight, body fat, and resting heart rate over
+              time with clear charts.
             </p>
             <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-[#D4FF00]">
-              <span>REAL-TIME CHARTS & TRENDS</span>
+              <span>HELPFUL CHARTS</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
           </div>
@@ -449,19 +435,19 @@ function LandingPage() {
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse" />
                 <span className="text-[11px] font-mono text-[#00F0FF] font-bold tracking-wider uppercase">
-                  Telemetry Stream &bull; Live Progression
+                  PROGRESS OVER TIME
                 </span>
               </div>
               <h3 className="font-display font-black text-2xl text-white tracking-tight mt-1">
-                Body Composition & Strength Velocity
+                Body weight & strength trends
               </h3>
             </div>
             <div className="flex items-center gap-3 font-mono text-xs">
               <div className="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-zinc-300">
-                DELTA: <span className="text-[#D4FF00] font-bold">+12.5% PEAK FORCE</span>
+                SQUAT: <span className="text-[#D4FF00] font-bold">+12.5% THIS MONTH</span>
               </div>
               <div className="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-zinc-300">
-                TREND: <span className="text-[#00F0FF] font-bold">PROGRESSIVE OVERLOAD</span>
+                TREND: <span className="text-[#00F0FF] font-bold">STEADY GAINS</span>
               </div>
             </div>
           </div>
@@ -544,10 +530,10 @@ function LandingPage() {
           </div>
 
           <div className="flex justify-between text-[10px] font-mono text-zinc-500 pt-3 border-t border-white/5">
-            <span>WEEK 01 &bull; BASELINE</span>
-            <span>WEEK 02 &bull; ACCUMULATION</span>
-            <span>WEEK 03 &bull; OVERLOAD</span>
-            <span className="text-[#D4FF00] font-bold">WEEK 04 &bull; PEAK PR REACHED</span>
+            <span>WEEK 1</span>
+            <span>WEEK 2</span>
+            <span>WEEK 3</span>
+            <span className="text-[#D4FF00] font-bold">WEEK 4 &bull; NEW PR</span>
           </div>
         </div>
       </section>
@@ -559,16 +545,16 @@ function LandingPage() {
         <div className="card p-8 sm:p-12 relative overflow-hidden bg-gradient-to-tr from-[#D4FF00]/10 via-transparent to-[#00F0FF]/10 border-white/15">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-[#D4FF00]/30 text-xs font-mono text-[#D4FF00] mb-4">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>JOIN THE GRID TODAY</span>
+            <span>JOIN KYBER</span>
           </div>
 
           <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight mb-4">
-            READY TO OUTPERFORM YOUR PREVIOUS SELF?
+            READY TO START TRACKING?
           </h2>
 
           <p className="text-sm sm:text-base text-zinc-300 max-w-xl mx-auto mb-8 leading-relaxed">
-            Free for individual athletes. Effortless setup for professional personal trainers. Start
-            logging your heaviest sets today.
+            Free for individual athletes. Built to help coaches stay organized. Start logging your
+            workouts in minutes.
           </p>
 
           <SignedOut>
@@ -577,7 +563,7 @@ function LandingPage() {
                 to="/sign-up"
                 className="btn btn-primary px-8 py-3.5 text-xs font-black tracking-wider flex items-center gap-2 shadow-[0_0_25px_rgba(212,255,0,0.35)]"
               >
-                <span>CREATE ATHLETE PROFILE</span>
+                <span>SIGN UP FREE</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link

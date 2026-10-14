@@ -152,13 +152,13 @@ export default function Header({
         <SignedOut>
           <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-zinc-300">
             <a href="#features" className="hover:text-[#D4FF00] transition">
-              Live Logger
+              Features
             </a>
             <a href="#coaching" className="hover:text-[#00F0FF] transition">
-              Coach Sync
+              Coaching
             </a>
             <a href="#telemetry" className="hover:text-[#D4FF00] transition">
-              Bio Vitals
+              Progress
             </a>
           </nav>
         </SignedOut>
@@ -195,7 +195,7 @@ export default function Header({
                 to="/sign-up"
                 className="btn btn-primary text-xs !py-2 px-4 shadow-[0_0_16px_rgba(212,255,0,0.3)]"
               >
-                Start Training
+                Sign Up
               </Link>
             </div>
           </SignedOut>

@@ -281,7 +281,7 @@ function ProgramBuilderPage() {
       navigate({ to: '/programs' })
     } catch (err: unknown) {
       console.error(err)
-      setError(err instanceof Error ? err.message : 'Failed to save workout program template.')
+      setError(err instanceof Error ? err.message : 'Could not save program.')
       setSaving(false)
     }
   }
@@ -290,9 +290,7 @@ function ProgramBuilderPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Streaming program telemetry console...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading program builder...</p>
       </div>
     )
   }
@@ -308,9 +306,9 @@ function ProgramBuilderPage() {
       {/* Header */}
       <div className="flex flex-wrap justify-between items-center gap-4 border-b border-white/5 pb-4">
         <div>
-          <div className="chip chip-cyan mb-1">STITCH KINETIC ROUTINE BUILDER</div>
+          <div className="chip chip-cyan mb-1">WORKOUT PLANS</div>
           <h1 className="headline-lg font-black text-white m-0 uppercase">
-            {programId ? 'Edit Program Template' : 'Design Routine Template'}
+            {programId ? 'Edit Program' : 'New Program'}
           </h1>
         </div>
         <div className="flex gap-3">
@@ -322,7 +320,7 @@ function ProgramBuilderPage() {
             disabled={saving}
             className={`btn btn-primary py-2 ${saving ? 'btn-disabled' : ''}`}
           >
-            {saving ? 'Saving Template...' : 'Save Template'}
+            {saving ? 'Saving...' : 'Save Program'}
           </button>
         </div>
       </div>
@@ -342,7 +340,7 @@ function ProgramBuilderPage() {
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 search
               </span>
-              Exercise Catalog
+              Exercises
             </h3>
 
             <div className="input-group">
@@ -388,7 +386,7 @@ function ProgramBuilderPage() {
                 className="btn btn-secondary w-full py-2 flex items-center justify-center gap-2 text-xs"
               >
                 <span className="material-symbols-outlined text-sm">add_circle</span>
-                <span>Register Custom Exercise</span>
+                <span>Add Custom Exercise</span>
               </button>
             </div>
 
@@ -410,12 +408,12 @@ function ProgramBuilderPage() {
               <span className="material-symbols-outlined text-[var(--secondary-container)]">
                 info
               </span>
-              Template Attributes
+              Program Details
             </h3>
 
             <div className="input-group">
               <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                Template Title
+                Program Title
               </label>
               <input
                 type="text"
@@ -427,11 +425,9 @@ function ProgramBuilderPage() {
             </div>
 
             <div className="input-group">
-              <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                Coaching / Routine Notes
-              </label>
+              <label className="label-md text-xs text-[var(--on-surface-variant)]">Notes</label>
               <textarea
-                placeholder="Write overall guidelines, hydration, or warm-up notes here..."
+                placeholder="Write overall guidelines or warm-up instructions here..."
                 value={programNotes}
                 onChange={(e) => setProgramNotes(e.target.value)}
                 className="input-field bg-[var(--surface-container-lowest)] text-white w-full min-h-[120px] resize-none"
@@ -447,7 +443,7 @@ function ProgramBuilderPage() {
               <span className="material-symbols-outlined text-[var(--secondary-container)]">
                 assignment_turned_in
               </span>
-              Routine Constructor
+              Workout Plan
             </h3>
             <span className="chip chip-cyan">{addedExercises.length} exercises added</span>
           </div>
@@ -457,10 +453,11 @@ function ProgramBuilderPage() {
               <span className="material-symbols-outlined text-[var(--secondary-container)] text-5xl mb-3 animate-pulse">
                 playlist_add
               </span>
-              <h4 className="headline-md font-bold text-white/70 text-lg">Your canvas is empty</h4>
+              <h4 className="headline-md font-bold text-white/70 text-lg">
+                No exercises added yet
+              </h4>
               <p className="body-md text-[var(--on-surface-variant)] text-sm max-w-sm mx-auto">
-                Add exercises from the catalog on the left to structure your premium routine
-                template.
+                Add exercises from the list on the left to build your workout program.
               </p>
             </div>
           ) : (
@@ -671,20 +668,20 @@ function ProgramBuilderPage() {
                       className="btn py-1 px-3 bg-white/5 hover:bg-white/10 text-white rounded-md text-xs flex items-center gap-1.5"
                     >
                       <span className="material-symbols-outlined text-xs">add</span>
-                      <span>Add Target Set</span>
+                      <span>Add Set</span>
                     </button>
 
                     <div className="w-full md:max-w-xl grid grid-cols-1 md:grid-cols-2 gap-3">
                       <input
                         type="text"
-                        placeholder="Reusable block, e.g. Week 1 Push A"
+                        placeholder="Block name, e.g. Warmup, Superset A"
                         value={ex.blockName}
                         onChange={(e) => handleExerciseBlockChange(exIdx, e.target.value)}
                         className="bg-transparent text-white placeholder-white/20 border-b border-white/5 hover:border-white/15 focus:border-[var(--secondary-container)] w-full py-1 text-xs outline-none transition-colors"
                       />
                       <input
                         type="text"
-                        placeholder="Exercise specific coaching instructions..."
+                        placeholder="Exercise notes or coaching cues..."
                         value={ex.notes}
                         onChange={(e) => handleExerciseNotesChange(exIdx, e.target.value)}
                         className="bg-transparent text-white placeholder-white/20 border-b border-white/5 hover:border-white/15 focus:border-[var(--secondary-container)] w-full py-1 text-xs outline-none transition-colors"
@@ -707,7 +704,7 @@ function ProgramBuilderPage() {
                 <span className="material-symbols-outlined text-[var(--primary-container)]">
                   add_box
                 </span>
-                Register Custom Exercise
+                Create Custom Exercise
               </h3>
               <button
                 onClick={() => setShowCustomModal(false)}
@@ -734,23 +731,23 @@ function ProgramBuilderPage() {
 
               <div className="input-group">
                 <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                  Movement Category
+                  Category
                 </label>
                 <select
                   value={customCategory}
                   onChange={(e) => setCustomCategory(e.target.value)}
                   className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
                 >
-                  <option value="strength">Strength / Hypertrophy</option>
-                  <option value="cardio">Cardio / Endurance</option>
-                  <option value="bodyweight">Calisthenics / Bodyweight</option>
-                  <option value="mobility">Mobility / Flexibility</option>
+                  <option value="strength">Strength</option>
+                  <option value="cardio">Cardio</option>
+                  <option value="bodyweight">Bodyweight</option>
+                  <option value="mobility">Mobility</option>
                 </select>
               </div>
 
               <div className="input-group">
                 <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                  Default Metric Unit
+                  Default Unit
                 </label>
                 <select
                   value={customUnit}
@@ -773,7 +770,7 @@ function ProgramBuilderPage() {
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary py-1.5 px-4 text-xs">
-                  Register and Add
+                  Create & Add
                 </button>
               </div>
             </form>

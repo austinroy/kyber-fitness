@@ -76,7 +76,7 @@ function NotificationsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">Syncing signal inbox...</p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading notifications...</p>
       </div>
     )
   }
@@ -85,10 +85,10 @@ function NotificationsPage() {
     <div className="space-y-6 py-2">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div>
-          <div className="chip chip-cyan mb-2">SIGNAL INBOX</div>
+          <div className="chip chip-cyan mb-2">ACTIVITY</div>
           <h1 className="display-lg text-3xl font-black m-0 text-white uppercase">Notifications</h1>
           <p className="body-md text-[var(--on-surface-variant)] m-0">
-            Trainer invites, assigned routines, and coaching alerts land here.
+            Trainer invites, assigned workouts, and updates appear here.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -125,9 +125,9 @@ function NotificationsPage() {
           <span className="material-symbols-outlined text-[var(--secondary-container)] text-5xl mb-4">
             notifications
           </span>
-          <h3 className="headline-lg font-black text-white text-xl">Inbox clear</h3>
+          <h3 className="headline-lg font-black text-white text-xl">All caught up</h3>
           <p className="body-md text-[var(--on-surface-variant)] text-sm max-w-md mx-auto mt-2">
-            New trainer invites and routine assignments will appear here.
+            New invites, assigned workouts, and notifications will show up here.
           </p>
         </div>
       ) : (

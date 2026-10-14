@@ -78,11 +78,7 @@ function MyTrainersPage() {
       })
 
       if (res && res.success) {
-        setSuccessMsg(
-          accept
-            ? 'Trainer relationship successfully authorized! Performance sharing is now active.'
-            : 'Trainer invitation declined.',
-        )
+        setSuccessMsg(accept ? 'Trainer invitation accepted!' : 'Trainer invitation declined.')
         // Refresh trainer connections
         await loadTrainers()
         setTimeout(() => setSuccessMsg(''), 5000)
@@ -101,9 +97,7 @@ function MyTrainersPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Connecting to coach network...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading trainers...</p>
       </div>
     )
   }
@@ -115,11 +109,11 @@ function MyTrainersPage() {
     <div className="space-y-8 py-2 max-w-4xl mx-auto">
       {/* Page Header */}
       <div className="border-b border-white/5 pb-6">
-        <div className="chip chip-cyan mb-2">ATHLETE NETWORK GATE</div>
+        <div className="chip chip-cyan mb-2">COACHING</div>
         <h1 className="display-lg text-3xl font-black m-0 text-white font-sans">MY TRAINERS</h1>
         <p className="body-md text-[var(--on-surface-variant)] m-0">
-          Manage authorized trainers, review coaching credentials, and manage permission overrides
-          for logging biometrics or training sessions.
+          Manage your trainers, review their details, and check permissions for logging workouts and
+          health metrics.
         </p>
       </div>
 
@@ -142,7 +136,7 @@ function MyTrainersPage() {
             <span className="material-symbols-outlined animate-pulse text-[var(--primary-container)]">
               notifications_active
             </span>
-            PENDING CONNECTION REQUESTS ({pendingInvitations.length})
+            Pending Invites ({pendingInvitations.length})
           </h2>
 
           <div className="grid grid-cols-1 gap-6">
@@ -154,7 +148,7 @@ function MyTrainersPage() {
                 {/* Header info */}
                 <div className="flex flex-wrap justify-between items-start gap-4">
                   <div>
-                    <span className="chip chip-cyan text-[8px] mb-1">PROPOSAL DEPLOYED</span>
+                    <span className="chip chip-cyan text-[8px] mb-1">INVITATION</span>
                     <h3 className="headline-md font-bold text-white text-base m-0">
                       {inv.trainer.name}
                     </h3>
@@ -177,7 +171,7 @@ function MyTrainersPage() {
                       disabled={actingId !== null}
                       className="btn btn-primary py-1.5 px-4 text-xs font-bold"
                     >
-                      {actingId === inv.id ? 'Authorizing...' : 'Approve Connection'}
+                      {actingId === inv.id ? 'Accepting...' : 'Accept Invite'}
                     </button>
                   </div>
                 </div>
@@ -226,7 +220,7 @@ function MyTrainersPage() {
           <span className="material-symbols-outlined text-[var(--secondary-container)]">
             verified_user
           </span>
-          AUTHORIZED PERFORMANCE COACHES ({activeTrainers.length})
+          Your Trainers ({activeTrainers.length})
         </h2>
 
         {activeTrainers.length === 0 ? (
@@ -234,18 +228,18 @@ function MyTrainersPage() {
             <span className="material-symbols-outlined text-white/10 text-5xl">sports</span>
             <div>
               <h4 className="headline-md font-bold text-white/50 text-sm">
-                Your training terminal is currently running solo
+                You haven't connected with a trainer yet
               </h4>
               <p className="body-md text-[var(--on-surface-variant)] text-xs mt-1.5 max-w-md mx-auto leading-relaxed">
-                Connect with a professional coach to grant permission to log workouts and record
-                metrics on your behalf. Provide your coach with your registered email:
+                Work with a trainer to get custom workout plans, log sessions together, and track
+                your progress. Give your trainer this email address so they can invite you:
               </p>
             </div>
             <div className="inline-block px-4 py-2 bg-white/[0.03] border border-white/5 rounded font-mono text-xs text-white">
               {dbUser?.email}
             </div>
             <p className="text-[10px] text-[var(--on-surface-variant)] uppercase tracking-wider">
-              Once they send an invitation, it will manifest here for authorization approval.
+              When they send you an invite, it will appear here for you to accept.
             </p>
           </div>
         ) : (
@@ -260,7 +254,7 @@ function MyTrainersPage() {
 
                 <div className="flex flex-wrap justify-between items-start gap-4 pl-2">
                   <div>
-                    <span className="chip chip-cyan text-[8px] mb-1.5">PARTNERSHIP ACTIVE</span>
+                    <span className="chip chip-cyan text-[8px] mb-1.5">ACTIVE</span>
                     <h3 className="headline-md font-bold text-white text-base m-0">
                       {con.trainer.name}
                     </h3>
@@ -284,21 +278,19 @@ function MyTrainersPage() {
                 {/* Trainer parameters */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-white/5 pt-4 text-xs pl-2">
                   <div className="p-3 bg-white/[0.01] border border-white/5 rounded">
-                    <span className="text-[var(--on-surface-variant)] block">Coaching Studio</span>
+                    <span className="text-[var(--on-surface-variant)] block">Gym or Studio</span>
                     <span className="text-white font-bold block mt-1">
-                      {con.trainerProfile.businessName || 'Elite Training'}
+                      {con.trainerProfile.businessName || 'Independent'}
                     </span>
                   </div>
                   <div className="p-3 bg-white/[0.01] border border-white/5 rounded">
-                    <span className="text-[var(--on-surface-variant)] block">
-                      Core Specialization
-                    </span>
+                    <span className="text-[var(--on-surface-variant)] block">Specialization</span>
                     <span className="text-white font-bold block mt-1">
-                      {con.trainerProfile.specialization || 'Performance'}
+                      {con.trainerProfile.specialization || 'General Fitness'}
                     </span>
                   </div>
                   <div className="p-3 bg-white/[0.01] border border-white/5 rounded">
-                    <span className="text-[var(--on-surface-variant)] block">Years Active</span>
+                    <span className="text-[var(--on-surface-variant)] block">Experience</span>
                     <span className="text-white font-bold block mt-1">
                       {con.trainerProfile.yearsExperience || 0} years
                     </span>
@@ -307,8 +299,7 @@ function MyTrainersPage() {
 
                 {con.trainerProfile.bio && (
                   <p className="body-md text-[var(--on-surface-variant)] text-xs leading-relaxed border-t border-white/5 pt-3 pl-2 mb-0">
-                    <span className="text-white font-bold">Trainer Statement: </span>"
-                    {con.trainerProfile.bio}"
+                    <span className="text-white font-bold">Bio: </span>"{con.trainerProfile.bio}"
                   </p>
                 )}
 
@@ -319,12 +310,11 @@ function MyTrainersPage() {
                   </span>
                   <div>
                     <span className="text-white font-bold block uppercase tracking-wider mb-0.5">
-                      Authorized Scope of Permissions
+                      What this trainer can do
                     </span>
-                    This certified performance trainer holds secure system permissions to construct
-                    training session records and write biometrics logs (e.g. weight, body fat) on
-                    your behalf. Your personal dashboard is synchronized with these records in
-                    real-time.
+                    This trainer can assign workout plans, log sessions, and record health metrics
+                    (like weight and body fat) for you. Everything they add will show up right in
+                    your dashboard.
                   </div>
                 </div>
               </div>

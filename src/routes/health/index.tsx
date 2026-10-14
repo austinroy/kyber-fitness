@@ -135,7 +135,7 @@ function HealthDashboardPage() {
       })
 
       if (res && res.success) {
-        setSuccessMsg('Biometrics successfully synced to core telemetry database!')
+        setSuccessMsg('Entry saved.')
         setLogValue('')
         setLogNotes('')
 
@@ -152,7 +152,9 @@ function HealthDashboardPage() {
       }
     } catch (err: unknown) {
       console.error(err)
-      setErrorMsg(err instanceof Error ? err.message : 'Failed to submit health metrics.')
+      setErrorMsg(
+        err instanceof Error ? err.message : "Couldn't save this entry. Please try again.",
+      )
     } finally {
       setLogging(false)
     }
@@ -196,17 +198,17 @@ function HealthDashboardPage() {
       })
       await refreshMetrics()
       setEditingMetricId('')
-      setSuccessMsg('Biometric log updated.')
+      setSuccessMsg('Entry updated.')
       setTimeout(() => setSuccessMsg(''), 3000)
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Failed to update health metric.')
+      setErrorMsg(err instanceof Error ? err.message : "Couldn't update this entry.")
     } finally {
       setLogging(false)
     }
   }
 
   const handleMetricDelete = async (metric: HealthMetricRecord) => {
-    if (!window.confirm('Delete this biometric log permanently?')) return
+    if (!window.confirm('Delete this entry? This can’t be undone.')) return
 
     setLogging(true)
     setErrorMsg('')
@@ -220,10 +222,10 @@ function HealthDashboardPage() {
         },
       })
       await refreshMetrics()
-      setSuccessMsg('Biometric log deleted.')
+      setSuccessMsg('Entry deleted.')
       setTimeout(() => setSuccessMsg(''), 3000)
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Failed to delete health metric.')
+      setErrorMsg(err instanceof Error ? err.message : "Couldn't delete this entry.")
     } finally {
       setLogging(false)
     }
@@ -233,9 +235,7 @@ function HealthDashboardPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Streaming biometric telemetry...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading your health data…</p>
       </div>
     )
   }
@@ -278,11 +278,10 @@ function HealthDashboardPage() {
             insights
           </span>
           <h4 className="headline-md font-bold text-[var(--on-surface)] text-sm">
-            Awaiting sufficient timeline data
+            Not enough data yet
           </h4>
           <p className="body-md text-[var(--on-surface-variant)] text-xs mt-1 max-w-xs">
-            Submit at least two logs to project premium performance vectors and rolling progress
-            lines.
+            Log at least two entries to see your trend over time.
           </p>
         </div>
       )
@@ -340,10 +339,10 @@ function HealthDashboardPage() {
               <span className="material-symbols-outlined text-[var(--secondary-container)]">
                 trending_up
               </span>
-              Biometric Performance Vectors
+              Progress Over Time
             </h3>
             <p className="body-md text-[var(--on-surface-variant)] text-xs mt-0.5">
-              Timeline trend from {chronologicalData[0].date} to{' '}
+              From {chronologicalData[0].date} to{' '}
               {chronologicalData[chronologicalData.length - 1].date}
             </p>
           </div>
@@ -456,11 +455,10 @@ function HealthDashboardPage() {
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div>
-          <div className="chip chip-cyan mb-2">HEALTH METRICS CORE</div>
-          <h1 className="display-lg text-3xl font-black m-0 text-white">BIOMETRICS CONSOLE</h1>
+          <div className="chip chip-cyan mb-2">HEALTH & VITALS</div>
+          <h1 className="display-lg text-3xl font-black m-0 text-white">HEALTH METRICS</h1>
           <p className="body-md text-[var(--on-surface-variant)] m-0">
-            Track dated physical variables, monitor chronological progress, and project biological
-            benchmarks.
+            Track your body weight, body fat, and resting heart rate over time.
           </p>
         </div>
 
@@ -468,14 +466,14 @@ function HealthDashboardPage() {
         {isTrainer && (
           <div className="input-group min-w-[200px]">
             <label className="label-md text-xs text-[var(--on-surface-variant)]">
-              Review Athlete Profile
+              Viewing stats for
             </label>
             <select
               value={selectedClientId}
               onChange={(e) => setSelectedClientId(e.target.value)}
               className="input-field bg-[var(--surface-container-lowest)] text-white text-xs w-full py-2"
             >
-              <option value="">Personal Biometrics (Self)</option>
+              <option value="">Myself</option>
               {clientsList.map((c) => (
                 <option key={c.client.id} value={c.client.id}>
                   {c.client.name} (Client)
@@ -536,7 +534,7 @@ function HealthDashboardPage() {
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 receipt_long
               </span>
-              Dated Telemetry Log entries
+              History
             </h3>
 
             {metricsHistory.length === 0 ? (
@@ -551,9 +549,9 @@ function HealthDashboardPage() {
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
                     <tr className="border-b border-white/5 text-[var(--on-surface-variant)]">
-                      <th className="py-2.5">Sync Timestamp</th>
-                      <th className="py-2.5">Recorded Value</th>
-                      <th className="py-2.5">Sync Terminal</th>
+                      <th className="py-2.5">Date</th>
+                      <th className="py-2.5">Value</th>
+                      <th className="py-2.5">Logged by</th>
                       <th className="py-2.5">Notes</th>
                       <th className="py-2.5 text-right">Actions</th>
                     </tr>
@@ -586,9 +584,7 @@ function HealthDashboardPage() {
                           )}
                         </td>
                         <td className="py-3 text-[var(--on-surface-variant)]">
-                          {m.recordedByUserId === m.userId
-                            ? 'Individual Core'
-                            : 'Trainer Portal Override'}
+                          {m.recordedByUserId === m.userId ? 'You' : 'Coach'}
                         </td>
                         <td className="py-3 text-[var(--on-surface-variant)] max-w-[240px]">
                           {editingMetricId === m.id ? (
@@ -658,10 +654,10 @@ function HealthDashboardPage() {
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 add_box
               </span>
-              Sync Bio Telemetry
+              Log Entry
             </h3>
             <p className="body-md text-[var(--on-surface-variant)] text-xs">
-              Manually append a secure datum point into the active biometric telemetry timeline.
+              Add a new measurement to keep your progress chart up to date.
             </p>
 
             {successMsg && (
@@ -681,14 +677,14 @@ function HealthDashboardPage() {
               {isTrainer && (
                 <div className="input-group">
                   <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                    Designate Sync Target
+                    Log for
                   </label>
                   <select
                     value={logForClientId}
                     onChange={(e) => setLogForClientId(e.target.value)}
                     className="input-field bg-[var(--surface-container-lowest)] text-white w-full py-2"
                   >
-                    <option value="">Self (Personal record)</option>
+                    <option value="">Myself</option>
                     {clientsList.map((c) => (
                       <option key={c.client.id} value={c.client.id}>
                         {c.client.name} (Client)
@@ -719,13 +715,11 @@ function HealthDashboardPage() {
               </div>
 
               <div className="input-group">
-                <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                  Verification / Notes
-                </label>
+                <label className="label-md text-xs text-[var(--on-surface-variant)]">Notes</label>
                 <textarea
                   value={logNotes}
                   onChange={(e) => setLogNotes(e.target.value)}
-                  placeholder="e.g., Logged pre-breakfast, fasted status"
+                  placeholder="e.g. Morning weigh-in, fasted"
                   className="input-field min-h-[80px]"
                 />
               </div>
@@ -735,7 +729,7 @@ function HealthDashboardPage() {
                 disabled={logging}
                 className={`btn btn-primary w-full py-2.5 text-xs ${logging ? 'btn-disabled' : ''}`}
               >
-                {logging ? 'Synchronizing Telemetry...' : 'Sync Telemetry Log'}
+                {logging ? 'Saving...' : 'Save Entry'}
               </button>
             </form>
           </div>
@@ -747,13 +741,13 @@ function HealthDashboardPage() {
                 info
               </span>
               <h4 className="headline-md font-bold text-white text-xs uppercase tracking-wider m-0">
-                Performance Insights
+                Tracking Tips
               </h4>
             </div>
             <p className="body-md text-[var(--on-surface-variant)] text-xs leading-relaxed">
-              Consistently recording biometric variables helps map metabolic adaptation charts.
-              Trainers with active partnerships can input telemetry override data, which maps into
-              your charts securely.
+              For the most reliable trends, log your metrics around the same time each day (like
+              first thing in the morning). Your coach can also view or log entries on your behalf if
+              permitted.
             </p>
           </div>
         </div>

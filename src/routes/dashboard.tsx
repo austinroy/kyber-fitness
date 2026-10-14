@@ -107,9 +107,7 @@ function DashboardPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Streaming biometric console...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading your dashboard...</p>
       </div>
     )
   }
@@ -121,19 +119,18 @@ function DashboardPage() {
       {/* Top Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div className="min-w-0">
-          <div className="chip chip-cyan mb-2">PORTAL ACTIVE</div>
+          <div className="chip chip-cyan mb-2">DASHBOARD</div>
           <h1 className="display-lg text-2xl sm:text-3xl font-black m-0 text-white capitalize break-words">
-            {isTrainer ? 'COACH TERMINAL' : 'ATHLETE CONSOLE'}
+            {isTrainer ? 'Coach Dashboard' : 'Athlete Dashboard'}
           </h1>
           <p className="body-md text-[var(--on-surface-variant)] m-0">
-            Biometric sync ok. Logged in as{' '}
-            <span className="text-white font-bold">{dbUser?.name}</span>.
+            Welcome back, <span className="text-white font-bold">{dbUser?.name}</span>.
           </p>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
           <Link to="/workouts/new" className="btn btn-primary w-full md:w-auto">
             <span className="material-symbols-outlined mr-2">add</span>
-            Log Activity
+            Log a Workout
           </Link>
         </div>
       </div>
@@ -152,7 +149,7 @@ function DashboardPage() {
               <div className="space-y-2 flex-1 pl-2 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="chip chip-cyan text-[9px] uppercase font-black tracking-widest">
-                    ASSIGNED BY COACH {assign.trainerName}
+                    ASSIGNED BY {assign.trainerName}
                   </span>
                   <span className="text-[10px] text-[var(--on-surface-variant)]">
                     Received {new Date(assign.assignedAt).toLocaleDateString()}
@@ -170,7 +167,7 @@ function DashboardPage() {
 
                 {assign.notes && (
                   <p className="body-md text-[var(--on-surface-variant)] text-xs m-0 italic bg-white/[0.02] p-3 rounded border border-white/5 max-w-2xl">
-                    Coaching Note: "{assign.notes}"
+                    Note: "{assign.notes}"
                   </p>
                 )}
 
@@ -193,7 +190,7 @@ function DashboardPage() {
                   <span className="material-symbols-outlined text-sm font-bold animate-bounce">
                     fitness_center
                   </span>
-                  <span>Record Routine</span>
+                  <span>Start Workout</span>
                 </Link>
               </div>
             </div>
@@ -209,24 +206,24 @@ function DashboardPage() {
               <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl mb-2">
                 sports
               </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Coaching Hub</p>
+              <p className="label-md text-[var(--on-surface-variant)] m-0">Your Business</p>
               <h2 className="headline-lg font-black text-white mt-1">
-                {trainerProfile?.businessName || 'Elite Training'}
+                {trainerProfile?.businessName || 'Independent Coach'}
               </h2>
             </div>
             <div className="card">
               <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
                 group
               </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Active Partnerships</p>
+              <p className="label-md text-[var(--on-surface-variant)] m-0">Clients</p>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="metric-xl text-3xl leading-none">Manage</span>
+                <span className="metric-xl text-3xl leading-none">Roster</span>
               </div>
               <Link
                 to="/clients"
                 className="label-md text-[var(--secondary-container)] text-xs font-bold hover:underline block mt-3"
               >
-                Open Client Desk &rarr;
+                View your clients &rarr;
               </Link>
             </div>
             <div className="card">
@@ -235,14 +232,14 @@ function DashboardPage() {
               </span>
               <p className="label-md text-[var(--on-surface-variant)] m-0">Specialization</p>
               <h3 className="headline-md font-bold text-white text-base mt-2 line-clamp-2">
-                {trainerProfile?.specialization || 'General Strength'}
+                {trainerProfile?.specialization || 'Strength & Conditioning'}
               </h3>
             </div>
             <div className="card">
               <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
                 history
               </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Experience</p>
+              <p className="label-md text-[var(--on-surface-variant)] m-0">Coaching Experience</p>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="metric-xl text-4xl">{trainerProfile?.yearsExperience || 0}</span>
                 <span className="body-md text-[var(--on-surface-variant)] text-xs">years</span>
@@ -255,7 +252,7 @@ function DashboardPage() {
               <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
                 fitness_center
               </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Total Workouts</p>
+              <p className="label-md text-[var(--on-surface-variant)] m-0">Completed Workouts</p>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="metric-xl text-5xl leading-none">{workouts.length}</span>
                 <span className="body-md text-[var(--on-surface-variant)] text-xs">sessions</span>
@@ -265,7 +262,7 @@ function DashboardPage() {
               <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl mb-2">
                 height
               </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Height Details</p>
+              <p className="label-md text-[var(--on-surface-variant)] m-0">Height</p>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="metric-xl text-4xl">{profile?.height || '--'}</span>
                 <span className="body-md text-[var(--on-surface-variant)] text-xs">cm</span>
@@ -275,9 +272,9 @@ function DashboardPage() {
               <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
                 track_changes
               </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Current Target Goal</p>
+              <p className="label-md text-[var(--on-surface-variant)] m-0">Primary Goal</p>
               <h3 className="headline-md font-bold text-white text-base mt-2 break-words">
-                {profile?.fitnessGoal || 'No goal set yet. Modify in profile onboarding.'}
+                {profile?.fitnessGoal || 'No goal set yet. Add one in Settings.'}
               </h3>
             </div>
           </>
@@ -293,7 +290,7 @@ function DashboardPage() {
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 receipt_long
               </span>
-              Recent Sessions History
+              Recent Workouts
             </h3>
             <Link
               to="/workouts"
@@ -385,12 +382,12 @@ function DashboardPage() {
                 Quick Weight Log
               </h3>
               <p className="body-md text-[var(--on-surface-variant)] text-xs">
-                Log today's weight to maintain your visual progress trend curve.
+                Log your weight to keep your progress charts up to date.
               </p>
 
               {logSuccess && (
                 <div className="p-2 text-xs rounded bg-green-950/40 border border-green-900 text-green-300">
-                  Metric synced to health core!
+                  Weight saved!
                 </div>
               )}
 
@@ -426,7 +423,7 @@ function DashboardPage() {
                   disabled={logging}
                   className={`btn btn-primary w-full py-2 text-xs ${logging ? 'btn-disabled' : ''}`}
                 >
-                  {logging ? 'Syncing...' : 'Sync Biometrics'}
+                  {logging ? 'Saving...' : 'Save Weight'}
                 </button>
               </form>
             </div>
@@ -437,15 +434,15 @@ function DashboardPage() {
                 <span className="material-symbols-outlined text-[var(--secondary-container)]">
                   support_agent
                 </span>
-                Client Administration
+                Client Management
               </h3>
               <p className="body-md text-[var(--on-surface-variant)] text-xs">
-                Invite individuals, log workout schedules, and review dynamic logs.
+                Invite clients, assign workouts, and review their progress.
               </p>
               <div className="space-y-2 pt-2">
                 <Link to="/clients" className="btn btn-primary w-full text-xs py-2">
                   <span className="material-symbols-outlined text-sm mr-1">group</span>
-                  View Client Registry
+                  View All Clients
                 </Link>
               </div>
             </div>
@@ -456,10 +453,10 @@ function DashboardPage() {
             <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl mb-2">
               tips_and_updates
             </span>
-            <h4 className="headline-md font-bold text-white text-sm m-0">Performance Insights</h4>
+            <h4 className="headline-md font-bold text-white text-sm m-0">Training Tip</h4>
             <p className="body-md text-[var(--on-surface-variant)] text-xs mt-2 leading-relaxed">
-              Consistently logging weight at the same time daily creates a cleaner, highly accurate
-              rolling weight trendline. Make sure to log post-waking!
+              Weigh yourself at the same time each day—ideally right after waking up—for the most
+              consistent trendline.
             </p>
           </div>
         </div>

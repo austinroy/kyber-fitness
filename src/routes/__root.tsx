@@ -52,7 +52,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Kyber Fitness — Kinetic Performance System' },
+      { title: 'Kyber Fitness — Workout & Health Tracker' },
       {
         name: 'description',
         content: 'Track workouts, health data, and manage client-trainer relationships.',
@@ -85,15 +85,14 @@ function NotFoundComponent() {
         explore_off
       </span>
 
-      <h1 className="headline-lg font-black tracking-tight text-white mb-2">ROUTE NOT FOUND</h1>
+      <h1 className="headline-lg font-black tracking-tight text-white mb-2">PAGE NOT FOUND</h1>
       <p className="body-md text-[var(--on-surface-variant)] mb-8">
-        The coordinates you entered do not exist on the Kyber grid. Let's redirect your training
-        session back to base.
+        We couldn't find the page you're looking for. Let's head back home.
       </p>
 
       <Link to="/" className="btn btn-primary px-8 py-3 flex items-center justify-center gap-2">
         <span className="material-symbols-outlined text-sm">home</span>
-        <span>Return to Base</span>
+        <span>Back to Home</span>
       </Link>
     </div>
   )
@@ -116,18 +115,17 @@ function RootDocument() {
           <div className="flex flex-col items-center justify-center min-h-screen text-center px-4 max-w-lg mx-auto relative">
             <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[var(--primary-container)]/5 rounded-full filter blur-[80px] pointer-events-none"></div>
 
-            <div className="chip mb-6 flex items-center gap-1.5 bg-red-950/40 border border-red-900/30 text-red-400">
-              <span className="material-symbols-outlined text-sm">warning</span>
-              <span>Sync Offline</span>
+            <div className="chip mb-6 flex items-center gap-1.5 bg-amber-950/40 border border-amber-900/30 text-amber-400">
+              <span className="material-symbols-outlined text-sm">info</span>
+              <span>Setup Required</span>
             </div>
 
             <h1 className="headline-lg font-black tracking-tight text-white mb-4">
-              PORTAL KEYS MISSING
+              AUTHENTICATION KEY MISSING
             </h1>
             <p className="body-md text-[var(--on-surface-variant)] mb-8">
-              The Kyber portal cannot establish client synchronization because the Clerk Publishable
-              Key is missing or set to placeholder. Please configure{' '}
-              <strong>VITE_CLERK_PUBLISHABLE_KEY</strong> in your hosting environment.
+              Kyber Fitness needs a valid Clerk Publishable Key to sign you in. Please set{' '}
+              <strong>VITE_CLERK_PUBLISHABLE_KEY</strong> in your environment variables.
             </p>
           </div>
           <Scripts />
@@ -325,7 +323,7 @@ function AppLayout() {
                     KYBER
                   </h1>
                   <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0 tracking-wider">
-                    KINETIC PERFORMANCE
+                    FITNESS & COACHING
                   </p>
                 </div>
                 <button
@@ -360,7 +358,7 @@ function AppLayout() {
                     KYBER
                   </h1>
                   <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0 tracking-wider">
-                    KINETIC PERFORMANCE
+                    FITNESS & COACHING
                   </p>
                 </div>
               </div>

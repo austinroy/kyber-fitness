@@ -18,7 +18,7 @@ function SignInPage() {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
         <div className="mb-6 h-12 w-12 animate-spin rounded-full border-2 border-[var(--line)] border-t-[var(--primary-container)]" />
-        <p className="body-md text-[var(--on-surface-variant)]">Finalizing secure redirect...</p>
+        <p className="body-md text-[var(--on-surface-variant)]">Redirecting to your dashboard...</p>
       </div>
     )
   }
@@ -32,7 +32,9 @@ function SignInPage() {
           <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
             bolt
           </span>
-          <span className="headline-lg font-black tracking-tight text-white m-0">KYBER PORTAL</span>
+          <span className="headline-lg font-black tracking-tight text-white m-0">
+            KYBER FITNESS
+          </span>
         </div>
 
         <div className="border border-white/5 rounded-[var(--rounded-lg)] bg-[var(--surface-container)] p-2 shadow-2xl">

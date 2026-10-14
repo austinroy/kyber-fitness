@@ -102,20 +102,17 @@ function OnboardingPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Securing connection to portal...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Setting up your account...</p>
       </div>
     )
   }
 
   return (
     <div className="max-w-2xl mx-auto py-8 px-4">
-      <div className="chip mb-4">PORTAL REGISTRATION</div>
-      <h1 className="headline-lg font-black text-white mb-2">COMPLETE YOUR BIO PROFILE</h1>
+      <div className="chip mb-4">GET STARTED</div>
+      <h1 className="headline-lg font-black text-white mb-2">COMPLETE YOUR PROFILE</h1>
       <p className="body-md text-[var(--on-surface-variant)] mb-8">
-        Welcome to Kyber, {name}. Please configure your performance role and initial metrics to sync
-        your biometric logs.
+        Welcome to Kyber, {name}. Choose your role and enter a few details to get started.
       </p>
 
       {error && (
@@ -139,7 +136,7 @@ function OnboardingPage() {
             <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
               fitness_center
             </span>
-            <span className="font-bold text-white text-base">Individual Athlete</span>
+            <span className="font-bold text-white text-base">Athlete / Individual</span>
             <span className="text-xs text-[var(--on-surface-variant)]">
               I want to log my personal workouts and track my health data.
             </span>
@@ -157,7 +154,7 @@ function OnboardingPage() {
             <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl">
               sports
             </span>
-            <span className="font-bold text-white text-base">Professional Trainer</span>
+            <span className="font-bold text-white text-base">Trainer / Coach</span>
             <span className="text-xs text-[var(--on-surface-variant)]">
               I want to manage client files, assign workouts, and track progress.
             </span>
@@ -167,7 +164,7 @@ function OnboardingPage() {
         {/* Base Details Card */}
         <div className="card space-y-4">
           <h3 className="headline-md text-lg font-bold border-b border-white/5 pb-2">
-            Base Information
+            Basic Information
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -200,7 +197,7 @@ function OnboardingPage() {
         {role === 'individual' ? (
           <div className="card space-y-4">
             <h3 className="headline-md text-lg font-bold border-b border-white/5 pb-2 text-[var(--primary-container)]">
-              Athlete Metrics
+              About You
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -247,7 +244,7 @@ function OnboardingPage() {
                   <option value="light">Lightly Active (1-3 days/week)</option>
                   <option value="moderate">Moderately Active (3-5 days/week)</option>
                   <option value="very-active">Very Active (6-7 days/week)</option>
-                  <option value="extreme">Athlete/Professional Training</option>
+                  <option value="extreme">Very intense training</option>
                 </select>
               </div>
               <div className="input-group">
@@ -256,7 +253,7 @@ function OnboardingPage() {
                   type="text"
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
-                  placeholder="e.g. Body recomposition, run a 5k"
+                  placeholder="e.g. Build strength, run a 5k"
                   className="input-field"
                 />
               </div>
@@ -264,12 +261,12 @@ function OnboardingPage() {
 
             <div className="input-group">
               <label className="label-md text-[var(--on-surface-variant)]">
-                Medical/Injury Notes
+                Health & Injury Notes
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Any past injuries, limitations, or instructions for trainers..."
+                placeholder="Any past injuries, limitations, or notes for your coach..."
                 className="input-field min-h-[80px]"
               />
             </div>
@@ -277,19 +274,19 @@ function OnboardingPage() {
         ) : (
           <div className="card space-y-4">
             <h3 className="headline-md text-lg font-bold border-b border-white/5 pb-2 text-[var(--secondary-container)]">
-              Coaching Credentials
+              Coaching Details
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="input-group">
                 <label className="label-md text-[var(--on-surface-variant)]">
-                  Business / Studio Name
+                  Business or Gym Name
                 </label>
                 <input
                   type="text"
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
-                  placeholder="e.g. Kinetic Labs Studio"
+                  placeholder="e.g. Peak Performance Gym"
                   className="input-field"
                 />
               </div>
@@ -308,24 +305,22 @@ function OnboardingPage() {
             </div>
 
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">
-                Specialization Areas
-              </label>
+              <label className="label-md text-[var(--on-surface-variant)]">Specialties</label>
               <input
                 type="text"
                 value={specialization}
                 onChange={(e) => setSpecialization(e.target.value)}
-                placeholder="e.g. Powerlifting, Olympic weightlifting, HIIT"
+                placeholder="e.g. Strength training, endurance, mobility"
                 className="input-field"
               />
             </div>
 
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">Bio Summary</label>
+              <label className="label-md text-[var(--on-surface-variant)]">Bio</label>
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                placeholder="Describe your training philosophy and credentials..."
+                placeholder="Describe your coaching philosophy and background..."
                 className="input-field min-h-[80px]"
               />
             </div>
@@ -337,7 +332,7 @@ function OnboardingPage() {
           disabled={submitting}
           className={`btn btn-primary w-full py-3 ${submitting ? 'btn-disabled' : ''}`}
         >
-          {submitting ? 'Registering...' : 'Sync Portal & Continue'}
+          {submitting ? 'Saving...' : 'Save & Continue'}
         </button>
       </form>
     </div>

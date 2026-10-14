@@ -18,7 +18,7 @@ function SignUpPage() {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
         <div className="mb-6 h-12 w-12 animate-spin rounded-full border-2 border-[var(--line)] border-t-[var(--secondary-container)]" />
-        <p className="body-md text-[var(--on-surface-variant)]">Finalizing secure redirect...</p>
+        <p className="body-md text-[var(--on-surface-variant)]">Redirecting to onboarding...</p>
       </div>
     )
   }
@@ -34,7 +34,7 @@ function SignUpPage() {
             bolt
           </span>
           <span className="headline-lg font-black tracking-tight text-white m-0">
-            CREATE PORTAL
+            JOIN KYBER FITNESS
           </span>
         </div>
 

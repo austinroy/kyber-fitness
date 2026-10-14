@@ -155,9 +155,7 @@ function SettingsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Retrieving biometric settings console...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading settings...</p>
       </div>
     )
   }
@@ -168,12 +166,10 @@ function SettingsPage() {
     <div className="max-w-2xl mx-auto py-4 px-4 space-y-6">
       {/* Settings Header */}
       <div className="flex flex-col gap-2 border-b border-white/5 pb-6">
-        <div className="chip chip-lime">PROFILE CONFIGURATION</div>
-        <h1 className="display-lg text-3xl font-black m-0 text-white">
-          {isTrainer ? 'COACH CREDENTIALS' : 'ATHLETE BIOMETRICS'}
-        </h1>
+        <div className="chip chip-lime">ACCOUNT & PREFERENCES</div>
+        <h1 className="display-lg text-3xl font-black m-0 text-white">Settings</h1>
         <p className="body-md text-[var(--on-surface-variant)] m-0">
-          Modify your central registration database settings and biometric tracking defaults.
+          Manage your personal details, training preferences, and app navigation.
         </p>
       </div>
 
@@ -189,7 +185,7 @@ function SettingsPage() {
         <div className="p-4 rounded-md bg-emerald-950/40 border border-emerald-900 text-emerald-300 body-md flex items-center justify-between gap-3 animate-fade-in">
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-emerald-400">check_circle</span>
-            <span>Biometric ledger updated successfully. Core changes saved.</span>
+            <span>Settings saved successfully.</span>
           </div>
           <button
             onClick={() => setSuccess(false)}
@@ -205,7 +201,7 @@ function SettingsPage() {
         <div className="card space-y-4">
           <div className="flex items-center gap-2 border-b border-white/5 pb-2">
             <span className="material-symbols-outlined text-[var(--primary-container)]">badge</span>
-            <h3 className="headline-md text-lg font-bold text-white">Base Directory Details</h3>
+            <h3 className="headline-md text-lg font-bold text-white">Profile Information</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -221,7 +217,7 @@ function SettingsPage() {
               />
             </div>
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">Registered Email</label>
+              <label className="label-md text-[var(--on-surface-variant)]">Email Address</label>
               <input
                 type="email"
                 value={email}
@@ -242,7 +238,7 @@ function SettingsPage() {
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 fitness_center
               </span>
-              <h3 className="headline-md text-lg font-bold text-white">Athlete Metrics Ledger</h3>
+              <h3 className="headline-md text-lg font-bold text-white">About You</h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -289,18 +285,16 @@ function SettingsPage() {
                   <option value="light">Lightly Active (1-3 days/week)</option>
                   <option value="moderate">Moderately Active (3-5 days/week)</option>
                   <option value="very-active">Very Active (6-7 days/week)</option>
-                  <option value="extreme">Athlete/Professional Training</option>
+                  <option value="extreme">Very intense training</option>
                 </select>
               </div>
               <div className="input-group">
-                <label className="label-md text-[var(--on-surface-variant)]">
-                  Primary Fitness Goal
-                </label>
+                <label className="label-md text-[var(--on-surface-variant)]">Fitness Goal</label>
                 <input
                   type="text"
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
-                  placeholder="e.g. Body recomposition, run a 5k"
+                  placeholder="e.g. Build strength, run a 5k"
                   className="input-field"
                 />
               </div>
@@ -308,12 +302,12 @@ function SettingsPage() {
 
             <div className="input-group">
               <label className="label-md text-[var(--on-surface-variant)]">
-                Medical / Injury Notes
+                Health & Injury Notes
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="List any past injuries, physical limits, or coaching requests..."
+                placeholder="List any past injuries, physical limits, or notes for your coach..."
                 className="input-field min-h-[100px]"
               />
             </div>
@@ -325,19 +319,19 @@ function SettingsPage() {
               <span className="material-symbols-outlined text-[var(--secondary-container)]">
                 sports
               </span>
-              <h3 className="headline-md text-lg font-bold text-white">Coaching Credentials</h3>
+              <h3 className="headline-md text-lg font-bold text-white">Coaching Details</h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="input-group">
                 <label className="label-md text-[var(--on-surface-variant)]">
-                  Business / Studio Name
+                  Business or Gym Name
                 </label>
                 <input
                   type="text"
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
-                  placeholder="e.g. Kinetic Labs Studio"
+                  placeholder="e.g. Peak Performance Gym"
                   className="input-field"
                 />
               </div>
@@ -356,24 +350,22 @@ function SettingsPage() {
             </div>
 
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">
-                Specialization Areas
-              </label>
+              <label className="label-md text-[var(--on-surface-variant)]">Specialties</label>
               <input
                 type="text"
                 value={specialization}
                 onChange={(e) => setSpecialization(e.target.value)}
-                placeholder="e.g. Powerlifting, Olympic weightlifting, HIIT"
+                placeholder="e.g. Strength training, endurance, mobility"
                 className="input-field"
               />
             </div>
 
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">Bio Summary</label>
+              <label className="label-md text-[var(--on-surface-variant)]">Bio</label>
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                placeholder="Describe your training philosophy and credentials..."
+                placeholder="Describe your coaching philosophy and background..."
                 className="input-field min-h-[100px]"
               />
             </div>
@@ -387,16 +379,12 @@ function SettingsPage() {
               <span className="material-symbols-outlined text-[var(--secondary-container)]">
                 dashboard_customize
               </span>
-              <h3 className="headline-md text-lg font-bold text-white">
-                Appearance & Navigation Layout
-              </h3>
+              <h3 className="headline-md text-lg font-bold text-white">Navigation Style</h3>
             </div>
-            <span className="badge-cyan text-[10px]">REAL-TIME PREVIEW</span>
           </div>
 
           <p className="body-md text-[var(--on-surface-variant)] text-xs">
-            Choose your preferred dashboard navigation style. Changes apply immediately to your
-            browser session.
+            Pick how you want to navigate the app. Changes apply right away.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
@@ -420,7 +408,7 @@ function SettingsPage() {
                 Glass capsule floating at top of screen with mobile bottom dock.
               </p>
               <span className="mt-3 inline-block text-[9px] font-mono px-2 py-0.5 rounded bg-[#D4FF00]/15 text-[#D4FF00] font-bold">
-                RECOMMENDED
+                DEFAULT
               </span>
             </button>
 
@@ -486,12 +474,12 @@ function SettingsPage() {
             {submitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
-                <span>Syncing Database...</span>
+                <span>Saving...</span>
               </>
             ) : (
               <>
-                <span className="material-symbols-outlined text-sm">cloud_sync</span>
-                <span>Apply Core Changes</span>
+                <span className="material-symbols-outlined text-sm">check</span>
+                <span>Save Changes</span>
               </>
             )}
           </button>
@@ -502,7 +490,7 @@ function SettingsPage() {
             disabled={submitting}
             className="btn btn-secondary py-3.5"
           >
-            Cancel & Return
+            Cancel
           </button>
         </div>
       </form>
