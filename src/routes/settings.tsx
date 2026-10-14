@@ -41,6 +41,24 @@ function SettingsPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [navLayout, setNavLayout] = useState<'floating' | 'full-bleed' | 'sidebar'>('floating')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('kyber_header_layout')
+      if (stored === 'full-bleed' || stored === 'floating' || stored === 'sidebar') {
+        setNavLayout(stored)
+      }
+    }
+  }, [])
+
+  const handleNavLayoutChange = (layout: 'floating' | 'full-bleed' | 'sidebar') => {
+    setNavLayout(layout)
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('kyber_header_layout', layout)
+      window.dispatchEvent(new Event('kyber_header_layout_change'))
+    }
+  }
 
   useEffect(() => {
     if (isLoaded) {
@@ -361,6 +379,100 @@ function SettingsPage() {
             </div>
           </div>
         )}
+
+        {/* Appearance & Navigation Layout Card */}
+        <div className="card space-y-4">
+          <div className="flex items-center justify-between border-b border-white/5 pb-2">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[var(--secondary-container)]">
+                dashboard_customize
+              </span>
+              <h3 className="headline-md text-lg font-bold text-white">
+                Appearance & Navigation Layout
+              </h3>
+            </div>
+            <span className="badge-cyan text-[10px]">REAL-TIME PREVIEW</span>
+          </div>
+
+          <p className="body-md text-[var(--on-surface-variant)] text-xs">
+            Choose your preferred dashboard navigation style. Changes apply immediately to your
+            browser session.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            {/* Floating Island Option */}
+            <button
+              type="button"
+              onClick={() => handleNavLayoutChange('floating')}
+              className={`p-4 rounded-2xl border text-left transition-all ${
+                navLayout === 'floating'
+                  ? 'border-[#D4FF00] bg-[#D4FF00]/10 shadow-[0_0_20px_rgba(212,255,0,0.15)]'
+                  : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05]'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-white">Floating Island</span>
+                {navLayout === 'floating' && (
+                  <span className="w-2 h-2 rounded-full bg-[#D4FF00] shadow-[0_0_8px_#D4FF00]"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Glass capsule floating at top of screen with mobile bottom dock.
+              </p>
+              <span className="mt-3 inline-block text-[9px] font-mono px-2 py-0.5 rounded bg-[#D4FF00]/15 text-[#D4FF00] font-bold">
+                RECOMMENDED
+              </span>
+            </button>
+
+            {/* Full-Bleed Top Bar Option */}
+            <button
+              type="button"
+              onClick={() => handleNavLayoutChange('full-bleed')}
+              className={`p-4 rounded-2xl border text-left transition-all ${
+                navLayout === 'full-bleed'
+                  ? 'border-[#00F0FF] bg-[#00F0FF]/10 shadow-[0_0_20px_rgba(0,240,255,0.15)]'
+                  : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05]'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-white">Full-Bleed Top Bar</span>
+                {navLayout === 'full-bleed' && (
+                  <span className="w-2 h-2 rounded-full bg-[#00F0FF] shadow-[0_0_8px_#00F0FF]"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Edge-to-edge sticky top navigation bar across the viewport.
+              </p>
+              <span className="mt-3 inline-block text-[9px] font-mono px-2 py-0.5 rounded bg-white/10 text-zinc-300 font-bold">
+                CLASSIC
+              </span>
+            </button>
+
+            {/* Classic Sidebar Option */}
+            <button
+              type="button"
+              onClick={() => handleNavLayoutChange('sidebar')}
+              className={`p-4 rounded-2xl border text-left transition-all ${
+                navLayout === 'sidebar'
+                  ? 'border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+                  : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05]'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-white">Left Sidebar Rail</span>
+                {navLayout === 'sidebar' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#10B981]"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Dedicated desktop left navigation rail with sticky links.
+              </p>
+              <span className="mt-3 inline-block text-[9px] font-mono px-2 py-0.5 rounded bg-white/10 text-zinc-300 font-bold">
+                DESKTOP RAIL
+              </span>
+            </button>
+          </div>
+        </div>
 
         {/* Submit Actions */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">

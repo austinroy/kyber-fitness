@@ -86,9 +86,7 @@ function NotificationsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
         <div>
           <div className="chip chip-cyan mb-2">SIGNAL INBOX</div>
-          <h1 className="display-lg text-3xl font-black m-0 text-white uppercase">
-            Notifications
-          </h1>
+          <h1 className="display-lg text-3xl font-black m-0 text-white uppercase">Notifications</h1>
           <p className="body-md text-[var(--on-surface-variant)] m-0">
             Trainer invites, assigned routines, and coaching alerts land here.
           </p>

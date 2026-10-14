@@ -1,89 +1,605 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { SignedIn, SignedOut } from '@clerk/tanstack-start'
+import { useState, useEffect } from 'react'
+import {
+  Dumbbell,
+  Users,
+  Activity,
+  ShieldCheck,
+  Zap,
+  ArrowRight,
+  Plus,
+  Minus,
+  Sparkles,
+  Timer,
+  CheckCircle2,
+} from 'lucide-react'
 
 export const Route = createFileRoute('/')({
   component: LandingPage,
 })
 
 function LandingPage() {
+  // Interactive Hero State
+  const [activePersona, setActivePersona] = useState<'athlete' | 'coach'>('athlete')
+  const [weight, setWeight] = useState(140.0)
+  const [restSeconds, setRestSeconds] = useState(102) // 01:42
+  const [isLogged, setIsLogged] = useState(false)
+
+  // Live timer tick for athletic realism
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRestSeconds((prev) => (prev > 0 ? prev - 1 : 90))
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const formatTimer = (totalSecs: number) => {
+    const mins = Math.floor(totalSecs / 60)
+    const secs = totalSecs % 60
+    return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+  }
+
+  const handleAdjustWeight = (delta: number) => {
+    setWeight((prev) => Math.max(20, Math.round((prev + delta) * 10) / 10))
+  }
+
+  const handleLogSet = () => {
+    setIsLogged(true)
+    setRestSeconds(90)
+    setTimeout(() => setIsLogged(false), 2500)
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4 max-w-4xl mx-auto">
-      {/* Visual background elements */}
-      <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-[var(--primary-container)]/5 rounded-full filter blur-[100px] pointer-events-none"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-[var(--secondary-container)]/5 rounded-full filter blur-[100px] pointer-events-none"></div>
+    <div className="relative overflow-hidden">
+      {/* Ambient background glows */}
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-[#D4FF00]/10 via-[#00F0FF]/10 to-transparent rounded-full filter blur-[120px] pointer-events-none -z-10" />
+      <div className="absolute top-[600px] -right-32 w-[450px] h-[450px] bg-[#00F0FF]/5 rounded-full filter blur-[100px] pointer-events-none -z-10" />
 
-      <div className="chip mb-6 animate-pulse">KINETIC PERFORMANCE SYSTEM</div>
+      {/* ========================================================================= */}
+      {/* HERO SECTION */}
+      {/* ========================================================================= */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+          {/* Left Column: Value Prop & CTAs */}
+          <div className="lg:col-span-7 space-y-6 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono tracking-wider text-zinc-300">
+              <span className="w-2 h-2 rounded-full bg-[#D4FF00] animate-pulse" />
+              <span className="text-[#D4FF00] font-bold">KINETIC PERFORMANCE SYSTEM</span>
+              <span className="text-zinc-500">v2.0</span>
+            </div>
 
-      <h1 className="display-lg font-black tracking-tight text-white mb-6 leading-tight">
-        ELEVATE YOUR ATHLETIC <br />
-        <span className="text-[var(--primary-container)]">POTENTIAL.</span>
-      </h1>
+            <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white leading-[1.08]">
+              ELEVATE YOUR <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4FF00] via-[#D4FF00] to-[#00F0FF]">
+                ATHLETIC POTENTIAL.
+              </span>
+            </h1>
 
-      <p className="body-lg text-[var(--on-surface-variant)] max-w-2xl mb-10 leading-relaxed">
-        The unified fitness dashboard for high-performance individuals and professional coaches. Log
-        workouts, sync metrics, and manage coaching networks with radical precision.
-      </p>
-
-      {/* Render when Signed Out */}
-      <SignedOut>
-        <div className="flex flex-wrap gap-4 justify-center">
-          <Link to="/sign-up" className="btn btn-primary px-8 py-3">
-            Get Started Free
-          </Link>
-          <Link to="/sign-in" className="btn btn-secondary px-8 py-3">
-            Open App Portal
-          </Link>
-        </div>
-      </SignedOut>
-
-      {/* Render when Signed In */}
-      <SignedIn>
-        <div className="flex flex-col items-center gap-4">
-          <div className="card max-w-md p-6 border-white/5 bg-white/[0.02] backdrop-blur">
-            <h3 className="headline-md font-bold mb-2">Welcome Back!</h3>
-            <p className="body-md text-[var(--on-surface-variant)] mb-4">
-              Your performance portal is active. View your training schedule and records.
+            <p className="text-base sm:text-lg text-zinc-300 max-w-xl leading-relaxed">
+              The unified training platform engineered for high-performance athletes and
+              professional coaches. Sub-second set logging, consent-governed client telemetry, and
+              intelligent progression.
             </p>
-            <Link to="/dashboard" className="btn btn-primary w-full">
-              Enter Dashboard
-            </Link>
+
+            {/* Signed Out CTAs */}
+            <SignedOut>
+              <div className="flex flex-wrap items-center gap-3.5 pt-2">
+                <Link
+                  to="/sign-up"
+                  className="btn btn-primary px-7 py-3.5 text-xs font-black tracking-wider flex items-center gap-2 shadow-[0_0_25px_rgba(212,255,0,0.35)]"
+                >
+                  <span>GET STARTED FREE</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  to="/sign-in"
+                  className="btn btn-secondary px-6 py-3.5 text-xs font-bold tracking-wider flex items-center gap-2"
+                >
+                  <span>OPEN APP PORTAL</span>
+                </Link>
+              </div>
+            </SignedOut>
+
+            {/* Signed In CTAs */}
+            <SignedIn>
+              <div className="pt-2">
+                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md max-w-md space-y-3">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#D4FF00]" />
+                    <span className="text-xs font-bold text-white uppercase tracking-wider">
+                      Console Active &bull; Ready to Train
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-400">
+                    Your performance telemetry is synced. Return to your active training dashboard.
+                  </p>
+                  <Link
+                    to="/dashboard"
+                    className="btn btn-primary w-full py-2.5 text-xs font-black flex items-center justify-center gap-2"
+                  >
+                    <span>ENTER DASHBOARD</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </SignedIn>
+
+            {/* Credibility Stats Strip */}
+            <div className="pt-6 grid grid-cols-3 gap-4 border-t border-white/[0.08] max-w-md font-mono text-left">
+              <div>
+                <div className="text-xl sm:text-2xl font-black text-white tabular-nums">0.15s</div>
+                <div className="text-[10px] text-zinc-400 tracking-wider uppercase font-semibold">
+                  Log Latency
+                </div>
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl font-black text-[#D4FF00] tabular-nums">
+                  100%
+                </div>
+                <div className="text-[10px] text-zinc-400 tracking-wider uppercase font-semibold">
+                  Consent Driven
+                </div>
+              </div>
+              <div>
+                <div className="text-xl sm:text-2xl font-black text-[#00F0FF] tabular-nums">
+                  120k+
+                </div>
+                <div className="text-[10px] text-zinc-400 tracking-wider uppercase font-semibold">
+                  Sets Logged
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Dual-Persona Interactive Showcase Card */}
+          <div className="lg:col-span-5">
+            <div className="relative rounded-3xl bg-[#0D1018]/90 backdrop-blur-xl border border-white/10 p-6 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+              {/* Persona Tab Switcher */}
+              <div className="flex items-center p-1 rounded-xl bg-white/[0.04] border border-white/5 mb-5 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setActivePersona('athlete')}
+                  className={`flex-1 py-1.5 rounded-lg font-bold transition flex items-center justify-center gap-1.5 ${
+                    activePersona === 'athlete'
+                      ? 'bg-[#D4FF00] text-black shadow-md'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <Dumbbell className="w-3.5 h-3.5" />
+                  <span>Athlete View</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActivePersona('coach')}
+                  className={`flex-1 py-1.5 rounded-lg font-bold transition flex items-center justify-center gap-1.5 ${
+                    activePersona === 'coach'
+                      ? 'bg-[#00F0FF] text-black shadow-md'
+                      : 'text-zinc-400 hover:text-white'
+                  }`}
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Coach View</span>
+                </button>
+              </div>
+
+              {/* ATHLETE VIEW CONTENT */}
+              {activePersona === 'athlete' ? (
+                <div className="space-y-4">
+                  {/* Active Exercise Header */}
+                  <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                    <div>
+                      <span className="text-[10px] font-mono font-bold text-[#00F0FF] uppercase tracking-wider">
+                        CIRCUIT A &bull; WORKING SET
+                      </span>
+                      <div className="text-base font-black text-white">Barbell Back Squat</div>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-[#D4FF00]/15 text-[#D4FF00] border border-[#D4FF00]/30">
+                      SET 4 / 5
+                    </span>
+                  </div>
+
+                  {/* 3 Metric Readout Columns */}
+                  <div className="grid grid-cols-3 gap-2.5">
+                    {/* Weight with quick adjust buttons */}
+                    <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 text-center flex flex-col justify-between">
+                      <div className="text-[10px] font-mono uppercase text-zinc-400 font-semibold">
+                        WEIGHT
+                      </div>
+                      <div className="text-xl sm:text-2xl font-black text-white tabular-nums my-1">
+                        {weight.toFixed(1)}
+                        <span className="text-xs font-normal text-zinc-400 ml-0.5">kg</span>
+                      </div>
+                      <div className="flex items-center justify-center gap-1 pt-1">
+                        <button
+                          type="button"
+                          onClick={() => handleAdjustWeight(-2.5)}
+                          className="w-6 h-6 rounded-lg bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs font-bold transition"
+                          title="Decrease 2.5kg"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleAdjustWeight(2.5)}
+                          className="w-6 h-6 rounded-lg bg-[#D4FF00]/20 hover:bg-[#D4FF00]/40 text-[#D4FF00] flex items-center justify-center text-xs font-bold transition"
+                          title="Increase 2.5kg"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Reps */}
+                    <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 text-center flex flex-col justify-between">
+                      <div className="text-[10px] font-mono uppercase text-zinc-400 font-semibold">
+                        TARGET
+                      </div>
+                      <div className="text-xl sm:text-2xl font-black text-white tabular-nums my-1">
+                        5<span className="text-xs font-normal text-zinc-400 ml-0.5">reps</span>
+                      </div>
+                      <div className="text-[10px] font-mono text-zinc-500 pb-1">RPE 8.5</div>
+                    </div>
+
+                    {/* Live Rest Timer */}
+                    <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 text-center flex flex-col justify-between">
+                      <div className="text-[10px] font-mono uppercase text-zinc-400 font-semibold">
+                        REST
+                      </div>
+                      <div className="text-xl sm:text-2xl font-black text-[#00F0FF] tabular-nums my-1 flex items-center justify-center gap-1">
+                        <Timer className="w-4 h-4 text-[#00F0FF] animate-pulse" />
+                        <span>{formatTimer(restSeconds)}</span>
+                      </div>
+                      <div className="text-[10px] font-mono text-zinc-500 pb-1">COUNTDOWN</div>
+                    </div>
+                  </div>
+
+                  {/* PR Milestone Alert */}
+                  <div className="p-3 rounded-2xl bg-[#D4FF00]/10 border border-[#D4FF00]/25 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-[#D4FF00]" />
+                      <span className="font-extrabold text-[#D4FF00]">PERSONAL RECORD HIT!</span>
+                    </div>
+                    <span className="font-mono text-zinc-300 font-semibold">
+                      +5.0 kg progression
+                    </span>
+                  </div>
+
+                  {/* Quick Action Button */}
+                  <button
+                    type="button"
+                    onClick={handleLogSet}
+                    className="w-full py-3 rounded-xl bg-[#D4FF00] hover:bg-[#e2ff40] text-black font-black text-xs uppercase tracking-wider transition shadow-[0_0_20px_rgba(212,255,0,0.3)] flex items-center justify-center gap-2"
+                  >
+                    {isLogged ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 text-black" />
+                        <span>SET 4 RECORDED! 90S CLOCK STARTED</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>LOG SET 4 &bull; START 90S REST</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              ) : (
+                /* COACH VIEW CONTENT */
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                    <div>
+                      <span className="text-[10px] font-mono font-bold text-[#00F0FF] uppercase tracking-wider">
+                        COACH NETWORK &bull; LIVE SYNC
+                      </span>
+                      <div className="text-base font-black text-white">Active Athletes (8)</div>
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                      ALL CONSENTED
+                    </span>
+                  </div>
+
+                  {/* Client Item 1 */}
+                  <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-zinc-800 text-white font-mono text-xs font-bold flex items-center justify-center">
+                          SJ
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white">Sarah Jenkins</div>
+                          <div className="text-[10px] text-zinc-400">
+                            Hypertrophy Meso &bull; Week 3 of 6
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/20">
+                        COMPLETED TODAY
+                      </span>
+                    </div>
+                    <div className="p-2 rounded-xl bg-black/40 border border-white/5 text-[11px] text-zinc-300 flex items-center justify-between">
+                      <span>Squat PR: 105 kg &times; 5 reps</span>
+                      <span className="font-mono text-[#D4FF00] font-bold">RPE 9.0</span>
+                    </div>
+                  </div>
+
+                  {/* Client Item 2 */}
+                  <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-zinc-800 text-white font-mono text-xs font-bold flex items-center justify-center">
+                          DK
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white">David Kim</div>
+                          <div className="text-[10px] text-zinc-400">
+                            Marathon Prep &bull; Block 2
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/20">
+                        DUE TOMORROW
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Coach Action */}
+                  <Link
+                    to="/programs"
+                    className="w-full py-3 rounded-xl bg-[#00F0FF] hover:bg-[#3bf4ff] text-black font-black text-xs uppercase tracking-wider transition shadow-[0_0_20px_rgba(0,240,255,0.3)] flex items-center justify-center gap-2"
+                  >
+                    <span>ASSIGN WORKOUT TEMPLATE</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </SignedIn>
+      </section>
 
-      {/* Feature grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-20 text-left">
-        <div className="card">
-          <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-3">
-            fitness_center
-          </span>
-          <h4 className="headline-md font-bold mb-2 text-white text-lg">Hyper Logger</h4>
-          <p className="body-md text-[var(--on-surface-variant)] text-sm">
-            Track individual strength sets, reps, weight, rest timers, and cardio distance and pace
-            in real-time.
+      {/* ========================================================================= */}
+      {/* 3 CORE PILLARS SECTION */}
+      {/* ========================================================================= */}
+      <section
+        id="features"
+        className="max-w-6xl mx-auto px-4 sm:px-6 py-16 border-t border-white/[0.08]"
+      >
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="chip chip-lime mb-2">SYSTEM CAPABILITIES</div>
+          <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight">
+            BUILT FOR RELENTLESS EXECUTION
+          </h2>
+          <p className="text-sm text-zinc-400 mt-2">
+            Every feature is purpose-designed for high heart rates, sweaty hands, and surgical
+            coaching precision.
           </p>
         </div>
-        <div className="card">
-          <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl mb-3">
-            groups
-          </span>
-          <h4 className="headline-md font-bold mb-2 text-white text-lg">Coach Sync</h4>
-          <p className="body-md text-[var(--on-surface-variant)] text-sm">
-            Trainers invite clients via email, verify active permissions, and record custom programs
-            on their clients behalf.
-          </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+          {/* Pillar 1 */}
+          <div className="card p-6 space-y-4 hover:border-[#D4FF00]/40 transition group">
+            <div className="w-12 h-12 rounded-2xl bg-[#D4FF00]/10 border border-[#D4FF00]/20 flex items-center justify-center text-[#D4FF00] group-hover:scale-105 transition shadow-[0_0_15px_rgba(212,255,0,0.15)]">
+              <Dumbbell className="w-6 h-6" />
+            </div>
+            <h3 className="font-display font-black text-xl text-white tracking-tight">
+              Hyper Logger
+            </h3>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Track sets, kilo or pound increments, RPE scales, and countdown rest intervals with
+              zero friction between heavy working sets.
+            </p>
+            <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-[#D4FF00]">
+              <span>RAPID SUB-SECOND INPUT</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
+
+          {/* Pillar 2 */}
+          <div
+            id="coaching"
+            className="card p-6 space-y-4 hover:border-[#00F0FF]/40 transition group"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-[#00F0FF]/10 border border-[#00F0FF]/20 flex items-center justify-center text-[#00F0FF] group-hover:scale-105 transition shadow-[0_0_15px_rgba(0,240,255,0.15)]">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <h3 className="font-display font-black text-xl text-white tracking-tight">
+              Consent-Driven Coach Sync
+            </h3>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Granular permission matrix protects athlete data. Coaches only view metrics or assign
+              programs when explicitly authorized.
+            </p>
+            <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-[#00F0FF]">
+              <span>CRYPTOGRAPHIC CONSENT</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
+
+          {/* Pillar 3 */}
+          <div
+            id="telemetry"
+            className="card p-6 space-y-4 hover:border-[#D4FF00]/40 transition group"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-[#D4FF00]/10 border border-[#D4FF00]/20 flex items-center justify-center text-[#D4FF00] group-hover:scale-105 transition shadow-[0_0_15px_rgba(212,255,0,0.15)]">
+              <Activity className="w-6 h-6" />
+            </div>
+            <h3 className="font-display font-black text-xl text-white tracking-tight">
+              Bio Telemetry
+            </h3>
+            <p className="text-xs text-zinc-400 leading-relaxed">
+              Monitor weight trends, resting heart rate curves, and cumulative strain volume with
+              high-precision glowing SVG dashboards.
+            </p>
+            <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-[#D4FF00]">
+              <span>REAL-TIME CHARTS & TRENDS</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </div>
+          </div>
         </div>
-        <div className="card">
-          <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-3">
-            monitoring
-          </span>
-          <h4 className="headline-md font-bold mb-2 text-white text-lg">Bio Analytics</h4>
-          <p className="body-md text-[var(--on-surface-variant)] text-sm">
-            Log weight and resting heart rate metrics, tracking progress curves with beautiful
-            custom SVG dashboards.
-          </p>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* TELEMETRY SHOWCASE SECTION (GLOWING AREA CHART) */}
+      {/* ========================================================================= */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 border-t border-white/[0.08]">
+        <div className="card p-6 sm:p-8 relative overflow-hidden bg-gradient-to-b from-[#111622]/90 to-[#0A0D14]/90">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse" />
+                <span className="text-[11px] font-mono text-[#00F0FF] font-bold tracking-wider uppercase">
+                  Telemetry Stream &bull; Live Progression
+                </span>
+              </div>
+              <h3 className="font-display font-black text-2xl text-white tracking-tight mt-1">
+                Body Composition & Strength Velocity
+              </h3>
+            </div>
+            <div className="flex items-center gap-3 font-mono text-xs">
+              <div className="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-zinc-300">
+                DELTA: <span className="text-[#D4FF00] font-bold">+12.5% PEAK FORCE</span>
+              </div>
+              <div className="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-zinc-300">
+                TREND: <span className="text-[#00F0FF] font-bold">PROGRESSIVE OVERLOAD</span>
+              </div>
+            </div>
+          </div>
+
+          {/* SVG Glow Area Chart */}
+          <div className="relative h-44 sm:h-56 w-full pt-4">
+            <svg
+              className="w-full h-full overflow-visible"
+              viewBox="0 0 700 160"
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <linearGradient id="landingCyanGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.35" />
+                  <stop offset="100%" stop-color="#00F0FF" stop-opacity="0.0" />
+                </linearGradient>
+                <filter id="landingGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3.5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+              </defs>
+
+              {/* Grid Lines */}
+              <line
+                x1="0"
+                y1="40"
+                x2="700"
+                y2="40"
+                stroke="rgba(255,255,255,0.06)"
+                strokeDasharray="4,4"
+              />
+              <line
+                x1="0"
+                y1="80"
+                x2="700"
+                y2="80"
+                stroke="rgba(255,255,255,0.06)"
+                strokeDasharray="4,4"
+              />
+              <line
+                x1="0"
+                y1="120"
+                x2="700"
+                y2="120"
+                stroke="rgba(255,255,255,0.06)"
+                strokeDasharray="4,4"
+              />
+
+              {/* Area Fill */}
+              <path
+                d="M 0 130 Q 120 120, 220 90 T 450 70 T 700 35 L 700 160 L 0 160 Z"
+                fill="url(#landingCyanGrad)"
+              />
+
+              {/* Glowing Line */}
+              <path
+                d="M 0 130 Q 120 120, 220 90 T 450 70 T 700 35"
+                fill="none"
+                stroke="#00F0FF"
+                strokeWidth="3"
+                filter="url(#landingGlow)"
+              />
+
+              {/* Data points */}
+              <circle cx="220" cy="90" r="4" fill="#00F0FF" />
+              <circle cx="450" cy="70" r="4" fill="#00F0FF" />
+              <circle
+                cx="700"
+                cy="35"
+                r="7"
+                fill="#D4FF00"
+                stroke="#0A0D14"
+                strokeWidth="2.5"
+                className="animate-pulse"
+              />
+            </svg>
+          </div>
+
+          <div className="flex justify-between text-[10px] font-mono text-zinc-500 pt-3 border-t border-white/5">
+            <span>WEEK 01 &bull; BASELINE</span>
+            <span>WEEK 02 &bull; ACCUMULATION</span>
+            <span>WEEK 03 &bull; OVERLOAD</span>
+            <span className="text-[#D4FF00] font-bold">WEEK 04 &bull; PEAK PR REACHED</span>
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* ========================================================================= */}
+      {/* FINAL CALL TO ACTION STRIP */}
+      {/* ========================================================================= */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 py-20 text-center">
+        <div className="card p-8 sm:p-12 relative overflow-hidden bg-gradient-to-tr from-[#D4FF00]/10 via-transparent to-[#00F0FF]/10 border-white/15">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-[#D4FF00]/30 text-xs font-mono text-[#D4FF00] mb-4">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>JOIN THE GRID TODAY</span>
+          </div>
+
+          <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight mb-4">
+            READY TO OUTPERFORM YOUR PREVIOUS SELF?
+          </h2>
+
+          <p className="text-sm sm:text-base text-zinc-300 max-w-xl mx-auto mb-8 leading-relaxed">
+            Free for individual athletes. Effortless setup for professional personal trainers. Start
+            logging your heaviest sets today.
+          </p>
+
+          <SignedOut>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link
+                to="/sign-up"
+                className="btn btn-primary px-8 py-3.5 text-xs font-black tracking-wider flex items-center gap-2 shadow-[0_0_25px_rgba(212,255,0,0.35)]"
+              >
+                <span>CREATE ATHLETE PROFILE</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                to="/sign-in"
+                className="btn btn-secondary px-7 py-3.5 text-xs font-bold tracking-wider"
+              >
+                SIGN IN
+              </Link>
+            </div>
+          </SignedOut>
+
+          <SignedIn>
+            <Link
+              to="/dashboard"
+              className="btn btn-primary px-8 py-3.5 text-xs font-black tracking-wider inline-flex items-center gap-2"
+            >
+              <span>GO TO DASHBOARD</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </SignedIn>
+        </div>
+      </section>
     </div>
   )
 }

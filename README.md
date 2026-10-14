@@ -22,8 +22,9 @@ Shared TypeScript data-transfer and form/editor shapes live under `src/types`. C
 
 ## Current Product Surface
 
-- **Landing and auth:** A premium public landing page plus Clerk-powered `/sign-in` and `/sign-up` routes with splat support for path-based multi-step auth.
-- **Onboarding and settings:** Role-aware onboarding for athletes and trainers, with unified profile and credential editing in `/settings`.
+- **Landing and auth:** A premium public landing page with an interactive dual-persona hero (live athlete set logger with real-time weight adjusters & rest timer vs coach client sync preview), credibility statistics strip, telemetry curves, and Clerk-powered `/sign-in` and `/sign-up` routes.
+- **Onboarding and settings:** Role-aware onboarding for athletes and trainers, unified profile and credential editing in `/settings`, and configurable navigation layout preferences ("Floating Island Capsule", "Full-Bleed Top Bar", or "Classic Left Sidebar").
+- **Navigation architecture:** Elevated floating capsule header on desktop, paired with a thumb-friendly 5-icon persistent mobile bottom dock (Home, Train, Plans/Clients, Vitals, Settings) with live notification badges.
 - **Athlete dashboard:** Workout totals, assigned-routine prompts, quick body-weight logging, and recent activity summaries.
 - **Workout logging and review:** Custom workout session builder with global/custom exercises, set targets, reps, load, distance, duration, rest, intensity, notes, dedicated session detail pages, and permission-checked edit/delete flows.
 - **Health metrics:** Timelines for weight, body fat, and resting heart rate, including trainer-supported client metric logging plus permission-checked metric correction and deletion when access allows.
@@ -35,15 +36,17 @@ Shared TypeScript data-transfer and form/editor shapes live under `src/types`. C
 
 ---
 
-## Stitch Kinetic Aesthetic Guidelines
+## Refined Neon Cyber 2.0 Aesthetic Guidelines
 
-The application strictly implements the Kinetic design principles to create a visual-first SaaS dashboard:
+The application strictly implements the **Refined Neon Cyber 2.0** design principles:
 
-- **Contrast Base:** Deep, low-fatigue charcoal surfaces (`#0a0a0a` / `#131313`) generating premium modern depth.
-- **Theme Modes:** Light, dark, and system-auto modes are available through the app shell theme toggle. The initial mode is applied before hydration to prevent visible theme flash.
-- **CTA Highlighters:** **Electric Lime** (`#c3f400`) primary markers for success nodes, action triggers, and primary biometric progress.
-- **Tech Accents:** **Cyan** (`#00eefc`) secondary lines for charting trends, diagnostic metrics, and structural borders.
-- **Glassmorphic Surfaces:** Backdrop-filtered translucent panels (`rgba(255, 255, 255, 0.03)` with `backdrop-filter: blur(12px)`) that let glowing background meshes bleed through.
+- **Contrast Base:** Deep Carbon (`#0A0D14` base, `#0C101A` / `#111622` cards) generating high-contrast, low-fatigue athletic surfaces.
+- **Cyber Frost Light Mode:** Clean ice-slate surfaces (`#F8FAFC` base, `#FFFFFF` cards, `#0F172A` text, `#E2E8F0` borders) preserving high-energy Volt accents with dark framing.
+- **Theme Modes:** Light, dark, and system-auto modes are available through `ThemeToggle.tsx`. The initial mode is applied before hydration to prevent visible theme flash.
+- **CTA Highlighters:** **Volt Lime** (`#D4FF00`) primary markers for success nodes, action triggers, PR celebrations, active workout timers, and primary biometric progress.
+- **Tech Accents:** **Hyper Cyan** (`#00F0FF`) secondary lines for charting trends, diagnostic metrics, coach sync status, and structural borders.
+- **Surfaces:** Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` with `backdrop-filter: blur(16px)`, subtle 1px white border highlight `rgba(255, 255, 255, 0.08)`, and soft ambient radial glow behind active cards).
+- **Typography:** `Lexend` for hero/display titles, `Geist` for clean SaaS body/forms, and `Geist Mono` with `tabular-nums` for clock readouts and weights without layout jitter.
 
 ---
 

@@ -131,37 +131,57 @@ kyber-fitness/
 
 ---
 
-## 5. Stitch Kinetic Aesthetic System
+## 5. Refined Neon Cyber 2.0 Aesthetic & Navigation System
 
-Kyber Fitness features a highly responsive, modern themeable dashboard. Agents must strictly adhere to the following visual design guidelines:
+Kyber Fitness features a highly responsive, modern themeable dashboard adhering to the **Refined Neon Cyber 2.0** design system:
 
-### Theme Palette (Stitch Kinetic)
+### Theme Palette (Refined Neon Cyber 2.0 & Cyber Frost)
 
-- **Backgrounds**: Deep Charcoal (`#0a0a0a` / `#121212` / `#131313`) for dark-mode container cards and base frames, plus bright frost surfaces for light mode, generating sleek premium contrast in both modes.
-- **Theme Modes**: The app supports light, dark, and system-auto modes through `ThemeToggle.tsx`. Preserve the pre-hydration theme boot script in `src/routes/__root.tsx` so the stored/system theme is applied before React hydrates.
+- **Dark Mode Backgrounds**: Deep Carbon (`#0A0D14` base, `#0C101A` / `#111622` cards) generating high-contrast, low-fatigue athletic surfaces.
+- **Light Mode (Cyber Frost)**: Crisp ice-slate (`#F8FAFC` base, `#FFFFFF` cards, `#0F172A` text, `#E2E8F0` borders) preserving Volt accents with dark framing.
+- **Theme Modes**: Supports dark, light, and system-auto modes through `ThemeToggle.tsx`. The pre-hydration theme boot script in `src/routes/__root.tsx` executes before React hydrates to prevent theme flash.
 - **Accents**:
-  - **Electric Lime (`#c3f400`)**: Core high-energy highlight used for CTA buttons, success rings, active tabs, and primary metrics.
-  - **Cyan (`#00eefc`)**: Tech highlight used for secondary interactions, data nodes, chart lines, and informative borders.
-- **Surfaces**: Semi-transparent overlays using **Glassmorphism** and backdrop-filters (`rgba(255, 255, 255, 0.03)` with `backdrop-filter: blur(12px)`).
+  - **Volt Lime (`#D4FF00`)**: Core high-energy athletic highlight used for primary CTA buttons (`.btn-primary`), active workout timers, PR celebrations, and milestone progress.
+  - **Hyper Cyan (`#00F0FF`)**: Technical telemetry highlight used for secondary CTAs (`.btn-secondary`), bio data curves, notification badges, and coach sync indicators.
+- **Surfaces**: Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` with `backdrop-filter: blur(16px)`, subtle 1px white border highlight `rgba(255, 255, 255, 0.08)`, and soft ambient radial glow behind active cards).
+- **Shape Language & Radii**: Modern SaaS radii (16px `rounded-2xl` for container cards, 12px `rounded-md` / `rounded-xl` for buttons and inputs, pill `rounded-full` for chips and status badges).
+
+### Typography Architecture
+
+- **Display / Hero Titles**: `Lexend` (`font-display`) for high-impact athletic branding and section headlines.
+- **UI / Body / Forms**: `Geist` (`font-sans-ui` / `var(--font-family)`) for clean, highly legible SaaS dashboard data and forms.
+- **Telemetry / Numerics**: `Geist Mono` (`font-mono-data` / `var(--font-mono)`) with `tabular-nums` ensuring weight numbers, clock timers, and RPE readouts remain perfectly aligned without layout shifts.
+
+### Navigation Architecture
+
+Kyber Fitness provides a dual-surface navigation model:
+
+1. **Floating Island Capsule Header** (`src/components/Header.tsx`): Default desktop navigation floating as an elevated frosted glass capsule at the top of the viewport. Supports Clerk auth links, notifications count, theme toggle, and switching between floating and full-bleed modes.
+2. **Mobile Bottom Navigation Dock** (`src/components/MobileBottomDock.tsx`): Persistent 5-icon thumb-friendly mobile dock mounted at the bottom of the viewport for signed-in athletes and coaches (Home, Train, Plans/Clients, Vitals, Settings) with live notification badges.
+3. **User-Configurable Navigation Preference**: Users can choose between "Floating Island Capsule" (default), "Full-Bleed Top Bar", and "Classic Left Sidebar" inside `/settings`. Preferences are stored in `localStorage` under `kyber_header_layout` and broadcast via the `kyber_header_layout_change` custom event for instant live layout updates.
 
 ### CSS Styling & Tailwind CSS v4 Configuration
 
-Tailwind CSS v4 is configured dynamically using a hybrid approach. The theme token values are declared as standard CSS custom variables in the `@theme` block inside `src/styles.css`:
+Tailwind CSS v4 is configured dynamically using custom design tokens in `src/styles.css`:
 
 ```css
 /* src/styles.css */
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Lexend', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Lexend', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
 }
 
 :root {
-  --background: #131313;
-  --surface: #131313;
-  --primary-container: #c3f400; /* Electric Lime */
-  --secondary-container: #00eefc; /* Cyan */
-  /* Glassmorphism template properties... */
+  --background: #0a0d14;
+  --surface: #0c101a;
+  --primary-container: #d4ff00; /* Volt Lime */
+  --secondary-container: #00f0ff; /* Hyper Cyan */
+  --radius-card: 16px;
+  --radius-btn: 12px;
+  /* Frosted glassmorphism properties... */
 }
 ```
 

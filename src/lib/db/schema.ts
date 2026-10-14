@@ -186,7 +186,9 @@ export const programAssignments = sqliteTable('program_assignments', {
   scheduledFor: text('scheduled_for'),
   dueAt: text('due_at'),
   recurrence: text('recurrence').default('none').notNull(), // "none" | "weekly" | "biweekly" | "monthly"
-  completedWorkoutSessionId: text('completed_workout_session_id').references(() => workoutSessions.id),
+  completedWorkoutSessionId: text('completed_workout_session_id').references(
+    () => workoutSessions.id,
+  ),
   assignedAt: text('assigned_at').notNull(),
   completedAt: text('completed_at'),
 })

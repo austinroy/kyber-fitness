@@ -256,19 +256,6 @@ function HealthDashboardPage() {
     }
   }
 
-  const getMetricIcon = (type: string) => {
-    switch (type) {
-      case 'weight':
-        return 'scale'
-      case 'body_fat':
-        return 'percent'
-      case 'resting_hr':
-        return 'favorite'
-      default:
-        return 'monitoring'
-    }
-  }
-
   const getMetricUnit = (type: string) => {
     switch (type) {
       case 'weight':
@@ -323,7 +310,6 @@ function HealthDashboardPage() {
 
     // Prevent divide by zero if values are identical
     const rangeDivisor = valRange === 0 ? 1 : valRange
-    const valueMultiplier = valRange === 0 ? 0.5 : 1
 
     const points = chronologicalData.map((d, index) => {
       const x = paddingX + (index * (svgWidth - paddingX * 2)) / (chronologicalData.length - 1)
@@ -344,8 +330,7 @@ function HealthDashboardPage() {
         : ''
 
     const isWeight = activeMetric === 'weight'
-    const themeColor = isWeight ? 'var(--primary-container)' : 'var(--secondary-container)'
-    const themeHex = isWeight ? '#c3f400' : '#00eefc'
+    const themeHex = isWeight ? '#D4FF00' : '#00F0FF'
 
     return (
       <div className="card space-y-4">

@@ -190,7 +190,11 @@ function WorkoutSessionDetailPage() {
         <form onSubmit={handleSave} className="card grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="input-group md:col-span-2">
             <label className="label-md text-xs text-[var(--on-surface-variant)]">Title</label>
-            <input className="input-field" value={title} onChange={(e) => setTitle(e.target.value)} />
+            <input
+              className="input-field"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
           </div>
           <div className="input-group">
             <label className="label-md text-xs text-[var(--on-surface-variant)]">Date</label>

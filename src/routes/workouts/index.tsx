@@ -120,7 +120,10 @@ function WorkoutsPage() {
 
                   <div className="flex flex-wrap gap-1">
                     {sess.exercises.map((ex) => (
-                      <span key={ex.id} className="chip py-0.5 px-2 text-[8px] max-w-full break-words">
+                      <span
+                        key={ex.id}
+                        className="chip py-0.5 px-2 text-[8px] max-w-full break-words"
+                      >
                         {ex.name}
                       </span>
                     ))}
