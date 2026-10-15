@@ -41,11 +41,11 @@ Shared TypeScript data-transfer and form/editor shapes live under `src/types`. C
 The application strictly implements the **Refined Neon Cyber 2.0** design principles:
 
 - **Contrast Base:** Deep Carbon (`#0A0D14` base, `#0C101A` / `#111622` cards) generating high-contrast, low-fatigue athletic surfaces.
-- **Cyber Frost Light Mode:** Clean ice-slate surfaces (`#F8FAFC` base, `#FFFFFF` cards, `#0F172A` text, `#E2E8F0` borders) preserving high-energy Volt accents with dark framing.
-- **Theme Modes:** Light, dark, and system-auto modes are available through `ThemeToggle.tsx`. The initial mode is applied before hydration to prevent visible theme flash.
-- **CTA Highlighters:** **Volt Lime** (`#D4FF00`) primary markers for success nodes, action triggers, PR celebrations, active workout timers, and primary biometric progress.
-- **Tech Accents:** **Hyper Cyan** (`#00F0FF`) secondary lines for charting trends, diagnostic metrics, coach sync status, and structural borders.
-- **Surfaces:** Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` with `backdrop-filter: blur(16px)`, subtle 1px white border highlight `rgba(255, 255, 255, 0.08)`, and soft ambient radial glow behind active cards).
+- **Cyber Frost Light Mode:** Clean ice-slate surfaces (`#F8FAFC` base, `#FFFFFF` cards, `#0F172A` text, `#E2E8F0` borders) preserving high-contrast athletic Volt and Cyan accents.
+- **Theme Modes:** Light, dark, and system-auto modes are available through `ThemeToggle.tsx`. The initial mode is applied before hydration to prevent visible theme flash. All navigation bars and SVG data charts dynamically adapt to the active theme.
+- **CTA Highlighters & Charts:** **Volt Lime** (`#D4FF00` dark, `#4D7C0F` light) primary markers for success nodes, action triggers, PR celebrations, active workout timers, and primary biometric progress.
+- **Tech Accents & Curves:** **Hyper Cyan** (`#00F0FF` dark, `#0891B2` light) secondary lines for charting trends, diagnostic metrics, coach sync status, and structural borders.
+- **Surfaces:** Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` in dark, `rgba(255, 255, 255, 0.85)` in light with `backdrop-filter: blur(16px)`, clean 1px border highlights, and soft ambient radial glow behind active cards).
 - **Typography:** `Lexend` for hero/display titles, `Geist` for clean SaaS body/forms, and `Geist Mono` with `tabular-nums` for clock readouts and weights without layout jitter.
 
 ---

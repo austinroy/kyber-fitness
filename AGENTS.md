@@ -138,12 +138,13 @@ Kyber Fitness features a highly responsive, modern themeable dashboard adhering 
 ### Theme Palette (Refined Neon Cyber 2.0 & Cyber Frost)
 
 - **Dark Mode Backgrounds**: Deep Carbon (`#0A0D14` base, `#0C101A` / `#111622` cards) generating high-contrast, low-fatigue athletic surfaces.
-- **Light Mode (Cyber Frost)**: Crisp ice-slate (`#F8FAFC` base, `#FFFFFF` cards, `#0F172A` text, `#E2E8F0` borders) preserving Volt accents with dark framing.
+- **Light Mode (Cyber Frost)**: Crisp ice-slate (`#F8FAFC` base, `#FFFFFF` cards, `#0F172A` text, `#E2E8F0` borders) preserving high-contrast athletic Volt and Cyan accents.
 - **Theme Modes**: Supports dark, light, and system-auto modes through `ThemeToggle.tsx`. The pre-hydration theme boot script in `src/routes/__root.tsx` executes before React hydrates to prevent theme flash.
-- **Accents**:
-  - **Volt Lime (`#D4FF00`)**: Core high-energy athletic highlight used for primary CTA buttons (`.btn-primary`), active workout timers, PR celebrations, and milestone progress.
-  - **Hyper Cyan (`#00F0FF`)**: Technical highlight used for secondary CTAs (`.btn-secondary`), progress curves, notification badges, and coach sync indicators.
-- **Surfaces**: Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` with `backdrop-filter: blur(16px)`, subtle 1px white border highlight `rgba(255, 255, 255, 0.08)`, and soft ambient radial glow behind active cards).
+- **Accents & Chart Tokens**:
+  - **Volt Lime (`#D4FF00` dark, `#4D7C0F` light)**: Core high-energy athletic highlight used for primary CTA buttons (`.btn-primary`), active workout timers, PR celebrations, weight trendlines, and milestone progress (`--chart-volt`).
+  - **Hyper Cyan (`#00F0FF` dark, `#0891B2` light)**: Technical highlight used for secondary CTAs (`.btn-secondary`), progress curves, body fat/heart rate charts, notification badges, and coach sync indicators (`--chart-cyan`).
+  - **Chart Grid & Dot Tokens**: `--chart-grid`, `--chart-text`, `--chart-dot-bg`, and `--chart-tooltip-*` tokens provide zero-flicker light and dark mode switching across all SVG charts.
+- **Surfaces**: Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` in dark, `rgba(255, 255, 255, 0.85)` in light with `backdrop-filter: blur(16px)`, clean 1px border highlights, and soft ambient radial glow behind active cards).
 - **Shape Language & Radii**: Modern SaaS radii (16px `rounded-2xl` for container cards, 12px `rounded-md` / `rounded-xl` for buttons and inputs, pill `rounded-full` for chips and status badges).
 
 ### Typography Architecture
@@ -154,10 +155,10 @@ Kyber Fitness features a highly responsive, modern themeable dashboard adhering 
 
 ### Navigation Architecture
 
-Kyber Fitness provides a dual-surface navigation model:
+Kyber Fitness provides a dual-surface navigation model fully themed for light and dark modes:
 
-1. **Floating Island Capsule Header** (`src/components/Header.tsx`): Default desktop navigation floating as an elevated frosted glass capsule at the top of the viewport. Supports Clerk auth links, notifications count, theme toggle, and switching between floating and full-bleed modes.
-2. **Mobile Bottom Navigation Dock** (`src/components/MobileBottomDock.tsx`): Persistent 5-icon thumb-friendly mobile dock mounted at the bottom of the viewport for signed-in athletes and coaches (Home, Train, Plans/Clients, Vitals, Settings) with live notification badges.
+1. **Floating Island Capsule Header** (`src/components/Header.tsx`): Default desktop navigation floating as an elevated frosted glass capsule at the top of the viewport (crisp white frosted glass in light mode, deep carbon glass in dark mode). Supports Clerk auth links, notifications count, theme toggle, and switching between floating and full-bleed modes.
+2. **Mobile Bottom Navigation Dock** (`src/components/MobileBottomDock.tsx`): Persistent 5-icon thumb-friendly mobile dock mounted at the bottom of the viewport for signed-in athletes and coaches (Home, Train, Plans/Clients, Vitals, Settings) with dual-mode glass styling and live notification badges.
 3. **User-Configurable Navigation Preference**: Users can choose between "Floating Island Capsule" (default), "Full-Bleed Top Bar", and "Classic Left Sidebar" inside `/settings`. Preferences are stored in `localStorage` under `kyber_header_layout` and broadcast via the `kyber_header_layout_change` custom event for instant live layout updates.
 
 ### CSS Styling & Tailwind CSS v4 Configuration
