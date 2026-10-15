@@ -225,8 +225,30 @@ export const getNotifications = createServerFn({ method: 'GET' })
       }
 
       throw error
+  }
+})
+
+export const getReceivedNotificationCount = createServerFn({ method: 'GET' }).handler(async () => {
+  const auth = await requireAuthUser()
+  const userId = auth.userId
+
+  try {
+    await syncPendingTrainerInviteNotifications(userId)
+
+    const rows = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+
+    return rows[0]?.count || 0
+  } catch (error) {
+    if (isMissingNotificationsTableError(error)) {
+      return 0
     }
-  })
+
+    throw error
+  }
+})
 
 export const getReceivedNotificationCount = createServerFn({ method: 'GET' }).handler(async () => {
   const auth = await requireAuthUser()
