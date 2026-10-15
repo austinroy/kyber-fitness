@@ -15,15 +15,16 @@ export default function MobileBottomDock({
   return (
     <nav
       aria-label="Mobile Navigation Dock"
-      className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-[#0D1018]/92 backdrop-blur-xl border-t border-white/10 px-3 py-2 shadow-[0_-10px_35px_rgba(0,0,0,0.6)]"
+      className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-white/95 dark:bg-[#0D1018]/92 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 px-3 py-2 shadow-[0_-10px_25px_rgba(0,0,0,0.06)] dark:shadow-[0_-10px_35px_rgba(0,0,0,0.6)]"
     >
       <div className="max-w-md mx-auto grid grid-cols-5 items-center text-center">
         {/* 1. Dashboard */}
         <Link
           to="/dashboard"
-          className="flex flex-col items-center justify-center py-1 text-zinc-400 hover:text-white transition group"
+          className="flex flex-col items-center justify-center py-1 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition group"
           activeProps={{
-            className: 'flex flex-col items-center justify-center py-1 text-[#D4FF00] font-bold',
+            className:
+              'flex flex-col items-center justify-center py-1 text-lime-700 dark:text-[#D4FF00] font-bold',
           }}
         >
           <span className="material-symbols-outlined text-xl transition-transform group-hover:scale-110">
@@ -35,9 +36,10 @@ export default function MobileBottomDock({
         {/* 2. Workouts (Core Action) */}
         <Link
           to="/workouts"
-          className="flex flex-col items-center justify-center py-1 text-zinc-400 hover:text-white transition group"
+          className="flex flex-col items-center justify-center py-1 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition group"
           activeProps={{
-            className: 'flex flex-col items-center justify-center py-1 text-[#D4FF00] font-bold',
+            className:
+              'flex flex-col items-center justify-center py-1 text-lime-700 dark:text-[#D4FF00] font-bold',
           }}
         >
           <span className="material-symbols-outlined text-xl transition-transform group-hover:scale-110">
@@ -50,9 +52,10 @@ export default function MobileBottomDock({
         {isTrainer ? (
           <Link
             to="/clients"
-            className="flex flex-col items-center justify-center py-1 text-zinc-400 hover:text-white transition group"
+            className="flex flex-col items-center justify-center py-1 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition group"
             activeProps={{
-              className: 'flex flex-col items-center justify-center py-1 text-[#00F0FF] font-bold',
+              className:
+                'flex flex-col items-center justify-center py-1 text-cyan-700 dark:text-[#00F0FF] font-bold',
             }}
           >
             <span className="material-symbols-outlined text-xl transition-transform group-hover:scale-110">
@@ -63,9 +66,10 @@ export default function MobileBottomDock({
         ) : (
           <Link
             to="/programs"
-            className="flex flex-col items-center justify-center py-1 text-zinc-400 hover:text-white transition group"
+            className="flex flex-col items-center justify-center py-1 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition group"
             activeProps={{
-              className: 'flex flex-col items-center justify-center py-1 text-[#00F0FF] font-bold',
+              className:
+                'flex flex-col items-center justify-center py-1 text-cyan-700 dark:text-[#00F0FF] font-bold',
             }}
           >
             <span className="material-symbols-outlined text-xl transition-transform group-hover:scale-110">
@@ -78,9 +82,10 @@ export default function MobileBottomDock({
         {/* 4. Health Biometrics */}
         <Link
           to="/health"
-          className="flex flex-col items-center justify-center py-1 text-zinc-400 hover:text-white transition group"
+          className="flex flex-col items-center justify-center py-1 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition group"
           activeProps={{
-            className: 'flex flex-col items-center justify-center py-1 text-[#00F0FF] font-bold',
+            className:
+              'flex flex-col items-center justify-center py-1 text-cyan-700 dark:text-[#00F0FF] font-bold',
           }}
         >
           <span className="material-symbols-outlined text-xl transition-transform group-hover:scale-110">
@@ -92,10 +97,10 @@ export default function MobileBottomDock({
         {/* 5. Settings / Notifications */}
         <Link
           to="/settings"
-          className="flex flex-col items-center justify-center py-1 text-zinc-400 hover:text-white transition group relative"
+          className="flex flex-col items-center justify-center py-1 text-slate-500 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white transition group relative"
           activeProps={{
             className:
-              'flex flex-col items-center justify-center py-1 text-[#D4FF00] font-bold relative',
+              'flex flex-col items-center justify-center py-1 text-lime-700 dark:text-[#D4FF00] font-bold relative',
           }}
         >
           <span className="material-symbols-outlined text-xl transition-transform group-hover:scale-110">
@@ -103,7 +108,7 @@ export default function MobileBottomDock({
           </span>
           <span className="text-[10px] tracking-tight mt-0.5 font-medium">Settings</span>
           {receivedNotifications > 0 && (
-            <span className="absolute top-0 right-3 w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse shadow-[0_0_8px_#00F0FF]" />
+            <span className="absolute top-0 right-3 w-2 h-2 rounded-full bg-cyan-500 dark:bg-[#00F0FF] animate-pulse shadow-[0_0_8px_#00F0FF]" />
           )}
         </Link>
       </div>

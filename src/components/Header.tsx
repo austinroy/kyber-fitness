@@ -58,8 +58,8 @@ export default function Header({
       <header
         className={
           isFloating
-            ? 'max-w-6xl mx-auto px-4 sm:px-6 py-2.5 rounded-2xl bg-[#0D1018]/85 backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex items-center justify-between transition-all duration-300'
-            : 'w-full px-4 sm:px-8 py-3 bg-[#0A0D14]/90 backdrop-blur-md border-b border-white/10 shadow-md flex items-center justify-between transition-all duration-300'
+            ? 'max-w-6xl mx-auto px-4 sm:px-6 py-2.5 rounded-2xl bg-[#0D1018]/85 dark-surface backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex items-center justify-between transition-all duration-300'
+            : 'w-full px-4 sm:px-8 py-3 bg-[#0A0D14]/90 dark-surface backdrop-blur-md border-b border-white/10 shadow-md flex items-center justify-between transition-all duration-300'
         }
       >
         {/* Brand Logo */}

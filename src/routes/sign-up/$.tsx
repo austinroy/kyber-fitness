@@ -33,13 +33,13 @@ function SignUpPage() {
           <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl">
             bolt
           </span>
-          <span className="headline-lg font-black tracking-tight text-white m-0">
+          <span className="headline-lg font-black tracking-tight text-slate-900 dark:text-white m-0">
             JOIN KYBER FITNESS
           </span>
         </div>
 
         {/* Custom styling container for Clerk */}
-        <div className="border border-white/5 rounded-[var(--rounded-lg)] bg-[var(--surface-container)] p-2 shadow-2xl">
+        <div className="border border-slate-200 dark:border-white/5 rounded-[var(--rounded-lg)] bg-[var(--surface-container)] p-2 shadow-2xl">
           <SignUp
             routing="path"
             path="/sign-up"

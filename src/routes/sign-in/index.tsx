@@ -32,12 +32,12 @@ function SignInPage() {
           <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl">
             bolt
           </span>
-          <span className="headline-lg font-black tracking-tight text-white m-0">
+          <span className="headline-lg font-black tracking-tight text-slate-900 dark:text-white m-0">
             KYBER FITNESS
           </span>
         </div>
 
-        <div className="border border-white/5 rounded-[var(--rounded-lg)] bg-[var(--surface-container)] p-2 shadow-2xl">
+        <div className="border border-slate-200 dark:border-white/5 rounded-[var(--rounded-lg)] bg-[var(--surface-container)] p-2 shadow-2xl">
           <SignIn
             routing="path"
             path="/sign-in"

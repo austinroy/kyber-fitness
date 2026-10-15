@@ -58,10 +58,10 @@ function WorkoutsPage() {
   return (
     <div className="space-y-6 py-2">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/5 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-4">
         <div className="min-w-0">
           <div className="chip mb-1">WORKOUTS</div>
-          <h1 className="headline-lg font-black text-white m-0 text-2xl sm:text-3xl break-words">
+          <h1 className="headline-lg font-black text-slate-900 dark:text-white m-0 text-2xl sm:text-3xl break-words">
             Workout History
           </h1>
         </div>

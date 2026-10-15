@@ -165,9 +165,11 @@ function SettingsPage() {
   return (
     <div className="max-w-2xl mx-auto py-4 px-4 space-y-6">
       {/* Settings Header */}
-      <div className="flex flex-col gap-2 border-b border-white/5 pb-6">
+      <div className="flex flex-col gap-2 border-b border-slate-200 dark:border-white/5 pb-6">
         <div className="chip chip-lime">ACCOUNT & PREFERENCES</div>
-        <h1 className="display-lg text-3xl font-black m-0 text-white">Settings</h1>
+        <h1 className="display-lg text-3xl font-black m-0 text-slate-900 dark:text-white">
+          Settings
+        </h1>
         <p className="body-md text-[var(--on-surface-variant)] m-0">
           Manage your personal details, training preferences, and app navigation.
         </p>

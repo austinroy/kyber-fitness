@@ -316,10 +316,10 @@ function LogWorkoutPage() {
   return (
     <div className="space-y-6 py-2 max-w-5xl mx-auto">
       {/* Detail Header */}
-      <div className="flex flex-wrap justify-between items-center gap-4 border-b border-white/5 pb-4">
+      <div className="flex flex-wrap justify-between items-center gap-4 border-b border-slate-200 dark:border-white/5 pb-4">
         <div>
           <div className="chip chip-cyan mb-1">WORKOUTS</div>
-          <h1 className="headline-lg font-black text-white m-0">LOG WORKOUT</h1>
+          <h1 className="headline-lg font-black text-slate-900 dark:text-white m-0">LOG WORKOUT</h1>
         </div>
         <div className="flex gap-3">
           <button onClick={() => navigate({ to: '/workouts/' })} className="btn btn-secondary py-2">
@@ -341,10 +341,13 @@ function LogWorkoutPage() {
             sports
           </span>
           <div>
-            <p className="body-md font-bold text-white text-sm m-0">ASSIGNED BY COACH</p>
+            <p className="body-md font-bold text-slate-900 dark:text-white text-sm m-0">
+              ASSIGNED BY COACH
+            </p>
             <p className="body-md text-[var(--on-surface-variant)] text-xs m-0">
-              You are logging <strong className="text-white">"{programTitle}"</strong>, assigned by
-              Coach <strong className="text-white">{coachName}</strong>.
+              You are logging{' '}
+              <strong className="text-slate-900 dark:text-white">"{programTitle}"</strong>, assigned
+              by Coach <strong className="text-slate-900 dark:text-white">{coachName}</strong>.
             </p>
           </div>
         </div>
@@ -363,7 +366,7 @@ function LogWorkoutPage() {
           {/* Trainer Client Selection */}
           {role === 'trainer' && (
             <div className="card space-y-4">
-              <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+              <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span className="material-symbols-outlined text-[var(--secondary-container)]">
                   assignment_ind
                 </span>
@@ -374,7 +377,7 @@ function LogWorkoutPage() {
                 <select
                   value={selectedClientId}
                   onChange={(e) => setSelectedClientId(e.target.value)}
-                  className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
+                  className="input-field w-full"
                 >
                   <option value="">Myself (personal workout)</option>
                   {clientsList.map((c) => (
@@ -389,7 +392,7 @@ function LogWorkoutPage() {
 
           {/* Session details */}
           <div className="card space-y-4">
-            <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+            <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 tune
               </span>
@@ -452,8 +455,8 @@ function LogWorkoutPage() {
 
           {/* Exercise Search & Quick Create */}
           <div className="card space-y-4">
-            <div className="flex justify-between items-center border-b border-white/5 pb-2">
-              <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+            <div className="flex justify-between items-center border-b border-slate-200 dark:border-white/5 pb-2">
+              <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span className="material-symbols-outlined text-[var(--primary-container)]">
                   search
                 </span>
@@ -487,7 +490,7 @@ function LogWorkoutPage() {
                     key={ex.id}
                     type="button"
                     onClick={() => handleAddExercise(ex)}
-                    className="w-full flex justify-between items-center p-2.5 rounded-md hover:bg-white/[0.04] text-left border border-white/5 transition-all text-xs text-white"
+                    className="w-full flex justify-between items-center p-2.5 rounded-md hover:bg-slate-100 dark:hover:bg-white/[0.04] text-left border border-slate-200 dark:border-white/5 transition-all text-xs text-slate-900 dark:text-white"
                   >
                     <span>{ex.name}</span>
                     <span className="chip py-0 px-2 text-[8px]">{ex.category}</span>
@@ -500,7 +503,7 @@ function LogWorkoutPage() {
 
         {/* Right Panel: Exercises Added Editor */}
         <div className="lg:col-span-2 space-y-6">
-          <h3 className="headline-md text-lg font-bold text-white flex items-center gap-2">
+          <h3 className="headline-md text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <span className="material-symbols-outlined text-[var(--primary-container)]">
               fitness_center
             </span>
@@ -509,7 +512,7 @@ function LogWorkoutPage() {
 
           {addedExercises.length === 0 ? (
             <div className="card text-center py-20 border-dashed">
-              <span className="material-symbols-outlined text-white/10 text-5xl mb-2">
+              <span className="material-symbols-outlined text-slate-300 dark:text-white/10 text-5xl mb-2">
                 playlist_add
               </span>
               <p className="body-md text-[var(--on-surface-variant)]">
@@ -525,17 +528,19 @@ function LogWorkoutPage() {
                   <button
                     type="button"
                     onClick={() => handleRemoveExercise(exIdx)}
-                    className="absolute top-4 right-4 text-white/40 hover:text-red-400 cursor-pointer"
+                    className="absolute top-4 right-4 text-slate-400 dark:text-white/40 hover:text-red-500 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-xl">delete</span>
                   </button>
 
                   {/* Header */}
-                  <div className="border-b border-white/5 pb-2 pr-8 flex items-center gap-2">
-                    <span className="chip py-0 px-2 text-[8px] bg-white/5 border-white/10 text-white/50">
+                  <div className="border-b border-slate-200 dark:border-white/5 pb-2 pr-8 flex items-center gap-2">
+                    <span className="chip py-0 px-2 text-[8px] bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/50">
                       EX #{exIdx + 1}
                     </span>
-                    <h4 className="headline-md font-bold text-white text-base m-0">{ex.name}</h4>
+                    <h4 className="headline-md font-bold text-slate-900 dark:text-white text-base m-0">
+                      {ex.name}
+                    </h4>
                     <span className="chip chip-cyan py-0.5 px-2 text-[8px]">{ex.category}</span>
                   </div>
 
@@ -557,7 +562,7 @@ function LogWorkoutPage() {
                   {/* Sets inputs */}
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
-                      <tr className="border-b border-white/5 text-[var(--on-surface-variant)]">
+                      <tr className="border-b border-slate-200 dark:border-white/5 text-[var(--on-surface-variant)]">
                         <th className="py-2 w-10">Set</th>
                         {ex.category === 'cardio' ? (
                           <>
@@ -578,8 +583,11 @@ function LogWorkoutPage() {
                     </thead>
                     <tbody>
                       {ex.sets.map((set, setIdx) => (
-                        <tr key={setIdx} className="border-b border-white/[0.01]">
-                          <td className="py-2 font-bold text-white text-center">
+                        <tr
+                          key={setIdx}
+                          className="border-b border-slate-100 dark:border-white/[0.01]"
+                        >
+                          <td className="py-2 font-bold text-slate-900 dark:text-white text-center">
                             #{set.setNumber}
                           </td>
 
@@ -680,7 +688,7 @@ function LogWorkoutPage() {
                               <button
                                 type="button"
                                 onClick={() => handleRemoveSet(exIdx, setIdx)}
-                                className="text-white/20 hover:text-red-400 cursor-pointer"
+                                className="text-slate-400 dark:text-white/20 hover:text-red-500 cursor-pointer"
                               >
                                 <span className="material-symbols-outlined text-sm">close</span>
                               </button>
@@ -709,12 +717,14 @@ function LogWorkoutPage() {
       {/* Custom Exercise Modal */}
       {showCustomModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="card max-w-md w-full p-6 border-white/10 space-y-4">
-            <div className="flex justify-between items-center border-b border-white/5 pb-2">
-              <h3 className="headline-md text-lg font-bold text-white">Create Custom Exercise</h3>
+          <div className="card max-w-md w-full p-6 border-slate-200 dark:border-white/10 space-y-4">
+            <div className="flex justify-between items-center border-b border-slate-200 dark:border-white/5 pb-2">
+              <h3 className="headline-md text-lg font-bold text-slate-900 dark:text-white">
+                Create Custom Exercise
+              </h3>
               <button
                 onClick={() => setShowCustomModal(false)}
-                className="text-white/40 hover:text-white"
+                className="text-slate-500 dark:text-white/40 hover:text-slate-900 dark:hover:text-white"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
@@ -743,7 +753,7 @@ function LogWorkoutPage() {
                   <select
                     value={customCategory}
                     onChange={(e) => setCustomCategory(e.target.value)}
-                    className="input-field bg-[var(--surface-container-lowest)] text-white text-xs"
+                    className="input-field text-xs"
                   >
                     <option value="strength">Strength</option>
                     <option value="cardio">Cardio</option>
@@ -758,7 +768,7 @@ function LogWorkoutPage() {
                   <select
                     value={customUnit}
                     onChange={(e) => setCustomUnit(e.target.value)}
-                    className="input-field bg-[var(--surface-container-lowest)] text-white text-xs"
+                    className="input-field text-xs"
                   >
                     <option value="kg">kg (weight)</option>
                     <option value="lbs">lbs (weight)</option>

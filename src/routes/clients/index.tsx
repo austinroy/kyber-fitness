@@ -374,9 +374,11 @@ function TrainerClientsPage() {
   return (
     <div className="space-y-8 py-2">
       {/* Top Banner */}
-      <div className="border-b border-white/5 pb-6">
+      <div className="border-b border-slate-200 dark:border-white/5 pb-6">
         <div className="chip chip-cyan mb-2">COACHING</div>
-        <h1 className="display-lg text-3xl font-black m-0 text-white">CLIENTS</h1>
+        <h1 className="display-lg text-3xl font-black m-0 text-slate-900 dark:text-white">
+          CLIENTS
+        </h1>
         <p className="body-md text-[var(--on-surface-variant)] m-0">
           Manage your clients, send email invites, log workouts, and track progress together.
         </p>

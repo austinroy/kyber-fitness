@@ -2,6 +2,8 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Lexend', ui-sans-serif, system-ui, sans-serif;
@@ -140,15 +142,15 @@
 html.light {
   color-scheme: light;
   /* Cyber Frost Theme */
-  --volt: #a6d600;
-  --cyan: #00a6b2;
+  --volt: #3f6212;
+  --cyan: #0891b2;
 
   --surface: #ffffff;
   --surface-dim: #eef2f6;
   --surface-bright: #ffffff;
   --surface-container-lowest: #ffffff;
-  --surface-container-low: #f1f5f9;
-  --surface-container: rgba(255, 255, 255, 0.92);
+  --surface-container-low: #f8fafc;
+  --surface-container: #f1f5f9;
   --surface-container-high: #e2e8f0;
   --surface-container-highest: #cbd5e1;
   --on-surface: #0f172a;
@@ -157,16 +159,16 @@ html.light {
   --inverse-on-surface: #f8fafc;
   --outline: #94a3b8;
   --outline-variant: #e2e8f0;
-  --surface-tint: #8fb500;
+  --surface-tint: #4d7c0f;
   --primary: #0f172a;
   --on-primary: #ffffff;
   --primary-container: #d4ff00;
   --on-primary-container: #000000;
-  --inverse-primary: #d4ff00;
+  --inverse-primary: #3f6212;
   --secondary: #0f172a;
   --on-secondary: #ffffff;
-  --secondary-container: #00f0ff;
-  --on-secondary-container: #002529;
+  --secondary-container: #0891b2;
+  --on-secondary-container: #ffffff;
   --tertiary: #7f260b;
   --on-tertiary: #ffffff;
   --tertiary-container: #ffdad2;
@@ -190,20 +192,100 @@ html.light {
   --background: #f8fafc;
   --on-background: #0f172a;
   --surface-variant: #e2e8f0;
-  --line: rgba(15, 23, 42, 0.08);
-  --glass-line: rgba(15, 23, 42, 0.08);
-  --glass-line-strong: rgba(15, 23, 42, 0.16);
-  --header-bg: rgba(248, 250, 252, 0.88);
-  --chip-bg: rgba(212, 255, 0, 0.25);
-  --chip-line: rgba(160, 210, 0, 0.45);
+  --line: #e2e8f0;
+  --glass-line: #e2e8f0;
+  --glass-line-strong: #cbd5e1;
+  --header-bg: rgba(248, 250, 252, 0.9);
+  --chip-bg: rgba(132, 204, 22, 0.16);
+  --chip-line: rgba(132, 204, 22, 0.35);
   --sea-ink: var(--on-surface);
   --sea-ink-soft: var(--on-surface-variant);
   --link-bg-hover: rgba(15, 23, 42, 0.05);
   --disabled-fg: rgba(15, 23, 42, 0.38);
   --body-gradient:
-    radial-gradient(circle at 10% 10%, rgba(212, 255, 0, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.06) 0%, transparent 40%),
+    radial-gradient(circle at 10% 10%, rgba(132, 204, 22, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(8, 145, 178, 0.06) 0%, transparent 40%),
     linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%);
+}
+
+/* Light Mode Overrides for UI Components */
+html.light .card:not(.dark-surface):not([data-theme='dark']) {
+  background-color: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow:
+    0 4px 20px -2px rgba(15, 23, 42, 0.06),
+    0 2px 6px -1px rgba(15, 23, 42, 0.04);
+}
+
+html.light .chip,
+html.light .badge-volt,
+html.light .chip-lime {
+  background-color: rgba(132, 204, 22, 0.16);
+  color: #3f6212;
+  border: 1px solid rgba(132, 204, 22, 0.35);
+}
+
+html.light .chip-cyan,
+html.light .badge-cyan {
+  background-color: rgba(6, 182, 212, 0.12);
+  color: #0e7490;
+  border: 1px solid rgba(6, 182, 212, 0.35);
+}
+
+html.light .btn-secondary {
+  background-color: rgba(8, 145, 178, 0.08);
+  color: #0891b2;
+  border: 1.5px solid #0891b2;
+}
+
+html.light .btn-secondary:hover,
+html.light .btn-secondary:focus {
+  background-color: rgba(8, 145, 178, 0.16);
+  color: #0e7490;
+  border-color: #0e7490;
+}
+
+html.light .btn-ghost {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-color: #e2e8f0;
+}
+
+html.light .input-field {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+html.light .input-field:focus {
+  background-color: #ffffff;
+  border-color: #65a30d;
+  box-shadow: 0 0 0 3px rgba(101, 163, 13, 0.15);
+}
+
+html.light .input-field::placeholder {
+  color: #94a3b8;
+}
+
+/* Light Mode Global Typography Rules */
+html.light .display-lg,
+html.light .headline-lg,
+html.light .headline-md,
+html.light .display-lg.text-white,
+html.light .headline-lg.text-white,
+html.light .headline-md.text-white {
+  color: #0f172a;
+}
+
+html.light
+  .card:not(.dark-surface):not([data-theme='dark'])
+  :is(h1, h2, h3, h4, h5, h6).text-white {
+  color: #0f172a;
+}
+
+html.light .card:not(.dark-surface):not([data-theme='dark']) p.text-zinc-400,
+html.light .card:not(.dark-surface):not([data-theme='dark']) p.text-zinc-300 {
+  color: #475569;
 }
 
 html.dark {

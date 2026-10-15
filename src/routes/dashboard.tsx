@@ -117,14 +117,15 @@ function DashboardPage() {
   return (
     <div className="space-y-6 md:space-y-8 py-2">
       {/* Top Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-6">
         <div className="min-w-0">
           <div className="chip chip-cyan mb-2">DASHBOARD</div>
-          <h1 className="display-lg text-2xl sm:text-3xl font-black m-0 text-white capitalize break-words">
+          <h1 className="display-lg text-2xl sm:text-3xl font-black m-0 text-slate-900 dark:text-white capitalize break-words">
             {isTrainer ? 'Coach Dashboard' : 'Athlete Dashboard'}
           </h1>
           <p className="body-md text-[var(--on-surface-variant)] m-0">
-            Welcome back, <span className="text-white font-bold">{dbUser?.name}</span>.
+            Welcome back,{' '}
+            <span className="text-slate-900 dark:text-white font-bold">{dbUser?.name}</span>.
           </p>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">

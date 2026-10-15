@@ -83,10 +83,12 @@ function NotificationsPage() {
 
   return (
     <div className="space-y-6 py-2">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-6">
         <div>
           <div className="chip chip-cyan mb-2">ACTIVITY</div>
-          <h1 className="display-lg text-3xl font-black m-0 text-white uppercase">Notifications</h1>
+          <h1 className="display-lg text-3xl font-black m-0 text-slate-900 dark:text-white uppercase">
+            Notifications
+          </h1>
           <p className="body-md text-[var(--on-surface-variant)] m-0">
             Trainer invites, assigned workouts, and updates appear here.
           </p>

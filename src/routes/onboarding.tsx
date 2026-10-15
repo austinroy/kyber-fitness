@@ -110,7 +110,9 @@ function OnboardingPage() {
   return (
     <div className="max-w-2xl mx-auto py-8 px-4">
       <div className="chip mb-4">GET STARTED</div>
-      <h1 className="headline-lg font-black text-white mb-2">COMPLETE YOUR PROFILE</h1>
+      <h1 className="headline-lg font-black text-slate-900 dark:text-white mb-2">
+        COMPLETE YOUR PROFILE
+      </h1>
       <p className="body-md text-[var(--on-surface-variant)] mb-8">
         Welcome to Kyber, {name}. Choose your role and enter a few details to get started.
       </p>

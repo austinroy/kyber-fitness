@@ -63,19 +63,21 @@ function LandingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
           {/* Left Column: Value Prop & CTAs */}
           <div className="lg:col-span-7 space-y-6 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono tracking-wider text-zinc-300">
-              <span className="w-2 h-2 rounded-full bg-[#D4FF00] animate-pulse" />
-              <span className="text-[#D4FF00] font-bold">FOR ATHLETES AND COACHES</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-lime-500/10 dark:bg-white/[0.04] border border-lime-600/30 dark:border-white/10 text-xs font-mono tracking-wider">
+              <span className="w-2 h-2 rounded-full bg-lime-600 dark:bg-[#D4FF00] animate-pulse" />
+              <span className="text-lime-700 dark:text-[#D4FF00] font-bold">
+                FOR ATHLETES AND COACHES
+              </span>
             </div>
 
-            <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl tracking-tight text-white leading-[1.08]">
+            <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl tracking-tight text-slate-900 dark:text-white leading-[1.08]">
               Train hard. <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4FF00] via-[#D4FF00] to-[#00F0FF]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-600 via-emerald-600 to-cyan-600 dark:from-[#D4FF00] dark:via-[#D4FF00] dark:to-[#00F0FF]">
                 See the progress.
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg text-zinc-300 max-w-xl leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-600 dark:text-zinc-300 max-w-xl leading-relaxed">
               Log every set without slowing down, keep an eye on your weight and heart rate, and
               work with a coach who only sees what you choose to share.
             </p>
@@ -102,14 +104,14 @@ function LandingPage() {
             {/* Signed In CTAs */}
             <SignedIn>
               <div className="pt-2">
-                <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md max-w-md space-y-3">
+                <div className="p-4 rounded-2xl bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 backdrop-blur-md max-w-md space-y-3">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-[#D4FF00]" />
-                    <span className="text-xs font-bold text-white uppercase tracking-wider">
+                    <CheckCircle2 className="w-4 h-4 text-lime-600 dark:text-[#D4FF00]" />
+                    <span className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                       Welcome back
                     </span>
                   </div>
-                  <p className="text-xs text-zinc-400">
+                  <p className="text-xs text-slate-600 dark:text-zinc-400">
                     Pick up where you left off. Your workouts and stats are waiting.
                   </p>
                   <Link
@@ -124,25 +126,40 @@ function LandingPage() {
             </SignedIn>
 
             {/* Feature highlights strip */}
-            <div className="pt-6 grid grid-cols-3 gap-4 border-t border-white/[0.08] max-w-md text-left">
+            <div className="pt-6 grid grid-cols-3 gap-4 border-t border-slate-200 dark:border-white/[0.08] max-w-md text-left">
               <div>
-                <div className="text-sm sm:text-base font-bold text-white">Sets, reps & RPE</div>
-                <div className="text-[11px] text-zinc-400">Strength and cardio</div>
+                <div className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                  Sets, reps & RPE
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-zinc-400">
+                  Strength and cardio
+                </div>
               </div>
               <div>
-                <div className="text-sm sm:text-base font-bold text-[#D4FF00]">Your call</div>
-                <div className="text-[11px] text-zinc-400">Coaches need your OK</div>
+                <div className="text-sm sm:text-base font-bold text-lime-700 dark:text-[#D4FF00]">
+                  Your call
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-zinc-400">
+                  Coaches need your OK
+                </div>
               </div>
               <div>
-                <div className="text-sm sm:text-base font-bold text-[#00F0FF]">Trends</div>
-                <div className="text-[11px] text-zinc-400">Weight, body fat, resting HR</div>
+                <div className="text-sm sm:text-base font-bold text-cyan-700 dark:text-[#00F0FF]">
+                  Trends
+                </div>
+                <div className="text-[11px] text-slate-500 dark:text-zinc-400">
+                  Weight, body fat, resting HR
+                </div>
               </div>
             </div>
           </div>
 
           {/* Right Column: Dual-Persona Interactive Showcase Card */}
           <div className="lg:col-span-5">
-            <div className="relative rounded-3xl bg-[#0D1018]/90 backdrop-blur-xl border border-white/10 p-6 shadow-[0_20px_50px_rgba(0,0,0,0.6)]">
+            <div
+              data-theme="dark"
+              className="relative rounded-3xl bg-[#0D1018]/95 dark-surface backdrop-blur-xl border border-slate-700/40 dark:border-white/10 p-6 shadow-[0_20px_50px_rgba(0,0,0,0.35)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] text-white"
+            >
               {/* Persona Tab Switcher */}
               <div className="flex items-center p-1 rounded-xl bg-white/[0.04] border border-white/5 mb-5 text-xs">
                 <button
@@ -349,14 +366,14 @@ function LandingPage() {
       {/* ========================================================================= */}
       <section
         id="features"
-        className="max-w-6xl mx-auto px-4 sm:px-6 py-16 border-t border-white/[0.08]"
+        className="max-w-6xl mx-auto px-4 sm:px-6 py-16 border-t border-slate-200 dark:border-white/[0.08]"
       >
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="chip chip-lime mb-2">HOW IT WORKS</div>
-          <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight">
+          <h2 className="font-display font-black text-3xl sm:text-4xl text-slate-900 dark:text-white tracking-tight">
             EVERYTHING YOU NEED TO TRAIN AND COACH
           </h2>
-          <p className="text-sm text-zinc-400 mt-2">
+          <p className="text-sm text-slate-600 dark:text-zinc-400 mt-2">
             Fast enough to use between heavy sets, detailed enough for coaches who want real
             insight.
           </p>
@@ -364,18 +381,18 @@ function LandingPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
           {/* Pillar 1 */}
-          <div className="card p-6 space-y-4 hover:border-[#D4FF00]/40 transition group">
-            <div className="w-12 h-12 rounded-2xl bg-[#D4FF00]/10 border border-[#D4FF00]/20 flex items-center justify-center text-[#D4FF00] group-hover:scale-105 transition shadow-[0_0_15px_rgba(212,255,0,0.15)]">
+          <div className="card p-6 space-y-4 hover:border-lime-500/50 dark:hover:border-[#D4FF00]/40 transition group">
+            <div className="w-12 h-12 rounded-2xl bg-lime-500/10 dark:bg-[#D4FF00]/10 border border-lime-500/20 dark:border-[#D4FF00]/20 flex items-center justify-center text-lime-700 dark:text-[#D4FF00] group-hover:scale-105 transition shadow-[0_0_15px_rgba(132,204,22,0.15)] dark:shadow-[0_0_15px_rgba(212,255,0,0.15)]">
               <Dumbbell className="w-6 h-6" />
             </div>
-            <h3 className="font-display font-black text-xl text-white tracking-tight">
+            <h3 className="font-display font-black text-xl text-slate-900 dark:text-white tracking-tight">
               Fast workout logging
             </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed">
               Track sets, reps, weight in kg or lbs, RPE, and rest times in seconds without breaking
               your rhythm in the gym.
             </p>
-            <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-[#D4FF00]">
+            <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-lime-700 dark:text-[#D4FF00]">
               <span>QUICK & FRICTIONLESS</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
@@ -384,19 +401,19 @@ function LandingPage() {
           {/* Pillar 2 */}
           <div
             id="coaching"
-            className="card p-6 space-y-4 hover:border-[#00F0FF]/40 transition group"
+            className="card p-6 space-y-4 hover:border-cyan-500/50 dark:hover:border-[#00F0FF]/40 transition group"
           >
-            <div className="w-12 h-12 rounded-2xl bg-[#00F0FF]/10 border border-[#00F0FF]/20 flex items-center justify-center text-[#00F0FF] group-hover:scale-105 transition shadow-[0_0_15px_rgba(0,240,255,0.15)]">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 dark:bg-[#00F0FF]/10 border border-cyan-500/20 dark:border-[#00F0FF]/20 flex items-center justify-center text-cyan-700 dark:text-[#00F0FF] group-hover:scale-105 transition shadow-[0_0_15px_rgba(6,182,212,0.15)] dark:shadow-[0_0_15px_rgba(0,240,255,0.15)]">
               <ShieldCheck className="w-6 h-6" />
             </div>
-            <h3 className="font-display font-black text-xl text-white tracking-tight">
+            <h3 className="font-display font-black text-xl text-slate-900 dark:text-white tracking-tight">
               Coaching with consent
             </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed">
               You stay in control of your data. Coaches only see your workouts and body stats when
               you explicitly allow it.
             </p>
-            <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-[#00F0FF]">
+            <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-cyan-700 dark:text-[#00F0FF]">
               <span>CLEAR PERMISSIONS</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
@@ -405,19 +422,19 @@ function LandingPage() {
           {/* Pillar 3 */}
           <div
             id="telemetry"
-            className="card p-6 space-y-4 hover:border-[#D4FF00]/40 transition group"
+            className="card p-6 space-y-4 hover:border-lime-500/50 dark:hover:border-[#D4FF00]/40 transition group"
           >
-            <div className="w-12 h-12 rounded-2xl bg-[#D4FF00]/10 border border-[#D4FF00]/20 flex items-center justify-center text-[#D4FF00] group-hover:scale-105 transition shadow-[0_0_15px_rgba(212,255,0,0.15)]">
+            <div className="w-12 h-12 rounded-2xl bg-lime-500/10 dark:bg-[#D4FF00]/10 border border-lime-500/20 dark:border-[#D4FF00]/20 flex items-center justify-center text-lime-700 dark:text-[#D4FF00] group-hover:scale-105 transition shadow-[0_0_15px_rgba(132,204,22,0.15)] dark:shadow-[0_0_15px_rgba(212,255,0,0.15)]">
               <Activity className="w-6 h-6" />
             </div>
-            <h3 className="font-display font-black text-xl text-white tracking-tight">
+            <h3 className="font-display font-black text-xl text-slate-900 dark:text-white tracking-tight">
               Progress & body stats
             </h3>
-            <p className="text-xs text-zinc-400 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-zinc-400 leading-relaxed">
               Watch your strength climb and track your weight, body fat, and resting heart rate over
               time with clear charts.
             </p>
-            <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-[#D4FF00]">
+            <div className="pt-2 flex items-center gap-2 text-xs font-mono font-bold text-lime-700 dark:text-[#D4FF00]">
               <span>HELPFUL CHARTS</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </div>
@@ -428,8 +445,11 @@ function LandingPage() {
       {/* ========================================================================= */}
       {/* TELEMETRY SHOWCASE SECTION (GLOWING AREA CHART) */}
       {/* ========================================================================= */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 border-t border-white/[0.08]">
-        <div className="card p-6 sm:p-8 relative overflow-hidden bg-gradient-to-b from-[#111622]/90 to-[#0A0D14]/90">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 border-t border-slate-200 dark:border-white/[0.08]">
+        <div
+          data-theme="dark"
+          className="card dark-surface p-6 sm:p-8 relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 dark:from-[#111622]/90 dark:to-[#0A0D14]/90 text-white shadow-xl"
+        >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
               <div className="flex items-center gap-2">
@@ -461,8 +481,8 @@ function LandingPage() {
             >
               <defs>
                 <linearGradient id="landingCyanGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.35" />
-                  <stop offset="100%" stop-color="#00F0FF" stop-opacity="0.0" />
+                  <stop offset="0%" stopColor="#00F0FF" stopOpacity="0.35" />
+                  <stop offset="100%" stopColor="#00F0FF" stopOpacity="0.0" />
                 </linearGradient>
                 <filter id="landingGlow" x="-20%" y="-20%" width="140%" height="140%">
                   <feGaussianBlur stdDeviation="3.5" result="blur" />
@@ -542,17 +562,17 @@ function LandingPage() {
       {/* FINAL CALL TO ACTION STRIP */}
       {/* ========================================================================= */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 py-20 text-center">
-        <div className="card p-8 sm:p-12 relative overflow-hidden bg-gradient-to-tr from-[#D4FF00]/10 via-transparent to-[#00F0FF]/10 border-white/15">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-[#D4FF00]/30 text-xs font-mono text-[#D4FF00] mb-4">
+        <div className="card p-8 sm:p-12 relative overflow-hidden bg-gradient-to-tr from-lime-500/10 via-white to-cyan-500/10 dark:from-[#D4FF00]/10 dark:via-transparent dark:to-[#00F0FF]/10 border-slate-200 dark:border-white/15">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-500/10 dark:bg-black/40 border border-lime-600/30 dark:border-[#D4FF00]/30 text-xs font-mono font-bold text-lime-700 dark:text-[#D4FF00] mb-4">
             <Sparkles className="w-3.5 h-3.5" />
             <span>JOIN KYBER</span>
           </div>
 
-          <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight mb-4">
+          <h2 className="font-display font-black text-3xl sm:text-4xl text-slate-900 dark:text-white tracking-tight mb-4">
             READY TO START TRACKING?
           </h2>
 
-          <p className="text-sm sm:text-base text-zinc-300 max-w-xl mx-auto mb-8 leading-relaxed">
+          <p className="text-sm sm:text-base text-slate-600 dark:text-zinc-300 max-w-xl mx-auto mb-8 leading-relaxed">
             Free for individual athletes. Built to help coaches stay organized. Start logging your
             workouts in minutes.
           </p>
