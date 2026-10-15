@@ -9,7 +9,7 @@ Welcome, Agent! This document serves as the single source of truth for the **Kyb
 **Kyber Fitness** is a premium, full-stack fitness and athletic coaching platform designed to bridge the gap between individual athletes and professional personal trainers. The application allows:
 
 - **Individuals** to track workout sessions, exercises, sets, reps, weights, cardio metrics, and chronological health metrics.
-- **Trainers** to track their own workouts, invite/manage clients, build reusable workout program templates, assign those programs to active clients, and request secure consent to view dashboard progress or log sessions on behalf of active, consented athletes.
+- **Trainers** to track their own workouts, view business telemetry and live client roster counts, invite/manage clients, build reusable workout program templates, assign those programs to active clients, and request secure consent to view dashboard progress or log sessions on behalf of active, consented athletes.
 - **Visuals** to feel like a modern, clean, high-performance SaaS dashboard with rich aesthetics.
 
 ### Technical Stack & Configuration
@@ -131,37 +131,75 @@ kyber-fitness/
 
 ---
 
-## 5. Stitch Kinetic Aesthetic System
+## 5. Refined Neon Cyber 2.0 Aesthetic & Navigation System
 
-Kyber Fitness features a highly responsive, modern themeable dashboard. Agents must strictly adhere to the following visual design guidelines:
+Kyber Fitness features a highly responsive, modern themeable dashboard adhering to the **Refined Neon Cyber 2.0** design system:
 
-### Theme Palette (Stitch Kinetic)
+### Theme Palette (Refined Neon Cyber 2.0 & Cyber Frost)
 
-- **Backgrounds**: Deep Charcoal (`#0a0a0a` / `#121212` / `#131313`) for dark-mode container cards and base frames, plus bright frost surfaces for light mode, generating sleek premium contrast in both modes.
-- **Theme Modes**: The app supports light, dark, and system-auto modes through `ThemeToggle.tsx`. Preserve the pre-hydration theme boot script in `src/routes/__root.tsx` so the stored/system theme is applied before React hydrates.
-- **Accents**:
-  - **Electric Lime (`#c3f400`)**: Core high-energy highlight used for CTA buttons, success rings, active tabs, and primary metrics.
-  - **Cyan (`#00eefc`)**: Tech highlight used for secondary interactions, data nodes, chart lines, and informative borders.
-- **Surfaces**: Semi-transparent overlays using **Glassmorphism** and backdrop-filters (`rgba(255, 255, 255, 0.03)` with `backdrop-filter: blur(12px)`).
+- **Dark Mode Backgrounds**: Deep Carbon (`#0A0D14` base, `#0C101A` / `#111622` cards) generating high-contrast, low-fatigue athletic surfaces.
+- **Light Mode (Cyber Frost)**: Crisp ice-slate (`#F8FAFC` base, `#FFFFFF` cards, `#0F172A` text, `#E2E8F0` borders) preserving high-contrast athletic Volt and Cyan accents.
+- **Theme Modes**: Supports dark, light, and system-auto modes through `ThemeToggle.tsx`. The pre-hydration theme boot script in `src/routes/__root.tsx` executes before React hydrates to prevent theme flash.
+- **Accents & Chart Tokens**:
+  - **Volt Lime (`#D4FF00` dark, `#4D7C0F` light)**: Core high-energy athletic highlight used for primary CTA buttons (`.btn-primary`), active workout timers, PR celebrations, weight trendlines, and milestone progress (`--chart-volt`).
+  - **Hyper Cyan (`#00F0FF` dark, `#0891B2` light)**: Technical highlight used for secondary CTAs (`.btn-secondary`), progress curves, body fat/heart rate charts, notification badges, and coach sync indicators (`--chart-cyan`).
+  - **Chart Grid & Dot Tokens**: `--chart-grid`, `--chart-text`, `--chart-dot-bg`, and `--chart-tooltip-*` tokens provide zero-flicker light and dark mode switching across all SVG charts.
+- **Surfaces**: Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` in dark, `rgba(255, 255, 255, 0.85)` in light with `backdrop-filter: blur(16px)`, clean 1px border highlights, and soft ambient radial glow behind active cards).
+- **Shape Language & Radii**: Modern SaaS radii (16px `rounded-2xl` for container cards, 10-12px `rounded-md` for buttons and inputs, pill `rounded-full` for chips and status badges).
+- **Component & Container Sizing**: In-app buttons use compact SaaS scaling (`8px 16px` at 12px font size with `.btn-sm`, `.btn-xs`, and `.btn-lg` variants) to avoid bulky targets. Signed-in route components are uniformly wrapped with `max-w-6xl mx-auto px-4 sm:px-6` to strictly fit within the width of the floating navigation island and match the landing page layout.
+
+### Typography Architecture
+
+- **Display / Hero Titles**: `Lexend` (`font-display`) for high-impact athletic branding and section headlines.
+- **UI / Body / Forms**: `Geist` (`font-sans-ui` / `var(--font-family)`) for clean, highly legible SaaS dashboard data and forms.
+- **Numerics & Data**: `Geist Mono` (`font-mono-data` / `var(--font-mono)`) with `tabular-nums` ensuring weight numbers, clock timers, and RPE readouts remain perfectly aligned without layout shifts.
+
+### Navigation Architecture
+
+Kyber Fitness provides a dual-surface navigation model fully themed for light and dark modes:
+
+1. **Floating Island Capsule Header** (`src/components/Header.tsx`): Default desktop navigation floating as an elevated frosted glass capsule at the top of the viewport (crisp white frosted glass in light mode, deep carbon glass in dark mode). Supports Clerk auth links, notifications count, theme toggle, and switching between floating and full-bleed modes. On mobile viewports, center links collapse into a circular hamburger toggle that opens a smooth right slide-out navigation drawer with role-aware routes, notifications, and profile details.
+2. **Mobile Bottom Navigation Dock** (`src/components/MobileBottomDock.tsx`): Persistent 5-icon thumb-friendly mobile dock mounted at the bottom of the viewport for signed-in athletes and coaches (Home, Train, Plans/Clients, Vitals, Settings) with dual-mode glass styling and live notification badges.
+3. **User-Configurable Navigation Preference**: Users can choose between "Floating Island Capsule" (default), "Full-Bleed Top Bar", and "Classic Left Sidebar" inside `/settings`. Preferences are stored in `localStorage` under `kyber_header_layout` and broadcast via the `kyber_header_layout_change` custom event for instant live layout updates.
+
+### Mobile Responsiveness & Touch Ergonomics
+
+Kyber Fitness enforces strict responsive rules for seamless handheld and mobile performance:
+
+- **Viewport & iOS Safe Area Insets**:
+  - The viewport meta tag specifies `viewport-fit=cover` in `src/routes/__root.tsx`.
+  - The fixed mobile bottom dock (`src/components/MobileBottomDock.tsx`) incorporates `pb-[max(0.75rem,env(safe-area-inset-bottom))]` to avoid overlapping the home indicator bar on modern iOS devices.
+  - The main scrollable container (`<main>` in `src/routes/__root.tsx`) offsets mobile content with `pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] lg:pb-8`.
+- **Horizontal Scroll Safety for Tables & Tab Bars**:
+  - Multi-column tables (e.g. workout logging sets in `src/routes/workouts/new.tsx` and workout review grids in `src/routes/workouts/$sessionId.tsx`) are wrapped in `<div className="overflow-x-auto -mx-1 px-1">` with explicit minimum widths (`min-w-[540px]` or `min-w-[560px]`) to ensure comfortable input spacing without horizontal body blowout.
+  - Tabular navigational groups (such as client console tabs in `src/routes/clients/index.tsx`) use `overflow-x-auto pb-px whitespace-nowrap` to prevent awkward wrapping on narrow screens.
+- **Responsive Dialogs & Modals**:
+  - Centered modal dialogs (custom exercise modal in `src/routes/workouts/new.tsx` and program assignment dialog in `src/routes/programs/index.tsx`) enforce `max-h-[88vh] overflow-y-auto` so headers, forms, and CTA buttons remain fully accessible even when virtual soft keyboards appear.
+- **Dynamic Metric Display**:
+  - Hero interactive showcases and telemetry metric pill containers adaptively scale (`text-lg sm:text-2xl`, `p-2 sm:p-3`, `flex-wrap`) to maintain balanced grid layouts across screens as small as 320px width.
 
 ### CSS Styling & Tailwind CSS v4 Configuration
 
-Tailwind CSS v4 is configured dynamically using a hybrid approach. The theme token values are declared as standard CSS custom variables in the `@theme` block inside `src/styles.css`:
+Tailwind CSS v4 is configured dynamically using custom design tokens in `src/styles.css`:
 
 ```css
 /* src/styles.css */
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Lexend', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Lexend', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
 }
 
 :root {
-  --background: #131313;
-  --surface: #131313;
-  --primary-container: #c3f400; /* Electric Lime */
-  --secondary-container: #00eefc; /* Cyan */
-  /* Glassmorphism template properties... */
+  --background: #0a0d14;
+  --surface: #0c101a;
+  --primary-container: #d4ff00; /* Volt Lime */
+  --secondary-container: #00f0ff; /* Hyper Cyan */
+  --radius-card: 16px;
+  --radius-btn: 12px;
+  /* Frosted glassmorphism properties... */
 }
 ```
 
@@ -422,7 +460,7 @@ export async function getAuthUser(opts?: { shouldRedirect?: boolean }) {
 
 Kyber Fitness enforces a secure Trainer-Client permission system inside `src/lib/actions.ts`.
 
-- **Self-Access**: Individuals can always read, write, and update their own workouts and profiles. Profile / biometric and coaching credential updates are securely mapped through the `updateUserProfile` action under transaction safety.
+- **Self-Access**: Individuals can always read, write, and update their own workouts and profiles. Profile, health metric, and trainer credential updates are securely mapped through the `updateUserProfile` action under transaction safety.
 - **Workout / Metric Correction**: Logged workout sessions and health metrics support server-side update/delete flows. Individuals can correct their own records; trainers can correct client records only through the same active trainer-client access checks used for logging and viewing.
 - **Trainer-Client Relationship**:
   - A trainer can only view data or log sessions for an athlete if there is an active contract inside `trainerClients` with `status = 'active'`.

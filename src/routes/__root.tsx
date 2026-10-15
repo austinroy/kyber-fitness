@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react'
 import { getCurrentUserProfile, getReceivedNotificationCount } from '../lib/actions'
 import type { UserRecord } from '../types/domain'
 import ThemeToggle from '../components/ThemeToggle'
+import Header from '../components/Header'
+import MobileBottomDock from '../components/MobileBottomDock'
 import { createPostAuthRedirectUrl } from '../lib/auth-redirects'
 import appCss from '../styles.css?url'
 
@@ -49,8 +51,8 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Kyber Fitness — Kinetic Performance System' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
+      { title: 'Kyber Fitness — Workout & Health Tracker' },
       {
         name: 'description',
         content: 'Track workouts, health data, and manage client-trainer relationships.',
@@ -60,6 +62,10 @@ export const Route = createRootRoute({
       { rel: 'stylesheet', href: appCss },
       { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
       { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&family=Lexend:wght@400;600;700;800;900&display=swap',
+      },
       {
         rel: 'stylesheet',
         href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0',
@@ -79,15 +85,17 @@ function NotFoundComponent() {
         explore_off
       </span>
 
-      <h1 className="headline-lg font-black tracking-tight text-white mb-2">ROUTE NOT FOUND</h1>
+      <h1 className="headline-lg font-black tracking-tight text-white mb-2">PAGE NOT FOUND</h1>
       <p className="body-md text-[var(--on-surface-variant)] mb-8">
-        The coordinates you entered do not exist on the Kyber grid. Let's redirect your training
-        session back to base.
+        We couldn't find the page you're looking for. Let's head back home.
       </p>
 
-      <Link to="/" className="btn btn-primary px-8 py-3 flex items-center justify-center gap-2">
+      <Link
+        to="/"
+        className="btn btn-primary text-xs px-5 py-2.5 flex items-center justify-center gap-2"
+      >
         <span className="material-symbols-outlined text-sm">home</span>
-        <span>Return to Base</span>
+        <span>Back to Home</span>
       </Link>
     </div>
   )
@@ -110,18 +118,17 @@ function RootDocument() {
           <div className="flex flex-col items-center justify-center min-h-screen text-center px-4 max-w-lg mx-auto relative">
             <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[var(--primary-container)]/5 rounded-full filter blur-[80px] pointer-events-none"></div>
 
-            <div className="chip mb-6 flex items-center gap-1.5 bg-red-950/40 border border-red-900/30 text-red-400">
-              <span className="material-symbols-outlined text-sm">warning</span>
-              <span>Sync Offline</span>
+            <div className="chip mb-6 flex items-center gap-1.5 bg-amber-950/40 border border-amber-900/30 text-amber-400">
+              <span className="material-symbols-outlined text-sm">info</span>
+              <span>Setup Required</span>
             </div>
 
             <h1 className="headline-lg font-black tracking-tight text-white mb-4">
-              PORTAL KEYS MISSING
+              AUTHENTICATION KEY MISSING
             </h1>
             <p className="body-md text-[var(--on-surface-variant)] mb-8">
-              The Kyber portal cannot establish client synchronization because the Clerk Publishable
-              Key is missing or set to placeholder. Please configure{' '}
-              <strong>VITE_CLERK_PUBLISHABLE_KEY</strong> in your hosting environment.
+              Kyber Fitness needs a valid Clerk Publishable Key to sign you in. Please set{' '}
+              <strong>VITE_CLERK_PUBLISHABLE_KEY</strong> in your environment variables.
             </p>
           </div>
           <Scripts />
@@ -177,6 +184,28 @@ function AppLayout() {
   const [receivedNotifications, setReceivedNotifications] = useState(() => {
     return cachedNavAuthState?.receivedNotifications || 0
   })
+  const [navLayout, setNavLayout] = useState<'floating' | 'full-bleed' | 'sidebar'>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('kyber_header_layout')
+      if (stored === 'full-bleed' || stored === 'floating' || stored === 'sidebar') return stored
+    }
+    return 'floating'
+  })
+
+  useEffect(() => {
+    const handler = () => {
+      const stored = window.localStorage.getItem('kyber_header_layout')
+      if (stored === 'full-bleed' || stored === 'floating' || stored === 'sidebar') {
+        setNavLayout(stored)
+      }
+    }
+    window.addEventListener('storage', handler)
+    window.addEventListener('kyber_header_layout_change', handler)
+    return () => {
+      window.removeEventListener('storage', handler)
+      window.removeEventListener('kyber_header_layout_change', handler)
+    }
+  }, [])
 
   // Check onboarding / db user status
   useEffect(() => {
@@ -255,9 +284,9 @@ function AppLayout() {
 
   return (
     <div className="app-layout">
-      {/* Sidebar - Visible only when signed in */}
+      {/* Sidebar - Visible only when signed in AND user preferred classic sidebar layout */}
       <SignedIn>
-        {canRenderSignedInNav && (
+        {canRenderSignedInNav && navLayout === 'sidebar' && (
           <>
             <header className="mobile-nav-header">
               <button
@@ -297,7 +326,7 @@ function AppLayout() {
                     KYBER
                   </h1>
                   <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0 tracking-wider">
-                    KINETIC PERFORMANCE
+                    FITNESS & COACHING
                   </p>
                 </div>
                 <button
@@ -332,7 +361,7 @@ function AppLayout() {
                     KYBER
                   </h1>
                   <p className="label-md text-[var(--on-surface-variant)] text-[10px] m-0 tracking-wider">
-                    KINETIC PERFORMANCE
+                    FITNESS & COACHING
                   </p>
                 </div>
               </div>
@@ -353,40 +382,32 @@ function AppLayout() {
       </SignedIn>
 
       {/* Main Panel Content */}
-      <main className="main-content flex-1">
+      <main className="main-content flex-1 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] lg:pb-8 min-w-0">
         {/* Render a top navigation header for public/anonymous users */}
         <SignedOut>
-          <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 py-4 px-4 sm:px-6 border-b border-[var(--line)] bg-[var(--surface-container-lowest)] mb-6 rounded-[var(--rounded-lg)]">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl">
-                bolt
-              </span>
-              <span className="headline-md font-bold tracking-tight text-[var(--on-surface)] m-0 text-lg sm:text-2xl truncate">
-                KYBER FITNESS
-              </span>
-            </div>
-            <div className="grid grid-cols-[2.25rem_minmax(0,1fr)_minmax(0,1fr)] sm:flex sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
-              <div className="h-9 w-9 shrink-0">
-                <ThemeToggle />
-              </div>
-              <Link
-                to="/sign-in"
-                className="btn btn-secondary !h-9 !py-0 px-3 sm:px-4 text-xs w-full sm:w-auto whitespace-nowrap"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/sign-up"
-                className="btn btn-primary !h-9 !py-0 px-3 sm:px-4 text-xs w-full sm:w-auto whitespace-nowrap"
-              >
-                Sign Up
-              </Link>
-            </div>
-          </header>
+          <Header preferredLayout={navLayout !== 'sidebar' ? navLayout : 'floating'} />
         </SignedOut>
+
+        {/* Render top navigation header for signed-in users when in floating or full-bleed layout */}
+        <SignedIn>
+          {canRenderSignedInNav && navLayout !== 'sidebar' && (
+            <Header
+              dbUser={dbUser}
+              receivedNotifications={receivedNotifications}
+              preferredLayout={navLayout}
+            />
+          )}
+        </SignedIn>
 
         <Outlet />
       </main>
+
+      {/* Persistent Mobile Bottom Navigation Dock for signed-in athletes & coaches */}
+      <SignedIn>
+        {canRenderSignedInNav && (
+          <MobileBottomDock dbUser={dbUser} receivedNotifications={receivedNotifications} />
+        )}
+      </SignedIn>
     </div>
   )
 }

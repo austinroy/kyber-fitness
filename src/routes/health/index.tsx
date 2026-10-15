@@ -135,7 +135,7 @@ function HealthDashboardPage() {
       })
 
       if (res && res.success) {
-        setSuccessMsg('Biometrics successfully synced to core telemetry database!')
+        setSuccessMsg('Entry saved.')
         setLogValue('')
         setLogNotes('')
 
@@ -152,7 +152,9 @@ function HealthDashboardPage() {
       }
     } catch (err: unknown) {
       console.error(err)
-      setErrorMsg(err instanceof Error ? err.message : 'Failed to submit health metrics.')
+      setErrorMsg(
+        err instanceof Error ? err.message : "Couldn't save this entry. Please try again.",
+      )
     } finally {
       setLogging(false)
     }
@@ -196,17 +198,17 @@ function HealthDashboardPage() {
       })
       await refreshMetrics()
       setEditingMetricId('')
-      setSuccessMsg('Biometric log updated.')
+      setSuccessMsg('Entry updated.')
       setTimeout(() => setSuccessMsg(''), 3000)
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Failed to update health metric.')
+      setErrorMsg(err instanceof Error ? err.message : "Couldn't update this entry.")
     } finally {
       setLogging(false)
     }
   }
 
   const handleMetricDelete = async (metric: HealthMetricRecord) => {
-    if (!window.confirm('Delete this biometric log permanently?')) return
+    if (!window.confirm('Delete this entry? This can’t be undone.')) return
 
     setLogging(true)
     setErrorMsg('')
@@ -220,10 +222,10 @@ function HealthDashboardPage() {
         },
       })
       await refreshMetrics()
-      setSuccessMsg('Biometric log deleted.')
+      setSuccessMsg('Entry deleted.')
       setTimeout(() => setSuccessMsg(''), 3000)
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Failed to delete health metric.')
+      setErrorMsg(err instanceof Error ? err.message : "Couldn't delete this entry.")
     } finally {
       setLogging(false)
     }
@@ -231,11 +233,9 @@ function HealthDashboardPage() {
 
   if (!isLoaded || (profileLoading && metricsHistory.length === 0)) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Streaming biometric telemetry...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading your health data…</p>
       </div>
     )
   }
@@ -253,19 +253,6 @@ function HealthDashboardPage() {
         return 'Resting Heart Rate'
       default:
         return 'Metrics'
-    }
-  }
-
-  const getMetricIcon = (type: string) => {
-    switch (type) {
-      case 'weight':
-        return 'scale'
-      case 'body_fat':
-        return 'percent'
-      case 'resting_hr':
-        return 'favorite'
-      default:
-        return 'monitoring'
     }
   }
 
@@ -291,11 +278,10 @@ function HealthDashboardPage() {
             insights
           </span>
           <h4 className="headline-md font-bold text-[var(--on-surface)] text-sm">
-            Awaiting sufficient timeline data
+            Not enough data yet
           </h4>
           <p className="body-md text-[var(--on-surface-variant)] text-xs mt-1 max-w-xs">
-            Submit at least two logs to project premium performance vectors and rolling progress
-            lines.
+            Log at least two entries to see your trend over time.
           </p>
         </div>
       )
@@ -323,7 +309,6 @@ function HealthDashboardPage() {
 
     // Prevent divide by zero if values are identical
     const rangeDivisor = valRange === 0 ? 1 : valRange
-    const valueMultiplier = valRange === 0 ? 0.5 : 1
 
     const points = chronologicalData.map((d, index) => {
       const x = paddingX + (index * (svgWidth - paddingX * 2)) / (chronologicalData.length - 1)
@@ -344,31 +329,36 @@ function HealthDashboardPage() {
         : ''
 
     const isWeight = activeMetric === 'weight'
-    const themeColor = isWeight ? 'var(--primary-container)' : 'var(--secondary-container)'
-    const themeHex = isWeight ? '#c3f400' : '#00eefc'
+    const themeHex = isWeight ? 'var(--chart-volt)' : 'var(--chart-cyan)'
 
     return (
       <div className="card space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+            <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--secondary-container)]">
                 trending_up
               </span>
-              Biometric Performance Vectors
+              Progress Over Time
             </h3>
             <p className="body-md text-[var(--on-surface-variant)] text-xs mt-0.5">
-              Timeline trend from {chronologicalData[0].date} to{' '}
+              From {chronologicalData[0].date} to{' '}
               {chronologicalData[chronologicalData.length - 1].date}
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs">
-            <span className="flex items-center gap-1.5 text-white font-semibold">
-              <span className="h-2 w-2 rounded-full bg-[var(--primary-container)]"></span>
+            <span className="flex items-center gap-1.5 text-slate-800 dark:text-white font-semibold">
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: 'var(--chart-volt)' }}
+              ></span>
               Peak: {maxVal.toFixed(1)} {getMetricUnit(activeMetric)}
             </span>
-            <span className="flex items-center gap-1.5 text-white font-semibold">
-              <span className="h-2 w-2 rounded-full bg-[var(--secondary-container)]"></span>
+            <span className="flex items-center gap-1.5 text-slate-800 dark:text-white font-semibold">
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: 'var(--chart-cyan)' }}
+              ></span>
               Low: {minVal.toFixed(1)} {getMetricUnit(activeMetric)}
             </span>
           </div>
@@ -381,7 +371,7 @@ function HealthDashboardPage() {
           >
             <defs>
               <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={themeHex} stopOpacity="0.25" />
+                <stop offset="0%" stopColor={themeHex} stopOpacity="0.22" />
                 <stop offset="100%" stopColor={themeHex} stopOpacity="0.00" />
               </linearGradient>
             </defs>
@@ -391,17 +381,23 @@ function HealthDashboardPage() {
               const y = paddingY + r * (svgHeight - paddingY * 2)
               const val = maxVal - r * valRange
               return (
-                <g key={i} className="opacity-15">
+                <g key={i}>
                   <line
                     x1={paddingX}
                     y1={y}
                     x2={svgWidth - paddingX}
                     y2={y}
-                    stroke="#ffffff"
+                    stroke="var(--chart-grid)"
                     strokeWidth="1"
                     strokeDasharray="4 4"
                   />
-                  <text x={paddingX - 10} y={y + 4} fill="#ffffff" fontSize="9" textAnchor="end">
+                  <text
+                    x={paddingX - 10}
+                    y={y + 4}
+                    fill="var(--chart-text)"
+                    fontSize="9"
+                    textAnchor="end"
+                  >
                     {val.toFixed(0)}
                   </text>
                 </g>
@@ -419,13 +415,20 @@ function HealthDashboardPage() {
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="drop-shadow-[0_0_8px_rgba(195,244,0,0.4)]"
+              className="drop-shadow-sm dark:drop-shadow-[0_0_8px_rgba(0,240,255,0.35)]"
             />
 
             {/* Glowing points */}
             {points.map((p, i) => (
               <g key={i} className="group cursor-pointer">
-                <circle cx={p.x} cy={p.y} r="7" fill="#131313" stroke={themeHex} strokeWidth="2" />
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r="7"
+                  fill="var(--chart-dot-bg)"
+                  stroke={themeHex}
+                  strokeWidth="2"
+                />
                 <circle
                   cx={p.x}
                   cy={p.y}
@@ -441,16 +444,16 @@ function HealthDashboardPage() {
                     y={p.y - 36}
                     width="90"
                     height="24"
-                    rx="4"
-                    fill="#2a2a2a"
-                    stroke="#ffffff"
-                    strokeWidth="0.5"
-                    strokeOpacity="0.2"
+                    rx="6"
+                    fill="var(--chart-tooltip-bg)"
+                    stroke="var(--chart-tooltip-border)"
+                    strokeWidth="1"
+                    className="shadow-md"
                   />
                   <text
                     x={p.x}
                     y={p.y - 20}
-                    fill="#ffffff"
+                    fill="var(--chart-tooltip-text)"
                     fontSize="9"
                     fontWeight="bold"
                     textAnchor="middle"
@@ -467,15 +470,16 @@ function HealthDashboardPage() {
   }
 
   return (
-    <div className="space-y-8 py-2">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8 py-2">
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-6">
         <div>
-          <div className="chip chip-cyan mb-2">HEALTH METRICS CORE</div>
-          <h1 className="display-lg text-3xl font-black m-0 text-white">BIOMETRICS CONSOLE</h1>
+          <div className="chip chip-cyan mb-2">HEALTH & VITALS</div>
+          <h1 className="display-lg text-3xl font-black m-0 text-slate-900 dark:text-white">
+            HEALTH METRICS
+          </h1>
           <p className="body-md text-[var(--on-surface-variant)] m-0">
-            Track dated physical variables, monitor chronological progress, and project biological
-            benchmarks.
+            Track your body weight, body fat, and resting heart rate over time.
           </p>
         </div>
 
@@ -483,14 +487,14 @@ function HealthDashboardPage() {
         {isTrainer && (
           <div className="input-group min-w-[200px]">
             <label className="label-md text-xs text-[var(--on-surface-variant)]">
-              Review Athlete Profile
+              Viewing stats for
             </label>
             <select
               value={selectedClientId}
               onChange={(e) => setSelectedClientId(e.target.value)}
-              className="input-field bg-[var(--surface-container-lowest)] text-white text-xs w-full py-2"
+              className="input-field bg-[var(--surface-container-lowest)] text-slate-900 dark:text-white text-xs w-full py-2"
             >
-              <option value="">Personal Biometrics (Self)</option>
+              <option value="">Myself</option>
               {clientsList.map((c) => (
                 <option key={c.client.id} value={c.client.id}>
                   {c.client.name} (Client)
@@ -547,11 +551,11 @@ function HealthDashboardPage() {
 
           {/* Metrics History Log List */}
           <div className="card space-y-4">
-            <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+            <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 receipt_long
               </span>
-              Dated Telemetry Log entries
+              History
             </h3>
 
             {metricsHistory.length === 0 ? (
@@ -565,24 +569,27 @@ function HealthDashboardPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-white/5 text-[var(--on-surface-variant)]">
-                      <th className="py-2.5">Sync Timestamp</th>
-                      <th className="py-2.5">Recorded Value</th>
-                      <th className="py-2.5">Sync Terminal</th>
+                    <tr className="border-b border-slate-200 dark:border-white/5 text-[var(--on-surface-variant)]">
+                      <th className="py-2.5">Date</th>
+                      <th className="py-2.5">Value</th>
+                      <th className="py-2.5">Logged by</th>
                       <th className="py-2.5">Notes</th>
                       <th className="py-2.5 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {metricsHistory.map((m) => (
-                      <tr key={m.id} className="border-b border-white/[0.02] hover:bg-white/[0.01]">
-                        <td className="py-3 font-semibold text-white">
+                      <tr
+                        key={m.id}
+                        className="border-b border-slate-100 dark:border-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/[0.01]"
+                      >
+                        <td className="py-3 font-semibold text-slate-900 dark:text-white">
                           {new Date(m.recordedAt).toLocaleString(undefined, {
                             dateStyle: 'medium',
                             timeStyle: 'short',
                           })}
                         </td>
-                        <td className="py-3 text-white font-bold text-sm">
+                        <td className="py-3 text-slate-900 dark:text-white font-bold text-sm">
                           {editingMetricId === m.id ? (
                             <input
                               type="number"
@@ -601,9 +608,7 @@ function HealthDashboardPage() {
                           )}
                         </td>
                         <td className="py-3 text-[var(--on-surface-variant)]">
-                          {m.recordedByUserId === m.userId
-                            ? 'Individual Core'
-                            : 'Trainer Portal Override'}
+                          {m.recordedByUserId === m.userId ? 'You' : 'Coach'}
                         </td>
                         <td className="py-3 text-[var(--on-surface-variant)] max-w-[240px]">
                           {editingMetricId === m.id ? (
@@ -669,14 +674,14 @@ function HealthDashboardPage() {
         {/* Right column: Log Sync Input Form */}
         <div className="lg:col-span-1 space-y-6">
           <div className="card space-y-4">
-            <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+            <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 add_box
               </span>
-              Sync Bio Telemetry
+              Log Entry
             </h3>
             <p className="body-md text-[var(--on-surface-variant)] text-xs">
-              Manually append a secure datum point into the active biometric telemetry timeline.
+              Add a new measurement to keep your progress chart up to date.
             </p>
 
             {successMsg && (
@@ -696,14 +701,14 @@ function HealthDashboardPage() {
               {isTrainer && (
                 <div className="input-group">
                   <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                    Designate Sync Target
+                    Log for
                   </label>
                   <select
                     value={logForClientId}
                     onChange={(e) => setLogForClientId(e.target.value)}
-                    className="input-field bg-[var(--surface-container-lowest)] text-white w-full py-2"
+                    className="input-field w-full py-2"
                   >
-                    <option value="">Self (Personal record)</option>
+                    <option value="">Myself</option>
                     {clientsList.map((c) => (
                       <option key={c.client.id} value={c.client.id}>
                         {c.client.name} (Client)
@@ -734,13 +739,11 @@ function HealthDashboardPage() {
               </div>
 
               <div className="input-group">
-                <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                  Verification / Notes
-                </label>
+                <label className="label-md text-xs text-[var(--on-surface-variant)]">Notes</label>
                 <textarea
                   value={logNotes}
                   onChange={(e) => setLogNotes(e.target.value)}
-                  placeholder="e.g., Logged pre-breakfast, fasted status"
+                  placeholder="e.g. Morning weigh-in, fasted"
                   className="input-field min-h-[80px]"
                 />
               </div>
@@ -750,25 +753,25 @@ function HealthDashboardPage() {
                 disabled={logging}
                 className={`btn btn-primary w-full py-2.5 text-xs ${logging ? 'btn-disabled' : ''}`}
               >
-                {logging ? 'Synchronizing Telemetry...' : 'Sync Telemetry Log'}
+                {logging ? 'Saving...' : 'Save Entry'}
               </button>
             </form>
           </div>
 
           {/* Metric Core Technical Advice Info Box */}
-          <div className="card bg-white/[0.01] border-white/5 space-y-3">
+          <div className="card border-slate-200 dark:border-white/5 space-y-3">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 info
               </span>
-              <h4 className="headline-md font-bold text-white text-xs uppercase tracking-wider m-0">
-                Performance Insights
+              <h4 className="headline-md font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider m-0">
+                Tracking Tips
               </h4>
             </div>
             <p className="body-md text-[var(--on-surface-variant)] text-xs leading-relaxed">
-              Consistently recording biometric variables helps map metabolic adaptation charts.
-              Trainers with active partnerships can input telemetry override data, which maps into
-              your charts securely.
+              For the most reliable trends, log your metrics around the same time each day (like
+              first thing in the morning). Your coach can also view or log entries on your behalf if
+              permitted.
             </p>
           </div>
         </div>

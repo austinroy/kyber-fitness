@@ -137,7 +137,11 @@ async function syncPendingTrainerInviteNotifications(clientId: string) {
 }
 
 async function getUserName(userId: string) {
-  const rows = await db.select({ name: users.name }).from(users).where(eq(users.id, userId)).limit(1)
+  const rows = await db
+    .select({ name: users.name })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
   return rows[0]?.name || 'Kyber user'
 }
 
@@ -223,6 +227,7 @@ export const getNotifications = createServerFn({ method: 'GET' })
       throw error
   }
 })
+
 
 export const getReceivedNotificationCount = createServerFn({ method: 'GET' }).handler(async () => {
   const auth = await requireAuthUser()
@@ -1051,13 +1056,8 @@ export const getCoachingNotes = createServerFn({ method: 'GET' })
 
 export const saveCoachingNote = createServerFn({ method: 'POST' })
   .inputValidator(
-    (data: {
-      clientId: string
-      noteId?: string
-      title: string
-      body: string
-      pinned?: boolean
-    }) => data,
+    (data: { clientId: string; noteId?: string; title: string; body: string; pinned?: boolean }) =>
+      data,
   )
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
