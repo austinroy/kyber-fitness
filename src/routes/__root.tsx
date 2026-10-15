@@ -90,7 +90,10 @@ function NotFoundComponent() {
         We couldn't find the page you're looking for. Let's head back home.
       </p>
 
-      <Link to="/" className="btn btn-primary px-8 py-3 flex items-center justify-center gap-2">
+      <Link
+        to="/"
+        className="btn btn-primary text-xs px-5 py-2.5 flex items-center justify-center gap-2"
+      >
         <span className="material-symbols-outlined text-sm">home</span>
         <span>Back to Home</span>
       </Link>

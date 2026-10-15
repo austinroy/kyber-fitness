@@ -47,6 +47,7 @@ The application strictly implements the **Refined Neon Cyber 2.0** design princi
 - **Tech Accents & Curves:** **Hyper Cyan** (`#00F0FF` dark, `#0891B2` light) secondary lines for charting trends, diagnostic metrics, coach sync status, and structural borders.
 - **Surfaces:** Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` in dark, `rgba(255, 255, 255, 0.85)` in light with `backdrop-filter: blur(16px)`, clean 1px border highlights, and soft ambient radial glow behind active cards).
 - **Typography:** `Lexend` for hero/display titles, `Geist` for clean SaaS body/forms, and `Geist Mono` with `tabular-nums` for clock readouts and weights without layout jitter.
+- **Component & Container Sizing:** In-app buttons adhere to compact, high-performance SaaS scaling (`8px 16px` at 12px font size with `btn-sm` and `btn-xs` variants). Signed-in page components are constrained to `max-w-6xl mx-auto px-4 sm:px-6`, matching the landing page design and floating navigation header width for cohesive visual alignment.
 
 ---
 

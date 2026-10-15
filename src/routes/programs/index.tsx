@@ -156,7 +156,7 @@ function ProgramsDashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
         <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading programs...</p>
       </div>
@@ -164,7 +164,7 @@ function ProgramsDashboardPage() {
   }
 
   return (
-    <div className="space-y-8 py-2">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8 py-2">
       {/* Top action header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-6">
         <div>
@@ -177,8 +177,8 @@ function ProgramsDashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link to="/programs/new" className="btn btn-primary">
-            <span className="material-symbols-outlined mr-2">add</span>
+          <Link to="/programs/new" className="btn btn-primary text-xs">
+            <span className="material-symbols-outlined mr-1.5 text-base">add</span>
             Create Program
           </Link>
         </div>
@@ -201,7 +201,7 @@ function ProgramsDashboardPage() {
             Build reusable workout routines with target sets, reps, and notes to share with your
             clients.
           </p>
-          <Link to="/programs/new" className="btn btn-primary px-8 py-3">
+          <Link to="/programs/new" className="btn btn-primary text-xs px-4 py-2">
             Create Your First Program
           </Link>
         </div>

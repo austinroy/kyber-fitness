@@ -145,7 +145,8 @@ Kyber Fitness features a highly responsive, modern themeable dashboard adhering 
   - **Hyper Cyan (`#00F0FF` dark, `#0891B2` light)**: Technical highlight used for secondary CTAs (`.btn-secondary`), progress curves, body fat/heart rate charts, notification badges, and coach sync indicators (`--chart-cyan`).
   - **Chart Grid & Dot Tokens**: `--chart-grid`, `--chart-text`, `--chart-dot-bg`, and `--chart-tooltip-*` tokens provide zero-flicker light and dark mode switching across all SVG charts.
 - **Surfaces**: Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` in dark, `rgba(255, 255, 255, 0.85)` in light with `backdrop-filter: blur(16px)`, clean 1px border highlights, and soft ambient radial glow behind active cards).
-- **Shape Language & Radii**: Modern SaaS radii (16px `rounded-2xl` for container cards, 12px `rounded-md` / `rounded-xl` for buttons and inputs, pill `rounded-full` for chips and status badges).
+- **Shape Language & Radii**: Modern SaaS radii (16px `rounded-2xl` for container cards, 10-12px `rounded-md` for buttons and inputs, pill `rounded-full` for chips and status badges).
+- **Component & Container Sizing**: In-app buttons use compact SaaS scaling (`8px 16px` at 12px font size with `.btn-sm`, `.btn-xs`, and `.btn-lg` variants) to avoid bulky targets. Signed-in route components are uniformly wrapped with `max-w-6xl mx-auto px-4 sm:px-6` to strictly fit within the width of the floating navigation island and match the landing page layout.
 
 ### Typography Architecture
 

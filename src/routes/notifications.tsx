@@ -74,7 +74,7 @@ function NotificationsPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
         <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading notifications...</p>
       </div>
@@ -82,7 +82,7 @@ function NotificationsPage() {
   }
 
   return (
-    <div className="space-y-6 py-2">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 py-2">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-6">
         <div>
           <div className="chip chip-cyan mb-2">ACTIVITY</div>
@@ -110,7 +110,7 @@ function NotificationsPage() {
               </button>
             ))}
           </div>
-          <button onClick={handleMarkAllRead} className="btn btn-secondary py-2 text-xs">
+          <button onClick={handleMarkAllRead} className="btn btn-secondary text-xs py-1.5 px-3">
             Mark All Read
           </button>
         </div>
@@ -158,14 +158,14 @@ function NotificationsPage() {
                 </div>
                 <div className="flex gap-2">
                   {item.href && (
-                    <Link to={item.href} className="btn btn-primary py-2 px-4 text-xs">
+                    <Link to={item.href} className="btn btn-primary text-xs py-1.5 px-3">
                       Open
                     </Link>
                   )}
                   {!item.readAt && (
                     <button
                       onClick={() => handleMarkRead(item.id)}
-                      className="btn btn-secondary py-2 px-4 text-xs"
+                      className="btn btn-secondary text-xs py-1.5 px-3"
                     >
                       Mark Read
                     </button>

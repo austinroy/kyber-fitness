@@ -95,7 +95,7 @@ function MyTrainersPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
         <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading trainers...</p>
       </div>
@@ -106,7 +106,7 @@ function MyTrainersPage() {
   const pendingInvitations = trainers.filter((t) => t.status === 'pending')
 
   return (
-    <div className="space-y-8 py-2 max-w-4xl mx-auto">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8 py-2">
       {/* Page Header */}
       <div className="border-b border-slate-200 dark:border-white/5 pb-6">
         <div className="chip chip-cyan mb-2">COACHING</div>

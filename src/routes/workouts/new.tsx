@@ -298,7 +298,7 @@ function LogWorkoutPage() {
 
   if (loading || assignmentLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
         <p className="body-md text-[var(--on-surface-variant)] mt-4">
           {assignmentLoading ? 'Loading assigned workout...' : 'Loading workout editor...'}
@@ -314,7 +314,7 @@ function LogWorkoutPage() {
   )
 
   return (
-    <div className="space-y-6 py-2 max-w-5xl mx-auto">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 py-2">
       {/* Detail Header */}
       <div className="flex flex-wrap justify-between items-center gap-4 border-b border-slate-200 dark:border-white/5 pb-4">
         <div>
@@ -322,13 +322,16 @@ function LogWorkoutPage() {
           <h1 className="headline-lg font-black text-slate-900 dark:text-white m-0">LOG WORKOUT</h1>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => navigate({ to: '/workouts/' })} className="btn btn-secondary py-2">
+          <button
+            onClick={() => navigate({ to: '/workouts/' })}
+            className="btn btn-secondary text-xs py-2 px-4"
+          >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
-            className={`btn btn-primary py-2 ${saving ? 'btn-disabled' : ''}`}
+            className={`btn btn-primary text-xs py-2 px-4 ${saving ? 'btn-disabled' : ''}`}
           >
             {saving ? 'Saving...' : 'Save Workout'}
           </button>

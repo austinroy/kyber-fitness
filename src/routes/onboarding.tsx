@@ -332,7 +332,7 @@ function OnboardingPage() {
         <button
           type="submit"
           disabled={submitting}
-          className={`btn btn-primary w-full py-3 ${submitting ? 'btn-disabled' : ''}`}
+          className={`btn btn-primary text-xs w-full py-2.5 ${submitting ? 'btn-disabled' : ''}`}
         >
           {submitting ? 'Saving...' : 'Save & Continue'}
         </button>

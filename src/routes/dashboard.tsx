@@ -105,7 +105,7 @@ function DashboardPage() {
 
   if (profileLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
         <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading your dashboard...</p>
       </div>
@@ -115,7 +115,7 @@ function DashboardPage() {
   const isTrainer = dbUser?.role === 'trainer'
 
   return (
-    <div className="space-y-6 md:space-y-8 py-2">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 md:space-y-8 py-2">
       {/* Top Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-6">
         <div className="min-w-0">
@@ -129,8 +129,8 @@ function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <Link to="/workouts/new" className="btn btn-primary w-full md:w-auto">
-            <span className="material-symbols-outlined mr-2">add</span>
+          <Link to="/workouts/new" className="btn btn-primary text-xs w-full md:w-auto">
+            <span className="material-symbols-outlined mr-1.5 text-base">add</span>
             Log a Workout
           </Link>
         </div>
@@ -186,9 +186,9 @@ function DashboardPage() {
                 <Link
                   to="/workouts/new"
                   search={{ assignmentId: assign.id }}
-                  className="btn py-2 px-6 w-full md:w-auto text-sm font-black bg-[var(--secondary-container)] hover:bg-[var(--secondary-container)]/95 text-black flex items-center justify-center gap-2 rounded-md shadow-[0_0_15px_rgba(0,238,252,0.25)] transition-all"
+                  className="btn btn-secondary text-xs font-bold py-2 px-4 w-full md:w-auto flex items-center justify-center gap-1.5 shadow-sm"
                 >
-                  <span className="material-symbols-outlined text-sm font-bold animate-bounce">
+                  <span className="material-symbols-outlined text-sm font-bold">
                     fitness_center
                   </span>
                   <span>Start Workout</span>
@@ -312,7 +312,7 @@ function DashboardPage() {
               <p className="body-md text-[var(--on-surface-variant)] text-sm mb-6">
                 Initialize your performance sync by adding your first workout.
               </p>
-              <Link to="/workouts/new" className="btn btn-primary px-6 py-2.5">
+              <Link to="/workouts/new" className="btn btn-primary text-xs px-4 py-2">
                 Record First Session
               </Link>
             </div>

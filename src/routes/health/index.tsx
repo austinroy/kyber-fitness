@@ -233,7 +233,7 @@ function HealthDashboardPage() {
 
   if (!isLoaded || (profileLoading && metricsHistory.length === 0)) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
         <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading your health data…</p>
       </div>
@@ -470,7 +470,7 @@ function HealthDashboardPage() {
   }
 
   return (
-    <div className="space-y-8 py-2">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8 py-2">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-6">
         <div>

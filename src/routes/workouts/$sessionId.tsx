@@ -132,7 +132,7 @@ function WorkoutSessionDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
         <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading workout details...</p>
       </div>
@@ -141,18 +141,22 @@ function WorkoutSessionDetailPage() {
 
   if (!session) {
     return (
-      <div className="card text-center py-16">
-        <h1 className="headline-md font-bold text-slate-900 dark:text-white">Workout not found</h1>
-        <p className="body-md text-[var(--on-surface-variant)]">{errorMsg}</p>
-        <Link to="/workouts" className="btn btn-primary mt-4">
-          Back to Workouts
-        </Link>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+        <div className="card text-center py-16">
+          <h1 className="headline-md font-bold text-slate-900 dark:text-white">
+            Workout not found
+          </h1>
+          <p className="body-md text-[var(--on-surface-variant)]">{errorMsg}</p>
+          <Link to="/workouts" className="btn btn-primary text-xs px-4 py-2 mt-4">
+            Back to Workouts
+          </Link>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 py-2">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 py-2">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-4">
         <div>
           <div className="chip mb-1">WORKOUT</div>
@@ -165,13 +169,20 @@ function WorkoutSessionDetailPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link to="/workouts" className="btn btn-secondary">
+          <Link to="/workouts" className="btn btn-secondary text-xs py-1.5 px-3">
             Back
           </Link>
-          <button className="btn btn-secondary" onClick={() => setIsEditing((value) => !value)}>
+          <button
+            className="btn btn-secondary text-xs py-1.5 px-3"
+            onClick={() => setIsEditing((value) => !value)}
+          >
             {isEditing ? 'Close Edit' : 'Edit'}
           </button>
-          <button className="btn btn-danger" disabled={saving} onClick={handleDelete}>
+          <button
+            className="btn btn-danger text-xs py-1.5 px-3"
+            disabled={saving}
+            onClick={handleDelete}
+          >
             Delete
           </button>
         </div>
@@ -232,7 +243,7 @@ function WorkoutSessionDetailPage() {
               onChange={(e) => setNotes(e.target.value)}
             />
           </div>
-          <button className="btn btn-primary md:col-span-2" disabled={saving}>
+          <button className="btn btn-primary text-xs py-2 md:col-span-2" disabled={saving}>
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
         </form>

@@ -48,7 +48,7 @@ function WorkoutsPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
         <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading your workouts...</p>
       </div>
@@ -56,7 +56,7 @@ function WorkoutsPage() {
   }
 
   return (
-    <div className="space-y-6 py-2">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 py-2">
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-4">
         <div className="min-w-0">
@@ -65,8 +65,8 @@ function WorkoutsPage() {
             Workout History
           </h1>
         </div>
-        <Link to="/workouts/new" className="btn btn-primary w-full sm:w-auto">
-          <span className="material-symbols-outlined mr-2">add</span>
+        <Link to="/workouts/new" className="btn btn-primary text-xs w-full sm:w-auto">
+          <span className="material-symbols-outlined mr-1.5 text-base">add</span>
           Log a Workout
         </Link>
       </div>
@@ -80,7 +80,7 @@ function WorkoutsPage() {
           <p className="body-md text-[var(--on-surface-variant)] max-w-md mx-auto mt-2 mb-6">
             Track your strength and cardio sessions to start building your workout history.
           </p>
-          <Link to="/workouts/new" className="btn btn-primary px-8 py-3">
+          <Link to="/workouts/new" className="btn btn-primary text-xs px-4 py-2">
             Log your first workout
           </Link>
         </div>
