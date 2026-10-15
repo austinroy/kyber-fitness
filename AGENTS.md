@@ -9,7 +9,7 @@ Welcome, Agent! This document serves as the single source of truth for the **Kyb
 **Kyber Fitness** is a premium, full-stack fitness and athletic coaching platform designed to bridge the gap between individual athletes and professional personal trainers. The application allows:
 
 - **Individuals** to track workout sessions, exercises, sets, reps, weights, cardio metrics, and chronological health metrics.
-- **Trainers** to track their own workouts, invite/manage clients, build reusable workout program templates, assign those programs to active clients, and request secure consent to view dashboard progress or log sessions on behalf of active, consented athletes.
+- **Trainers** to track their own workouts, view business telemetry and live client roster counts, invite/manage clients, build reusable workout program templates, assign those programs to active clients, and request secure consent to view dashboard progress or log sessions on behalf of active, consented athletes.
 - **Visuals** to feel like a modern, clean, high-performance SaaS dashboard with rich aesthetics.
 
 ### Technical Stack & Configuration
