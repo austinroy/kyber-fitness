@@ -23,7 +23,7 @@ Shared TypeScript data-transfer and form/editor shapes live under `src/types`. C
 ## Current Product Surface
 
 - **Landing and auth:** A public landing page with an interactive dual-persona hero (live workout tracker preview with weight adjusters and rest timer alongside a coach client management preview), feature pillars, progress charts, and Clerk-powered `/sign-in` and `/sign-up` routes.
-- **Navigation architecture:** Elevated floating capsule header on desktop, paired with a thumb-friendly 5-icon persistent mobile bottom dock (Home, Train, Plans/Clients, Vitals, Settings) with live notification badges.
+- **Navigation architecture:** Elevated floating capsule header on desktop with a mobile circular hamburger toggle that slides out a right-side navigation drawer, paired with a thumb-friendly 5-icon persistent mobile bottom dock (Home, Train, Plans/Clients, Vitals, Settings) with live notification badges.
 - **Dashboards for athletes and coaches:** Role-tailored consoles — athlete view with workout totals, assigned-routine prompts, quick body-weight logging, and recent activity summaries; coach view with business overview, active client network counts, program template metrics, quick coaching desk shortcuts, recent client snapshot, and coaching guidance.
 - **Workout logging and review:** Custom workout session builder with global/custom exercises, set targets, reps, load, distance, duration, rest, intensity, notes, dedicated session detail pages, and permission-checked edit/delete flows.
 - **Health metrics:** Timelines for weight, body fat, and resting heart rate, including trainer-supported client metric logging plus permission-checked metric correction and deletion when access allows.

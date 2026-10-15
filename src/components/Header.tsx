@@ -24,6 +24,8 @@ export default function Header({
     return 'floating'
   })
 
+  const [mobileOpen, setMobileOpen] = useState(false)
+
   useEffect(() => {
     if (preferredLayout) {
       setLayout(preferredLayout)
@@ -44,6 +46,22 @@ export default function Header({
       window.removeEventListener('kyber_header_layout_change', handler)
     }
   }, [preferredLayout])
+
+  // Lock body scroll and listen for Escape when mobile drawer is open
+  useEffect(() => {
+    if (mobileOpen) {
+      const originalOverflow = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') setMobileOpen(false)
+      }
+      window.addEventListener('keydown', handleKeyDown)
+      return () => {
+        document.body.style.overflow = originalOverflow
+        window.removeEventListener('keydown', handleKeyDown)
+      }
+    }
+  }, [mobileOpen])
 
   const isFloating = layout === 'floating'
 
@@ -173,7 +191,7 @@ export default function Header({
         </SignedOut>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <ThemeToggle />
 
           <SignedIn>
@@ -194,7 +212,7 @@ export default function Header({
           </SignedIn>
 
           <SignedOut>
-            <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2">
               <Link
                 to="/sign-in"
                 className="text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white px-3 py-1.5 rounded-lg transition"
@@ -209,8 +227,267 @@ export default function Header({
               </Link>
             </div>
           </SignedOut>
+
+          {/* Mobile Hamburger Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setMobileOpen((prev) => !prev)}
+            aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200/80 dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/5 text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white transition hover:-translate-y-0.5"
+          >
+            <span className="material-symbols-outlined text-xl">
+              {mobileOpen ? 'close' : 'menu'}
+            </span>
+          </button>
         </div>
       </header>
+
+      {/* Mobile Slide-Out Drawer & Backdrop */}
+      <div
+        className={`fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+          mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setMobileOpen(false)}
+        aria-hidden="true"
+      />
+
+      <aside
+        aria-label="Mobile Navigation Drawer"
+        className={`fixed top-0 right-0 bottom-0 z-50 w-72 sm:w-80 bg-white dark:bg-[#0C101A] border-l border-slate-200 dark:border-white/10 shadow-2xl p-6 flex flex-col justify-between transition-transform duration-300 ease-in-out md:hidden pb-[max(1.5rem,env(safe-area-inset-bottom))] ${
+          mobileOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="space-y-6">
+          {/* Drawer Top Header */}
+          <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10">
+            <Link
+              to="/"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-2 group"
+            >
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-lime-500 to-cyan-500 dark:from-[#D4FF00] dark:to-[#00F0FF] p-[2px] shadow-[0_0_15px_rgba(212,255,0,0.35)]">
+                <div className="w-full h-full bg-slate-900 dark:bg-[#0A0D14] rounded-[10px] flex items-center justify-center font-black text-xs text-[#D4FF00]">
+                  ⚡
+                </div>
+              </div>
+              <span className="font-display font-black text-lg tracking-tight text-slate-900 dark:text-white">
+                KYBER<span className="text-lime-600 dark:text-[#D4FF00]">.FIT</span>
+              </span>
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              aria-label="Close mobile navigation"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200 dark:hover:bg-white/10 text-slate-600 dark:text-zinc-300 transition"
+            >
+              <span className="material-symbols-outlined text-lg">close</span>
+            </button>
+          </div>
+
+          {/* Navigation Links List */}
+          <nav className="flex flex-col gap-1">
+            <SignedIn>
+              <Link
+                to="/dashboard"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+                activeProps={{
+                  className:
+                    'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-lime-500/15 dark:bg-[#D4FF00]/15 text-lime-800 dark:text-[#D4FF00] border-l-2 border-lime-600 dark:border-[#D4FF00]',
+                }}
+              >
+                <span className="material-symbols-outlined text-lg">dashboard</span>
+                <span>Dashboard</span>
+              </Link>
+              <Link
+                to="/workouts"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+                activeProps={{
+                  className:
+                    'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold bg-lime-500/15 dark:bg-[#D4FF00]/15 text-lime-800 dark:text-[#D4FF00] border-l-2 border-lime-600 dark:border-[#D4FF00]',
+                }}
+              >
+                <span className="material-symbols-outlined text-lg">fitness_center</span>
+                <span>Workouts</span>
+              </Link>
+              <Link
+                to="/health"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+                activeProps={{
+                  className:
+                    'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-cyan-800 dark:text-[#00F0FF] bg-cyan-500/15 dark:bg-[#00F0FF]/15 border-l-2 border-cyan-600 dark:border-[#00F0FF]',
+                }}
+              >
+                <span className="material-symbols-outlined text-lg">monitoring</span>
+                <span>Health & Vitals</span>
+              </Link>
+
+              {dbUser?.role === 'trainer' ? (
+                <>
+                  <Link
+                    to="/clients"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+                    activeProps={{
+                      className:
+                        'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-cyan-800 dark:text-[#00F0FF] bg-cyan-500/15 dark:bg-[#00F0FF]/15 border-l-2 border-cyan-600 dark:border-[#00F0FF]',
+                    }}
+                  >
+                    <span className="material-symbols-outlined text-lg">groups</span>
+                    <span>Client Roster</span>
+                  </Link>
+                  <Link
+                    to="/programs"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+                    activeProps={{
+                      className:
+                        'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-cyan-800 dark:text-[#00F0FF] bg-cyan-500/15 dark:bg-[#00F0FF]/15 border-l-2 border-cyan-600 dark:border-[#00F0FF]',
+                    }}
+                  >
+                    <span className="material-symbols-outlined text-lg">splitscreen</span>
+                    <span>Workout Programs</span>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/programs"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+                    activeProps={{
+                      className:
+                        'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-cyan-800 dark:text-[#00F0FF] bg-cyan-500/15 dark:bg-[#00F0FF]/15 border-l-2 border-cyan-600 dark:border-[#00F0FF]',
+                    }}
+                  >
+                    <span className="material-symbols-outlined text-lg">splitscreen</span>
+                    <span>My Programs</span>
+                  </Link>
+                  <Link
+                    to="/my-trainers"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+                    activeProps={{
+                      className:
+                        'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-cyan-800 dark:text-[#00F0FF] bg-cyan-500/15 dark:bg-[#00F0FF]/15 border-l-2 border-cyan-600 dark:border-[#00F0FF]',
+                    }}
+                  >
+                    <span className="material-symbols-outlined text-lg">badge</span>
+                    <span>My Coaches</span>
+                  </Link>
+                </>
+              )}
+
+              <div className="my-2 border-t border-slate-200 dark:border-white/10" />
+
+              <Link
+                to="/notifications"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+                activeProps={{
+                  className:
+                    'flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-950 dark:text-white bg-slate-100 dark:bg-white/10',
+                }}
+              >
+                <span className="flex items-center gap-3">
+                  <span className="material-symbols-outlined text-lg">notifications</span>
+                  <span>Notifications</span>
+                </span>
+                {receivedNotifications > 0 && (
+                  <span className="rounded-full bg-cyan-500 dark:bg-[#00F0FF] px-2 py-0.5 text-[10px] font-black text-white dark:text-black">
+                    {receivedNotifications}
+                  </span>
+                )}
+              </Link>
+
+              <Link
+                to="/settings"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+                activeProps={{
+                  className:
+                    'flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold text-slate-950 dark:text-white bg-slate-100 dark:bg-white/10',
+                }}
+              >
+                <span className="material-symbols-outlined text-lg">settings</span>
+                <span>Settings</span>
+              </Link>
+            </SignedIn>
+
+            <SignedOut>
+              <a
+                href="#features"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+              >
+                <span className="material-symbols-outlined text-lg">bolt</span>
+                <span>Features</span>
+              </a>
+              <a
+                href="#coaching"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+              >
+                <span className="material-symbols-outlined text-lg">sports</span>
+                <span>Coaching</span>
+              </a>
+              <a
+                href="#telemetry"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04] transition"
+              >
+                <span className="material-symbols-outlined text-lg">trending_up</span>
+                <span>Progress</span>
+              </a>
+
+              <div className="my-3 border-t border-slate-200 dark:border-white/10" />
+
+              <div className="flex flex-col gap-2 pt-1">
+                <Link
+                  to="/sign-in"
+                  onClick={() => setMobileOpen(false)}
+                  className="btn btn-secondary w-full text-xs justify-center py-2.5"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/sign-up"
+                  onClick={() => setMobileOpen(false)}
+                  className="btn btn-primary w-full text-xs justify-center py-2.5"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            </SignedOut>
+          </nav>
+        </div>
+
+        {/* Drawer Bottom User Info */}
+        <div className="pt-4 border-t border-slate-200 dark:border-white/10">
+          <SignedIn>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <UserButton afterSignOutUrl="/" />
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate m-0">
+                    {dbUser?.name || 'Athlete'}
+                  </p>
+                  <p className="text-[10px] text-slate-500 dark:text-zinc-400 capitalize m-0">
+                    {dbUser?.role || 'User'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </SignedIn>
+          <SignedOut>
+            <p className="text-[10px] text-slate-400 dark:text-zinc-500 m-0 text-center font-mono">
+              KYBER FITNESS © 2026
+            </p>
+          </SignedOut>
+        </div>
+      </aside>
     </div>
   )
 }

@@ -158,7 +158,7 @@ Kyber Fitness features a highly responsive, modern themeable dashboard adhering 
 
 Kyber Fitness provides a dual-surface navigation model fully themed for light and dark modes:
 
-1. **Floating Island Capsule Header** (`src/components/Header.tsx`): Default desktop navigation floating as an elevated frosted glass capsule at the top of the viewport (crisp white frosted glass in light mode, deep carbon glass in dark mode). Supports Clerk auth links, notifications count, theme toggle, and switching between floating and full-bleed modes.
+1. **Floating Island Capsule Header** (`src/components/Header.tsx`): Default desktop navigation floating as an elevated frosted glass capsule at the top of the viewport (crisp white frosted glass in light mode, deep carbon glass in dark mode). Supports Clerk auth links, notifications count, theme toggle, and switching between floating and full-bleed modes. On mobile viewports, center links collapse into a circular hamburger toggle that opens a smooth right slide-out navigation drawer with role-aware routes, notifications, and profile details.
 2. **Mobile Bottom Navigation Dock** (`src/components/MobileBottomDock.tsx`): Persistent 5-icon thumb-friendly mobile dock mounted at the bottom of the viewport for signed-in athletes and coaches (Home, Train, Plans/Clients, Vitals, Settings) with dual-mode glass styling and live notification badges.
 3. **User-Configurable Navigation Preference**: Users can choose between "Floating Island Capsule" (default), "Full-Bleed Top Bar", and "Classic Left Sidebar" inside `/settings`. Preferences are stored in `localStorage` under `kyber_header_layout` and broadcast via the `kyber_header_layout_change` custom event for instant live layout updates.
 
