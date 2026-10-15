@@ -179,8 +179,9 @@ export default function Header({
           <SignedIn>
             <Link
               to="/notifications"
-              className="relative p-2 rounded-xl bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200/80 dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/5 text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white transition"
+              className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200/80 dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/5 text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white transition hover:-translate-y-0.5"
               title="Notifications"
+              aria-label="Notifications"
             >
               <span className="material-symbols-outlined text-lg">notifications</span>
               {receivedNotifications > 0 && (
