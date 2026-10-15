@@ -287,7 +287,7 @@ function TrainerClientsPage() {
   const renderClientTrendChart = () => {
     if (selectedClientMetrics.length < 2) {
       return (
-        <div className="text-center py-8 border border-white/5 bg-white/[0.01] rounded-[var(--rounded-md)] text-[var(--on-surface-variant)] text-xs">
+        <div className="text-center py-8 border border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.01] rounded-[var(--rounded-md)] text-[var(--on-surface-variant)] text-xs">
           Need at least 2 logs to construct active client trendlines.
         </div>
       )
@@ -324,7 +324,7 @@ function TrainerClientsPage() {
 
     const areaPath = `${linePath} L ${points[points.length - 1].x} ${svgHeight - paddingY} L ${points[0].x} ${svgHeight - paddingY} Z`
     const isWeight = activeMetricType === 'weight'
-    const themeHex = isWeight ? '#c3f400' : '#00eefc'
+    const themeHex = isWeight ? 'var(--chart-volt)' : 'var(--chart-cyan)'
 
     return (
       <div className="space-y-2">
@@ -333,15 +333,15 @@ function TrainerClientsPage() {
             Timeline: {chronologicalData[0].date} &rarr;{' '}
             {chronologicalData[chronologicalData.length - 1].date}
           </span>
-          <span className="text-white font-bold">
+          <span className="text-slate-900 dark:text-white font-bold">
             Peak: {maxVal.toFixed(1)} / Low: {minVal.toFixed(1)}
           </span>
         </div>
-        <div className="border border-white/5 rounded p-2 bg-black/20">
+        <div className="border border-slate-200 dark:border-white/5 rounded p-2 bg-slate-50/70 dark:bg-black/20">
           <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full h-auto overflow-visible">
             <defs>
               <linearGradient id="clientChartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={themeHex} stopOpacity="0.15" />
+                <stop offset="0%" stopColor={themeHex} stopOpacity="0.18" />
                 <stop offset="100%" stopColor={themeHex} stopOpacity="0.00" />
               </linearGradient>
             </defs>
@@ -360,7 +360,7 @@ function TrainerClientsPage() {
                 cx={p.x}
                 cy={p.y}
                 r="4"
-                fill="#131313"
+                fill="var(--chart-dot-bg)"
                 stroke={themeHex}
                 strokeWidth="1.5"
               />

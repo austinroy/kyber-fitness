@@ -79,6 +79,16 @@
     radial-gradient(circle at 88% 85%, rgba(0, 240, 255, 0.04) 0%, transparent 40%),
     linear-gradient(180deg, #0a0d14 0%, #06080d 100%);
 
+  /* Chart Colors (Dark Theme) */
+  --chart-volt: #d4ff00;
+  --chart-cyan: #00f0ff;
+  --chart-grid: rgba(255, 255, 255, 0.08);
+  --chart-text: #a1a1aa;
+  --chart-dot-bg: #131313;
+  --chart-tooltip-bg: #1e293b;
+  --chart-tooltip-border: rgba(255, 255, 255, 0.15);
+  --chart-tooltip-text: #ffffff;
+
   /* Font Styling Variables */
   --font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-display: 'Lexend', sans-serif;
@@ -206,6 +216,16 @@ html.light {
     radial-gradient(circle at 10% 10%, rgba(132, 204, 22, 0.08) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(8, 145, 178, 0.06) 0%, transparent 40%),
     linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%);
+
+  /* Chart Colors (Light Theme) */
+  --chart-volt: #4d7c0f;
+  --chart-cyan: #0891b2;
+  --chart-grid: rgba(15, 23, 42, 0.08);
+  --chart-text: #64748b;
+  --chart-dot-bg: #ffffff;
+  --chart-tooltip-bg: #ffffff;
+  --chart-tooltip-border: #cbd5e1;
+  --chart-tooltip-text: #0f172a;
 }
 
 /* Light Mode Overrides for UI Components */

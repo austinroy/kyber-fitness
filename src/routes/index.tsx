@@ -446,28 +446,29 @@ function LandingPage() {
       {/* TELEMETRY SHOWCASE SECTION (GLOWING AREA CHART) */}
       {/* ========================================================================= */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 border-t border-slate-200 dark:border-white/[0.08]">
-        <div
-          data-theme="dark"
-          className="card dark-surface p-6 sm:p-8 relative overflow-hidden bg-gradient-to-b from-slate-900 to-slate-950 dark:from-[#111622]/90 dark:to-[#0A0D14]/90 text-white shadow-xl"
-        >
+        <div className="card p-6 sm:p-8 relative overflow-hidden bg-white/95 dark:bg-gradient-to-b dark:from-[#111622]/90 dark:to-[#0A0D14]/90 border border-slate-200 dark:border-white/10 shadow-xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-pulse" />
-                <span className="text-[11px] font-mono text-[#00F0FF] font-bold tracking-wider uppercase">
+                <span className="w-2 h-2 rounded-full bg-cyan-600 dark:bg-[#00F0FF] animate-pulse" />
+                <span className="text-[11px] font-mono text-cyan-700 dark:text-[#00F0FF] font-bold tracking-wider uppercase">
                   PROGRESS OVER TIME
                 </span>
               </div>
-              <h3 className="font-display font-black text-2xl text-white tracking-tight mt-1">
+              <h3 className="font-display font-black text-2xl text-slate-900 dark:text-white tracking-tight mt-1">
                 Body weight & strength trends
               </h3>
             </div>
             <div className="flex items-center gap-3 font-mono text-xs">
-              <div className="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-zinc-300">
-                SQUAT: <span className="text-[#D4FF00] font-bold">+12.5% THIS MONTH</span>
+              <div className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-slate-700 dark:text-zinc-300">
+                SQUAT:{' '}
+                <span className="text-lime-700 dark:text-[#D4FF00] font-bold">
+                  +12.5% THIS MONTH
+                </span>
               </div>
-              <div className="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/10 text-zinc-300">
-                TREND: <span className="text-[#00F0FF] font-bold">STEADY GAINS</span>
+              <div className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-slate-700 dark:text-zinc-300">
+                TREND:{' '}
+                <span className="text-cyan-700 dark:text-[#00F0FF] font-bold">STEADY GAINS</span>
               </div>
             </div>
           </div>
@@ -481,11 +482,11 @@ function LandingPage() {
             >
               <defs>
                 <linearGradient id="landingCyanGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#00F0FF" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="#00F0FF" stopOpacity="0.0" />
+                  <stop offset="0%" stopColor="var(--chart-cyan)" stopOpacity="0.28" />
+                  <stop offset="100%" stopColor="var(--chart-cyan)" stopOpacity="0.0" />
                 </linearGradient>
                 <filter id="landingGlow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3.5" result="blur" />
+                  <feGaussianBlur stdDeviation="3" result="blur" />
                   <feMerge>
                     <feMergeNode in="blur" />
                     <feMergeNode in="SourceGraphic" />
@@ -499,7 +500,7 @@ function LandingPage() {
                 y1="40"
                 x2="700"
                 y2="40"
-                stroke="rgba(255,255,255,0.06)"
+                stroke="var(--chart-grid)"
                 strokeDasharray="4,4"
               />
               <line
@@ -507,7 +508,7 @@ function LandingPage() {
                 y1="80"
                 x2="700"
                 y2="80"
-                stroke="rgba(255,255,255,0.06)"
+                stroke="var(--chart-grid)"
                 strokeDasharray="4,4"
               />
               <line
@@ -515,7 +516,7 @@ function LandingPage() {
                 y1="120"
                 x2="700"
                 y2="120"
-                stroke="rgba(255,255,255,0.06)"
+                stroke="var(--chart-grid)"
                 strokeDasharray="4,4"
               />
 
@@ -529,31 +530,33 @@ function LandingPage() {
               <path
                 d="M 0 130 Q 120 120, 220 90 T 450 70 T 700 35"
                 fill="none"
-                stroke="#00F0FF"
+                stroke="var(--chart-cyan)"
                 strokeWidth="3"
-                filter="url(#landingGlow)"
+                className="drop-shadow-sm dark:drop-shadow-[0_0_8px_rgba(0,240,255,0.4)]"
               />
 
               {/* Data points */}
-              <circle cx="220" cy="90" r="4" fill="#00F0FF" />
-              <circle cx="450" cy="70" r="4" fill="#00F0FF" />
+              <circle cx="220" cy="90" r="4" fill="var(--chart-cyan)" />
+              <circle cx="450" cy="70" r="4" fill="var(--chart-cyan)" />
               <circle
                 cx="700"
                 cy="35"
                 r="7"
-                fill="#D4FF00"
-                stroke="#0A0D14"
+                fill="var(--chart-volt)"
+                stroke="var(--chart-dot-bg)"
                 strokeWidth="2.5"
                 className="animate-pulse"
               />
             </svg>
           </div>
 
-          <div className="flex justify-between text-[10px] font-mono text-zinc-500 pt-3 border-t border-white/5">
+          <div className="flex justify-between text-[10px] font-mono text-slate-500 dark:text-zinc-500 pt-3 border-t border-slate-200 dark:border-white/5">
             <span>WEEK 1</span>
             <span>WEEK 2</span>
             <span>WEEK 3</span>
-            <span className="text-[#D4FF00] font-bold">WEEK 4 &bull; NEW PR</span>
+            <span className="text-lime-700 dark:text-[#D4FF00] font-bold">
+              WEEK 4 &bull; NEW PR
+            </span>
           </div>
         </div>
       </section>

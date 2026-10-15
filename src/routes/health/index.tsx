@@ -329,13 +329,13 @@ function HealthDashboardPage() {
         : ''
 
     const isWeight = activeMetric === 'weight'
-    const themeHex = isWeight ? '#D4FF00' : '#00F0FF'
+    const themeHex = isWeight ? 'var(--chart-volt)' : 'var(--chart-cyan)'
 
     return (
       <div className="card space-y-4">
         <div className="flex justify-between items-center">
           <div>
-            <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+            <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--secondary-container)]">
                 trending_up
               </span>
@@ -347,12 +347,18 @@ function HealthDashboardPage() {
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs">
-            <span className="flex items-center gap-1.5 text-white font-semibold">
-              <span className="h-2 w-2 rounded-full bg-[var(--primary-container)]"></span>
+            <span className="flex items-center gap-1.5 text-slate-800 dark:text-white font-semibold">
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: 'var(--chart-volt)' }}
+              ></span>
               Peak: {maxVal.toFixed(1)} {getMetricUnit(activeMetric)}
             </span>
-            <span className="flex items-center gap-1.5 text-white font-semibold">
-              <span className="h-2 w-2 rounded-full bg-[var(--secondary-container)]"></span>
+            <span className="flex items-center gap-1.5 text-slate-800 dark:text-white font-semibold">
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: 'var(--chart-cyan)' }}
+              ></span>
               Low: {minVal.toFixed(1)} {getMetricUnit(activeMetric)}
             </span>
           </div>
@@ -365,7 +371,7 @@ function HealthDashboardPage() {
           >
             <defs>
               <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={themeHex} stopOpacity="0.25" />
+                <stop offset="0%" stopColor={themeHex} stopOpacity="0.22" />
                 <stop offset="100%" stopColor={themeHex} stopOpacity="0.00" />
               </linearGradient>
             </defs>
@@ -375,17 +381,23 @@ function HealthDashboardPage() {
               const y = paddingY + r * (svgHeight - paddingY * 2)
               const val = maxVal - r * valRange
               return (
-                <g key={i} className="opacity-15">
+                <g key={i}>
                   <line
                     x1={paddingX}
                     y1={y}
                     x2={svgWidth - paddingX}
                     y2={y}
-                    stroke="#ffffff"
+                    stroke="var(--chart-grid)"
                     strokeWidth="1"
                     strokeDasharray="4 4"
                   />
-                  <text x={paddingX - 10} y={y + 4} fill="#ffffff" fontSize="9" textAnchor="end">
+                  <text
+                    x={paddingX - 10}
+                    y={y + 4}
+                    fill="var(--chart-text)"
+                    fontSize="9"
+                    textAnchor="end"
+                  >
                     {val.toFixed(0)}
                   </text>
                 </g>
@@ -403,13 +415,20 @@ function HealthDashboardPage() {
               strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="drop-shadow-[0_0_8px_rgba(195,244,0,0.4)]"
+              className="drop-shadow-sm dark:drop-shadow-[0_0_8px_rgba(0,240,255,0.35)]"
             />
 
             {/* Glowing points */}
             {points.map((p, i) => (
               <g key={i} className="group cursor-pointer">
-                <circle cx={p.x} cy={p.y} r="7" fill="#131313" stroke={themeHex} strokeWidth="2" />
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r="7"
+                  fill="var(--chart-dot-bg)"
+                  stroke={themeHex}
+                  strokeWidth="2"
+                />
                 <circle
                   cx={p.x}
                   cy={p.y}
@@ -425,16 +444,16 @@ function HealthDashboardPage() {
                     y={p.y - 36}
                     width="90"
                     height="24"
-                    rx="4"
-                    fill="#2a2a2a"
-                    stroke="#ffffff"
-                    strokeWidth="0.5"
-                    strokeOpacity="0.2"
+                    rx="6"
+                    fill="var(--chart-tooltip-bg)"
+                    stroke="var(--chart-tooltip-border)"
+                    strokeWidth="1"
+                    className="shadow-md"
                   />
                   <text
                     x={p.x}
                     y={p.y - 20}
-                    fill="#ffffff"
+                    fill="var(--chart-tooltip-text)"
                     fontSize="9"
                     fontWeight="bold"
                     textAnchor="middle"
@@ -532,7 +551,7 @@ function HealthDashboardPage() {
 
           {/* Metrics History Log List */}
           <div className="card space-y-4">
-            <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+            <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 receipt_long
               </span>
@@ -550,7 +569,7 @@ function HealthDashboardPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-b border-white/5 text-[var(--on-surface-variant)]">
+                    <tr className="border-b border-slate-200 dark:border-white/5 text-[var(--on-surface-variant)]">
                       <th className="py-2.5">Date</th>
                       <th className="py-2.5">Value</th>
                       <th className="py-2.5">Logged by</th>
@@ -560,14 +579,17 @@ function HealthDashboardPage() {
                   </thead>
                   <tbody>
                     {metricsHistory.map((m) => (
-                      <tr key={m.id} className="border-b border-white/[0.02] hover:bg-white/[0.01]">
-                        <td className="py-3 font-semibold text-white">
+                      <tr
+                        key={m.id}
+                        className="border-b border-slate-100 dark:border-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/[0.01]"
+                      >
+                        <td className="py-3 font-semibold text-slate-900 dark:text-white">
                           {new Date(m.recordedAt).toLocaleString(undefined, {
                             dateStyle: 'medium',
                             timeStyle: 'short',
                           })}
                         </td>
-                        <td className="py-3 text-white font-bold text-sm">
+                        <td className="py-3 text-slate-900 dark:text-white font-bold text-sm">
                           {editingMetricId === m.id ? (
                             <input
                               type="number"
@@ -652,7 +674,7 @@ function HealthDashboardPage() {
         {/* Right column: Log Sync Input Form */}
         <div className="lg:col-span-1 space-y-6">
           <div className="card space-y-4">
-            <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+            <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 add_box
               </span>
@@ -684,7 +706,7 @@ function HealthDashboardPage() {
                   <select
                     value={logForClientId}
                     onChange={(e) => setLogForClientId(e.target.value)}
-                    className="input-field bg-[var(--surface-container-lowest)] text-white w-full py-2"
+                    className="input-field w-full py-2"
                   >
                     <option value="">Myself</option>
                     {clientsList.map((c) => (
@@ -737,12 +759,12 @@ function HealthDashboardPage() {
           </div>
 
           {/* Metric Core Technical Advice Info Box */}
-          <div className="card bg-white/[0.01] border-white/5 space-y-3">
+          <div className="card border-slate-200 dark:border-white/5 space-y-3">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 info
               </span>
-              <h4 className="headline-md font-bold text-white text-xs uppercase tracking-wider m-0">
+              <h4 className="headline-md font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider m-0">
                 Tracking Tips
               </h4>
             </div>

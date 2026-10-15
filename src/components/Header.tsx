@@ -58,31 +58,31 @@ export default function Header({
       <header
         className={
           isFloating
-            ? 'max-w-6xl mx-auto px-4 sm:px-6 py-2.5 rounded-2xl bg-[#0D1018]/85 dark-surface backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex items-center justify-between transition-all duration-300'
-            : 'w-full px-4 sm:px-8 py-3 bg-[#0A0D14]/90 dark-surface backdrop-blur-md border-b border-white/10 shadow-md flex items-center justify-between transition-all duration-300'
+            ? 'max-w-6xl mx-auto px-4 sm:px-6 py-2.5 rounded-2xl bg-white/80 dark:bg-[#0D1018]/85 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex items-center justify-between transition-all duration-300'
+            : 'w-full px-4 sm:px-8 py-3 bg-white/90 dark:bg-[#0A0D14]/90 backdrop-blur-md border-b border-slate-200 dark:border-white/10 shadow-sm dark:shadow-md flex items-center justify-between transition-all duration-300'
         }
       >
         {/* Brand Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#D4FF00] to-[#00F0FF] p-[2px] shadow-[0_0_15px_rgba(212,255,0,0.35)] transition-transform group-hover:scale-105">
-            <div className="w-full h-full bg-[#0A0D14] rounded-[10px] flex items-center justify-center font-black text-xs text-[#D4FF00]">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-lime-500 to-cyan-500 dark:from-[#D4FF00] dark:to-[#00F0FF] p-[2px] shadow-[0_0_15px_rgba(212,255,0,0.35)] transition-transform group-hover:scale-105">
+            <div className="w-full h-full bg-slate-900 dark:bg-[#0A0D14] rounded-[10px] flex items-center justify-center font-black text-xs text-[#D4FF00]">
               ⚡
             </div>
           </div>
           <div className="flex items-center">
-            <span className="font-display font-black text-lg tracking-tight text-white group-hover:text-zinc-100 transition">
+            <span className="font-display font-black text-lg tracking-tight text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-zinc-100 transition">
               KYBER
             </span>
-            <span className="text-[#D4FF00] font-black text-lg">.FIT</span>
+            <span className="text-lime-600 dark:text-[#D4FF00] font-black text-lg">.FIT</span>
           </div>
         </Link>
 
         {/* Center Links (Signed In) */}
         <SignedIn>
-          <nav className="hidden md:flex items-center gap-1 bg-white/[0.03] p-1 rounded-xl border border-white/5 text-xs font-semibold">
+          <nav className="hidden md:flex items-center gap-1 bg-slate-100/90 dark:bg-white/[0.03] p-1 rounded-xl border border-slate-200 dark:border-white/5 text-xs font-semibold">
             <Link
               to="/dashboard"
-              className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition"
+              className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
               activeProps={{
                 className:
                   'px-3 py-1.5 rounded-lg bg-[#D4FF00] text-black font-extrabold shadow-sm',
@@ -92,7 +92,7 @@ export default function Header({
             </Link>
             <Link
               to="/workouts"
-              className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition"
+              className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
               activeProps={{
                 className:
                   'px-3 py-1.5 rounded-lg bg-[#D4FF00] text-black font-extrabold shadow-sm',
@@ -102,7 +102,7 @@ export default function Header({
             </Link>
             <Link
               to="/health"
-              className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition"
+              className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
               activeProps={{
                 className:
                   'px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
@@ -114,7 +114,7 @@ export default function Header({
               <>
                 <Link
                   to="/clients"
-                  className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition"
+                  className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
                   activeProps={{
                     className:
                       'px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
@@ -124,7 +124,7 @@ export default function Header({
                 </Link>
                 <Link
                   to="/programs"
-                  className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition"
+                  className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
                   activeProps={{
                     className:
                       'px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
@@ -136,7 +136,7 @@ export default function Header({
             ) : (
               <Link
                 to="/programs"
-                className="px-3 py-1.5 rounded-lg text-zinc-400 hover:text-white transition"
+                className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
                 activeProps={{
                   className:
                     'px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
@@ -150,14 +150,23 @@ export default function Header({
 
         {/* Center Links (Signed Out / Public) */}
         <SignedOut>
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-zinc-300">
-            <a href="#features" className="hover:text-[#D4FF00] transition">
+          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600 dark:text-zinc-300">
+            <a
+              href="#features"
+              className="hover:text-lime-700 dark:hover:text-[#D4FF00] transition"
+            >
               Features
             </a>
-            <a href="#coaching" className="hover:text-[#00F0FF] transition">
+            <a
+              href="#coaching"
+              className="hover:text-cyan-700 dark:hover:text-[#00F0FF] transition"
+            >
               Coaching
             </a>
-            <a href="#telemetry" className="hover:text-[#D4FF00] transition">
+            <a
+              href="#telemetry"
+              className="hover:text-lime-700 dark:hover:text-[#D4FF00] transition"
+            >
               Progress
             </a>
           </nav>
@@ -170,12 +179,12 @@ export default function Header({
           <SignedIn>
             <Link
               to="/notifications"
-              className="relative p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/5 text-zinc-300 hover:text-white transition"
+              className="relative p-2 rounded-xl bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200/80 dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/5 text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white transition"
               title="Notifications"
             >
               <span className="material-symbols-outlined text-lg">notifications</span>
               {receivedNotifications > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#00F0FF] text-black text-[9px] font-black flex items-center justify-center shadow-[0_0_8px_#00F0FF]">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-cyan-500 dark:bg-[#00F0FF] text-white dark:text-black text-[9px] font-black flex items-center justify-center shadow-[0_0_8px_#00F0FF]">
                   {receivedNotifications}
                 </span>
               )}
@@ -187,13 +196,13 @@ export default function Header({
             <div className="flex items-center gap-2">
               <Link
                 to="/sign-in"
-                className="text-xs font-semibold text-zinc-300 hover:text-white px-3 py-1.5 rounded-lg transition"
+                className="text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white px-3 py-1.5 rounded-lg transition"
               >
                 Sign In
               </Link>
               <Link
                 to="/sign-up"
-                className="btn btn-primary text-xs !py-2 px-4 shadow-[0_0_16px_rgba(212,255,0,0.3)]"
+                className="btn btn-primary text-xs !py-2 px-4 shadow-sm dark:shadow-[0_0_16px_rgba(212,255,0,0.3)]"
               >
                 Sign Up
               </Link>
