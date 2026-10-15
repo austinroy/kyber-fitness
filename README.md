@@ -48,6 +48,7 @@ The application strictly implements the **Refined Neon Cyber 2.0** design princi
 - **Surfaces:** Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` in dark, `rgba(255, 255, 255, 0.85)` in light with `backdrop-filter: blur(16px)`, clean 1px border highlights, and soft ambient radial glow behind active cards).
 - **Typography:** `Lexend` for hero/display titles, `Geist` for clean SaaS body/forms, and `Geist Mono` with `tabular-nums` for clock readouts and weights without layout jitter.
 - **Component & Container Sizing:** In-app buttons adhere to compact, high-performance SaaS scaling (`8px 16px` at 12px font size with `btn-sm` and `btn-xs` variants). Signed-in page components are constrained to `max-w-6xl mx-auto px-4 sm:px-6`, matching the landing page design and floating navigation header width for cohesive visual alignment.
+- **Mobile Responsiveness & Ergonomics:** Viewport configuration supports `viewport-fit=cover` with iOS safe area offsets (`env(safe-area-inset-bottom)`) on the persistent bottom navigation dock and main viewports. Multi-column set logging tables are guarded with horizontal scroll wrappers and minimum widths (`min-w-[540px]`), client console tabs feature frictionless horizontal scrolling, and dialog modals enforce max-height constraints (`max-h-[88vh] overflow-y-auto`) for mobile keyboards.
 
 ---
 

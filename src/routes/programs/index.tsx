@@ -291,7 +291,7 @@ function ProgramsDashboardPage() {
       {/* Modal Dialog: Assign Program to Client */}
       {showAssignModal && selectedProgram && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="card w-full max-w-md space-y-6 relative border border-[var(--secondary-container)] bg-[#121212] shadow-2xl">
+          <div className="card w-full max-w-md space-y-6 relative border border-[var(--secondary-container)] bg-[#121212] shadow-2xl max-h-[88vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-white/5 pb-3">
               <div>
                 <span className="chip chip-cyan mb-1 text-[9px]">ASSIGN PROGRAM</span>

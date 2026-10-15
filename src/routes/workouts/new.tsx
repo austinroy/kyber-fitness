@@ -563,144 +563,146 @@ function LogWorkoutPage() {
                   </div>
 
                   {/* Sets inputs */}
-                  <table className="w-full text-left border-collapse text-xs">
-                    <thead>
-                      <tr className="border-b border-slate-200 dark:border-white/5 text-[var(--on-surface-variant)]">
-                        <th className="py-2 w-10">Set</th>
-                        {ex.category === 'cardio' ? (
-                          <>
-                            <th className="py-2 w-28">Duration (sec)</th>
-                            <th className="py-2 w-28">Distance ({ex.defaultUnit})</th>
-                          </>
-                        ) : (
-                          <>
-                            <th className="py-2 w-24">Reps</th>
-                            <th className="py-2 w-28">Weight ({ex.defaultUnit})</th>
-                          </>
-                        )}
-                        <th className="py-2 w-24">Rest (sec)</th>
-                        <th className="py-2 w-24">Intensity</th>
-                        <th className="py-2">Set Notes</th>
-                        <th className="py-2 w-8"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {ex.sets.map((set, setIdx) => (
-                        <tr
-                          key={setIdx}
-                          className="border-b border-slate-100 dark:border-white/[0.01]"
-                        >
-                          <td className="py-2 font-bold text-slate-900 dark:text-white text-center">
-                            #{set.setNumber}
-                          </td>
-
+                  <div className="overflow-x-auto -mx-1 px-1">
+                    <table className="w-full text-left border-collapse text-xs min-w-[540px]">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-white/5 text-[var(--on-surface-variant)]">
+                          <th className="py-2 w-10">Set</th>
                           {ex.category === 'cardio' ? (
                             <>
-                              <td className="py-1">
-                                <input
-                                  type="number"
-                                  value={set.durationSeconds}
-                                  onChange={(e) =>
-                                    handleSetChange(
-                                      exIdx,
-                                      setIdx,
-                                      'durationSeconds',
-                                      e.target.value,
-                                    )
-                                  }
-                                  className="input-field py-1 px-2 text-xs w-20 text-center"
-                                  placeholder="secs"
-                                />
-                              </td>
-                              <td className="py-1">
-                                <input
-                                  type="number"
-                                  step="0.01"
-                                  value={set.distance}
-                                  onChange={(e) =>
-                                    handleSetChange(exIdx, setIdx, 'distance', e.target.value)
-                                  }
-                                  className="input-field py-1 px-2 text-xs w-20 text-center"
-                                  placeholder="dist"
-                                />
-                              </td>
+                              <th className="py-2 w-28">Duration (sec)</th>
+                              <th className="py-2 w-28">Distance ({ex.defaultUnit})</th>
                             </>
                           ) : (
                             <>
-                              <td className="py-1">
-                                <input
-                                  type="number"
-                                  value={set.reps}
-                                  onChange={(e) =>
-                                    handleSetChange(exIdx, setIdx, 'reps', e.target.value)
-                                  }
-                                  className="input-field py-1 px-2 text-xs w-16 text-center"
-                                  placeholder="reps"
-                                />
-                              </td>
-                              <td className="py-1">
-                                <input
-                                  type="number"
-                                  step="0.1"
-                                  value={set.weight}
-                                  onChange={(e) =>
-                                    handleSetChange(exIdx, setIdx, 'weight', e.target.value)
-                                  }
-                                  className="input-field py-1 px-2 text-xs w-20 text-center"
-                                  placeholder="kg"
-                                />
-                              </td>
+                              <th className="py-2 w-24">Reps</th>
+                              <th className="py-2 w-28">Weight ({ex.defaultUnit})</th>
                             </>
                           )}
-
-                          <td className="py-1">
-                            <input
-                              type="number"
-                              value={set.restSeconds}
-                              onChange={(e) =>
-                                handleSetChange(exIdx, setIdx, 'restSeconds', e.target.value)
-                              }
-                              className="input-field py-1 px-2 text-xs w-16 text-center"
-                              placeholder="secs"
-                            />
-                          </td>
-                          <td className="py-1">
-                            <input
-                              type="text"
-                              value={set.intensity}
-                              onChange={(e) =>
-                                handleSetChange(exIdx, setIdx, 'intensity', e.target.value)
-                              }
-                              className="input-field py-1 px-2 text-xs w-16 text-center"
-                              placeholder="RPE/pace"
-                            />
-                          </td>
-                          <td className="py-1">
-                            <input
-                              type="text"
-                              value={set.notes}
-                              onChange={(e) =>
-                                handleSetChange(exIdx, setIdx, 'notes', e.target.value)
-                              }
-                              className="input-field py-1 px-2 text-xs w-full"
-                              placeholder="Warmup, drop set..."
-                            />
-                          </td>
-                          <td className="py-1 text-center">
-                            {ex.sets.length > 1 && (
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveSet(exIdx, setIdx)}
-                                className="text-slate-400 dark:text-white/20 hover:text-red-500 cursor-pointer"
-                              >
-                                <span className="material-symbols-outlined text-sm">close</span>
-                              </button>
-                            )}
-                          </td>
+                          <th className="py-2 w-24">Rest (sec)</th>
+                          <th className="py-2 w-24">Intensity</th>
+                          <th className="py-2">Set Notes</th>
+                          <th className="py-2 w-8"></th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {ex.sets.map((set, setIdx) => (
+                          <tr
+                            key={setIdx}
+                            className="border-b border-slate-100 dark:border-white/[0.01]"
+                          >
+                            <td className="py-2 font-bold text-slate-900 dark:text-white text-center">
+                              #{set.setNumber}
+                            </td>
+
+                            {ex.category === 'cardio' ? (
+                              <>
+                                <td className="py-1">
+                                  <input
+                                    type="number"
+                                    value={set.durationSeconds}
+                                    onChange={(e) =>
+                                      handleSetChange(
+                                        exIdx,
+                                        setIdx,
+                                        'durationSeconds',
+                                        e.target.value,
+                                      )
+                                    }
+                                    className="input-field py-1 px-2 text-xs w-20 text-center"
+                                    placeholder="secs"
+                                  />
+                                </td>
+                                <td className="py-1">
+                                  <input
+                                    type="number"
+                                    step="0.01"
+                                    value={set.distance}
+                                    onChange={(e) =>
+                                      handleSetChange(exIdx, setIdx, 'distance', e.target.value)
+                                    }
+                                    className="input-field py-1 px-2 text-xs w-20 text-center"
+                                    placeholder="dist"
+                                  />
+                                </td>
+                              </>
+                            ) : (
+                              <>
+                                <td className="py-1">
+                                  <input
+                                    type="number"
+                                    value={set.reps}
+                                    onChange={(e) =>
+                                      handleSetChange(exIdx, setIdx, 'reps', e.target.value)
+                                    }
+                                    className="input-field py-1 px-2 text-xs w-16 text-center"
+                                    placeholder="reps"
+                                  />
+                                </td>
+                                <td className="py-1">
+                                  <input
+                                    type="number"
+                                    step="0.1"
+                                    value={set.weight}
+                                    onChange={(e) =>
+                                      handleSetChange(exIdx, setIdx, 'weight', e.target.value)
+                                    }
+                                    className="input-field py-1 px-2 text-xs w-20 text-center"
+                                    placeholder="kg"
+                                  />
+                                </td>
+                              </>
+                            )}
+
+                            <td className="py-1">
+                              <input
+                                type="number"
+                                value={set.restSeconds}
+                                onChange={(e) =>
+                                  handleSetChange(exIdx, setIdx, 'restSeconds', e.target.value)
+                                }
+                                className="input-field py-1 px-2 text-xs w-16 text-center"
+                                placeholder="secs"
+                              />
+                            </td>
+                            <td className="py-1">
+                              <input
+                                type="text"
+                                value={set.intensity}
+                                onChange={(e) =>
+                                  handleSetChange(exIdx, setIdx, 'intensity', e.target.value)
+                                }
+                                className="input-field py-1 px-2 text-xs w-16 text-center"
+                                placeholder="RPE/pace"
+                              />
+                            </td>
+                            <td className="py-1">
+                              <input
+                                type="text"
+                                value={set.notes}
+                                onChange={(e) =>
+                                  handleSetChange(exIdx, setIdx, 'notes', e.target.value)
+                                }
+                                className="input-field py-1 px-2 text-xs w-full"
+                                placeholder="Warmup, drop set..."
+                              />
+                            </td>
+                            <td className="py-1 text-center">
+                              {ex.sets.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveSet(exIdx, setIdx)}
+                                  className="text-slate-400 dark:text-white/20 hover:text-red-500 cursor-pointer"
+                                >
+                                  <span className="material-symbols-outlined text-sm">close</span>
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
 
                   <button
                     type="button"
@@ -720,7 +722,7 @@ function LogWorkoutPage() {
       {/* Custom Exercise Modal */}
       {showCustomModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="card max-w-md w-full p-6 border-slate-200 dark:border-white/10 space-y-4">
+          <div className="card max-w-md w-full p-6 border-slate-200 dark:border-white/10 space-y-4 max-h-[88vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-slate-200 dark:border-white/5 pb-2">
               <h3 className="headline-md text-lg font-bold text-slate-900 dark:text-white">
                 Create Custom Exercise

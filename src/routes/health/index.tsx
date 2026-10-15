@@ -333,7 +333,7 @@ function HealthDashboardPage() {
 
     return (
       <div className="card space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--secondary-container)]">

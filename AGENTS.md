@@ -162,6 +162,22 @@ Kyber Fitness provides a dual-surface navigation model fully themed for light an
 2. **Mobile Bottom Navigation Dock** (`src/components/MobileBottomDock.tsx`): Persistent 5-icon thumb-friendly mobile dock mounted at the bottom of the viewport for signed-in athletes and coaches (Home, Train, Plans/Clients, Vitals, Settings) with dual-mode glass styling and live notification badges.
 3. **User-Configurable Navigation Preference**: Users can choose between "Floating Island Capsule" (default), "Full-Bleed Top Bar", and "Classic Left Sidebar" inside `/settings`. Preferences are stored in `localStorage` under `kyber_header_layout` and broadcast via the `kyber_header_layout_change` custom event for instant live layout updates.
 
+### Mobile Responsiveness & Touch Ergonomics
+
+Kyber Fitness enforces strict responsive rules for seamless handheld and mobile performance:
+
+- **Viewport & iOS Safe Area Insets**:
+  - The viewport meta tag specifies `viewport-fit=cover` in `src/routes/__root.tsx`.
+  - The fixed mobile bottom dock (`src/components/MobileBottomDock.tsx`) incorporates `pb-[max(0.75rem,env(safe-area-inset-bottom))]` to avoid overlapping the home indicator bar on modern iOS devices.
+  - The main scrollable container (`<main>` in `src/routes/__root.tsx`) offsets mobile content with `pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] lg:pb-8`.
+- **Horizontal Scroll Safety for Tables & Tab Bars**:
+  - Multi-column tables (e.g. workout logging sets in `src/routes/workouts/new.tsx` and workout review grids in `src/routes/workouts/$sessionId.tsx`) are wrapped in `<div className="overflow-x-auto -mx-1 px-1">` with explicit minimum widths (`min-w-[540px]` or `min-w-[560px]`) to ensure comfortable input spacing without horizontal body blowout.
+  - Tabular navigational groups (such as client console tabs in `src/routes/clients/index.tsx`) use `overflow-x-auto pb-px whitespace-nowrap` to prevent awkward wrapping on narrow screens.
+- **Responsive Dialogs & Modals**:
+  - Centered modal dialogs (custom exercise modal in `src/routes/workouts/new.tsx` and program assignment dialog in `src/routes/programs/index.tsx`) enforce `max-h-[88vh] overflow-y-auto` so headers, forms, and CTA buttons remain fully accessible even when virtual soft keyboards appear.
+- **Dynamic Metric Display**:
+  - Hero interactive showcases and telemetry metric pill containers adaptively scale (`text-lg sm:text-2xl`, `p-2 sm:p-3`, `flex-wrap`) to maintain balanced grid layouts across screens as small as 320px width.
+
 ### CSS Styling & Tailwind CSS v4 Configuration
 
 Tailwind CSS v4 is configured dynamically using custom design tokens in `src/styles.css`:

@@ -204,15 +204,15 @@ function LandingPage() {
                   </div>
 
                   {/* 3 Metric Readout Columns */}
-                  <div className="grid grid-cols-3 gap-2.5">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
                     {/* Weight with quick adjust buttons */}
-                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 text-center flex flex-col justify-between">
+                    <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 text-center flex flex-col justify-between">
                       <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-zinc-400 font-semibold">
                         WEIGHT
                       </div>
-                      <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tabular-nums my-1">
+                      <div className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tabular-nums my-1">
                         {weight.toFixed(1)}
-                        <span className="text-xs font-normal text-slate-500 dark:text-zinc-400 ml-0.5">
+                        <span className="text-[10px] sm:text-xs font-normal text-slate-500 dark:text-zinc-400 ml-0.5">
                           kg
                         </span>
                       </div>
@@ -220,30 +220,30 @@ function LandingPage() {
                         <button
                           type="button"
                           onClick={() => handleAdjustWeight(-2.5)}
-                          className="w-6 h-6 rounded-lg bg-slate-200/80 hover:bg-slate-300 text-slate-800 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white flex items-center justify-center text-xs font-bold transition"
+                          className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-slate-200/80 hover:bg-slate-300 text-slate-800 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white flex items-center justify-center text-xs font-bold transition"
                           title="Decrease 2.5kg"
                         >
-                          <Minus className="w-3 h-3" />
+                          <Minus className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         </button>
                         <button
                           type="button"
                           onClick={() => handleAdjustWeight(2.5)}
-                          className="w-6 h-6 rounded-lg bg-lime-500/20 hover:bg-lime-500/30 text-lime-800 dark:bg-[#D4FF00]/20 dark:hover:bg-[#D4FF00]/40 dark:text-[#D4FF00] flex items-center justify-center text-xs font-bold transition"
+                          className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-lime-500/20 hover:bg-lime-500/30 text-lime-800 dark:bg-[#D4FF00]/20 dark:hover:bg-[#D4FF00]/40 dark:text-[#D4FF00] flex items-center justify-center text-xs font-bold transition"
                           title="Increase 2.5kg"
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         </button>
                       </div>
                     </div>
 
                     {/* Reps */}
-                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 text-center flex flex-col justify-between">
+                    <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 text-center flex flex-col justify-between">
                       <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-zinc-400 font-semibold">
                         TARGET
                       </div>
-                      <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tabular-nums my-1">
+                      <div className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tabular-nums my-1">
                         5
-                        <span className="text-xs font-normal text-slate-500 dark:text-zinc-400 ml-0.5">
+                        <span className="text-[10px] sm:text-xs font-normal text-slate-500 dark:text-zinc-400 ml-0.5">
                           reps
                         </span>
                       </div>
@@ -253,12 +253,12 @@ function LandingPage() {
                     </div>
 
                     {/* Live Rest Timer */}
-                    <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 text-center flex flex-col justify-between">
+                    <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 text-center flex flex-col justify-between">
                       <div className="text-[10px] font-mono uppercase text-slate-500 dark:text-zinc-400 font-semibold">
                         REST
                       </div>
-                      <div className="text-xl sm:text-2xl font-black text-cyan-700 dark:text-[#00F0FF] tabular-nums my-1 flex items-center justify-center gap-1">
-                        <Timer className="w-4 h-4 text-cyan-700 dark:text-[#00F0FF] animate-pulse" />
+                      <div className="text-lg sm:text-2xl font-black text-cyan-700 dark:text-[#00F0FF] tabular-nums my-1 flex items-center justify-center gap-1">
+                        <Timer className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-700 dark:text-[#00F0FF] animate-pulse" />
                         <span>{formatTimer(restSeconds)}</span>
                       </div>
                       <div className="text-[10px] font-mono text-slate-500 dark:text-zinc-500 pb-1">
@@ -479,7 +479,7 @@ function LandingPage() {
                 Body weight & strength trends
               </h3>
             </div>
-            <div className="flex items-center gap-3 font-mono text-xs">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 font-mono text-xs">
               <div className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 text-slate-700 dark:text-zinc-300">
                 SQUAT:{' '}
                 <span className="text-lime-700 dark:text-[#D4FF00] font-bold">

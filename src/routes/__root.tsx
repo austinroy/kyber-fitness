@@ -51,7 +51,7 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
       { title: 'Kyber Fitness — Workout & Health Tracker' },
       {
         name: 'description',
@@ -382,7 +382,7 @@ function AppLayout() {
       </SignedIn>
 
       {/* Main Panel Content */}
-      <main className="main-content flex-1 pb-24 lg:pb-8 min-w-0">
+      <main className="main-content flex-1 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] lg:pb-8 min-w-0">
         {/* Render a top navigation header for public/anonymous users */}
         <SignedOut>
           <Header preferredLayout={navLayout !== 'sidebar' ? navLayout : 'floating'} />

@@ -584,7 +584,7 @@ function TrainerClientsPage() {
               </div>
 
               {/* Console Tabs */}
-              <div className="flex border-b border-white/5 gap-2">
+              <div className="flex border-b border-white/5 gap-2 overflow-x-auto pb-px whitespace-nowrap">
                 <button
                   onClick={() => setDetailTab('workouts')}
                   className={`px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 flex items-center gap-2 transition-all ${

@@ -297,7 +297,7 @@ function WorkoutSessionDetailPage() {
               </p>
             )}
             <div className="overflow-x-auto mt-4">
-              <table className="w-full text-left border-collapse text-xs">
+              <table className="w-full text-left border-collapse text-xs min-w-[560px]">
                 <thead>
                   <tr className="border-b border-slate-200 dark:border-white/5 text-[var(--on-surface-variant)]">
                     <th className="py-2">Set</th>
