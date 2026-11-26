@@ -225,9 +225,8 @@ export const getNotifications = createServerFn({ method: 'GET' })
       }
 
       throw error
-  }
-})
-
+    }
+  })
 
 export const getReceivedNotificationCount = createServerFn({ method: 'GET' }).handler(async () => {
   const auth = await requireAuthUser()

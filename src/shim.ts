@@ -27,5 +27,3 @@ try {
 } catch (e) {
   console.warn('Failed to register nitro-app context shim:', e)
 }
-
-export {}
