@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import type { DatePickerProps, DatePickerTab, ParsedDateParts } from './DatePicker.types'
 
 const MONTHS = [
@@ -72,6 +73,9 @@ export default function DatePicker({
   const [activeTab, setActiveTab] = useState<DatePickerTab>('date')
 
   const containerRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({})
 
   // Listen to screen width changes to adapt viewports dynamically
   useEffect(() => {
@@ -81,6 +85,52 @@ export default function DatePicker({
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
+
+  // Calculate and update fixed popover position relative to trigger button
+  useEffect(() => {
+    if (!isOpen || isMobile) return
+
+    const updatePosition = () => {
+      if (!triggerRef.current) return
+      const rect = triggerRef.current.getBoundingClientRect()
+      const popoverWidth = 320
+      const popoverHeight = 370
+
+      let left = rect.left
+      if (left + popoverWidth > window.innerWidth - 16) {
+        left = Math.max(16, rect.right - popoverWidth)
+      }
+      if (left < 16) {
+        left = 16
+      }
+
+      const spaceBelow = window.innerHeight - rect.bottom
+      const spaceAbove = rect.top
+      let top: number
+
+      if (spaceBelow < popoverHeight && spaceAbove > spaceBelow) {
+        top = Math.max(16, rect.top - popoverHeight - 8)
+      } else {
+        top = rect.bottom + 8
+      }
+
+      setDropdownStyle({
+        position: 'fixed',
+        top: `${top}px`,
+        left: `${left}px`,
+        width: `${popoverWidth}px`,
+        zIndex: 9999,
+      })
+    }
+
+    updatePosition()
+    window.addEventListener('scroll', updatePosition, true)
+    window.addEventListener('resize', updatePosition)
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true)
+      window.removeEventListener('resize', updatePosition)
+    }
+  }, [isOpen, isMobile])
 
   // Sync state when dialog opens
   useEffect(() => {
@@ -100,18 +150,35 @@ export default function DatePicker({
     }
   }, [isOpen, value])
 
-  // Click outside listener for desktop popover
+  // Click outside and escape key listener
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(target)
+      ) {
         setIsOpen(false)
       }
     }
-    if (isOpen && !isMobile) {
-      document.addEventListener('mousedown', handleClickOutside)
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      if (!isMobile) {
+        document.addEventListener('mousedown', handleClickOutside)
+      }
+      document.addEventListener('keydown', handleKeyDown)
     }
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
     }
   }, [isOpen, isMobile])
 
@@ -199,9 +266,10 @@ export default function DatePicker({
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1)
 
   return (
-    <div className="relative w-full" ref={containerRef}>
+    <div className={`relative w-full ${isOpen ? 'z-30' : ''}`} ref={containerRef}>
       {/* Trigger Button */}
       <button
+        ref={triggerRef}
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
@@ -225,334 +293,344 @@ export default function DatePicker({
       </button>
 
       {/* Desktop Calendar Dropdown */}
-      {isOpen && !isMobile && (
-        <div className="absolute left-0 md:right-0 mt-2 w-[320px] bg-[var(--surface-container)] backdrop-blur-md border border-[var(--line)] rounded-xl shadow-2xl z-[60] p-4 transition-all duration-200">
-          {/* Summary Display */}
-          <div className="text-center py-2 bg-[var(--surface-container-low)] rounded-xl border border-[var(--line)] mb-3 flex justify-center items-center gap-1.5 font-bold text-[var(--on-surface)] text-sm tracking-wide">
-            <span className="text-[var(--primary-container)]">{SHORT_MONTHS[selectedMonth]}</span>
-            <span className="text-[var(--secondary-container)]">{selectedDay}</span>
-            <span className="text-[var(--on-surface-variant)]">,</span>
-            <span className="text-[var(--primary-container)]">{selectedYear}</span>
-          </div>
-
-          {/* Tab Selector Bar */}
-          <div className="flex bg-[var(--surface-container-lowest)] p-1 rounded-xl border border-[var(--line)] mb-3">
-            <button
-              type="button"
-              onClick={() => setActiveTab('month')}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                activeTab === 'month'
-                  ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                  : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
-              }`}
-            >
-              Month
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('date')}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                activeTab === 'date'
-                  ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                  : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
-              }`}
-            >
-              Date
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('year')}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
-                activeTab === 'year'
-                  ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                  : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
-              }`}
-            >
-              Year
-            </button>
-          </div>
-
-          {/* Month Screen */}
-          {activeTab === 'month' && (
-            <div className="grid grid-cols-3 gap-1.5 py-1">
-              {SHORT_MONTHS.map((m, idx) => {
-                const isSelected = selectedMonth === idx
-                return (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => handleSelectMonth(idx)}
-                    className={`py-2 text-xs rounded-lg font-semibold transition-all ${
-                      isSelected
-                        ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                        : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
-                    }`}
-                  >
-                    {m}
-                  </button>
-                )
-              })}
-            </div>
-          )}
-
-          {/* Date Screen (No days header label) */}
-          {activeTab === 'date' && (
-            <div className="grid grid-cols-7 gap-1 py-1">
-              {daysArray.map((d) => {
-                const isSelected = selectedDay === d
-                const today = new Date()
-                const isToday =
-                  today.getDate() === d &&
-                  today.getMonth() === selectedMonth &&
-                  today.getFullYear() === selectedYear
-                return (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => setSelectedDay(d)}
-                    className={`py-1.5 text-xs rounded-lg font-semibold transition-all ${
-                      isSelected
-                        ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                        : isToday
-                          ? 'border border-[var(--primary-container)] text-[var(--primary-container)] bg-[var(--primary-container)]/10'
-                          : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
-                    }`}
-                  >
-                    {d}
-                  </button>
-                )
-              })}
-            </div>
-          )}
-
-          {/* Year Screen */}
-          {activeTab === 'year' && (
-            <div className="grid grid-cols-4 gap-1 py-1 overflow-y-auto max-h-48 pr-1 custom-scrollbar">
-              {yearsRange.map((y) => {
-                const isSelected = selectedYear === y
-                return (
-                  <button
-                    key={y}
-                    type="button"
-                    onClick={() => handleSelectYear(y)}
-                    className={`py-1.5 text-xs rounded-lg font-semibold transition-all ${
-                      isSelected
-                        ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                        : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
-                    }`}
-                  >
-                    {y}
-                  </button>
-                )
-              })}
-            </div>
-          )}
-
-          {/* Action Footer */}
-          <div className="mt-4 pt-3 border-t border-[var(--line)] flex items-center justify-between">
-            <button
-              type="button"
-              onClick={handleReset}
-              className="text-xs font-semibold text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] transition-colors"
-            >
-              Reset
-            </button>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="text-xs font-semibold px-3 py-1.5 border border-[var(--line)] hover:bg-[var(--link-bg-hover)] rounded-lg text-[var(--on-surface)] transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleApply}
-                className="text-xs px-3 py-1.5 bg-[var(--primary-container)] text-[var(--on-primary-container)] rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all"
-              >
-                Apply
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Mobile Modal Backdrop & Bottom Sheet */}
-      {isOpen && isMobile && (
-        <>
-          {/* Backdrop Blur Overlay */}
+      {isOpen &&
+        !isMobile &&
+        createPortal(
           <div
-            onClick={() => setIsOpen(false)}
-            className="fixed inset-0 bg-[color-mix(in_srgb,var(--background)_78%,transparent)] backdrop-blur-sm z-[9998] transition-opacity duration-300 opacity-100"
-          />
+            ref={dropdownRef}
+            style={dropdownStyle}
+            className="bg-[var(--surface-container)] backdrop-blur-md border border-[var(--line)] rounded-xl shadow-2xl p-4 transition-all duration-200"
+          >
+            {/* Summary Display */}
+            <div className="text-center py-2 bg-[var(--surface-container-low)] rounded-xl border border-[var(--line)] mb-3 flex justify-center items-center gap-1.5 font-bold text-[var(--on-surface)] text-sm tracking-wide">
+              <span className="text-[var(--primary-container)]">{SHORT_MONTHS[selectedMonth]}</span>
+              <span className="text-[var(--secondary-container)]">{selectedDay}</span>
+              <span className="text-[var(--on-surface-variant)]">,</span>
+              <span className="text-[var(--primary-container)]">{selectedYear}</span>
+            </div>
 
-          {/* Slide-Up Bottom Sheet */}
-          <div className="fixed bottom-0 left-0 w-full z-[9999] bg-[var(--surface-container)] rounded-t-[32px] overflow-hidden flex flex-col border-t border-[var(--line)] max-h-[90vh]">
-            {/* Modal Header */}
-            <div className="flex justify-between items-center w-full px-6 h-16 border-b border-[var(--line)] bg-[var(--surface-container-lowest)]">
+            {/* Tab Selector Bar */}
+            <div className="flex bg-[var(--surface-container-lowest)] p-1 rounded-xl border border-[var(--line)] mb-3">
               <button
                 type="button"
-                className="p-2 active:scale-95 transition-transform"
-                onClick={() => setIsOpen(false)}
+                onClick={() => setActiveTab('month')}
+                className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                  activeTab === 'month'
+                    ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                    : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
+                }`}
               >
-                <span className="material-symbols-outlined text-[var(--on-surface)]">close</span>
+                Month
               </button>
-              <h2 className="text-lg font-bold text-[var(--on-surface)]">Select Date</h2>
               <button
                 type="button"
-                className="text-sm font-semibold text-[var(--primary-container)] px-4 py-2 hover:bg-[var(--link-bg-hover)] rounded-lg active:scale-95 transition-transform"
-                onClick={handleApply}
+                onClick={() => setActiveTab('date')}
+                className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                  activeTab === 'date'
+                    ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                    : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
+                }`}
               >
-                Done
+                Date
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('year')}
+                className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                  activeTab === 'year'
+                    ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                    : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
+                }`}
+              >
+                Year
               </button>
             </div>
 
-            {/* Datepicker Content */}
-            <div className="overflow-y-auto p-6 space-y-4">
-              {/* Summary Display */}
-              <div className="text-center py-2.5 bg-[var(--surface-container-low)] rounded-xl border border-[var(--line)] flex justify-center items-center gap-1.5 font-bold text-[var(--on-surface)] text-md tracking-wide">
-                <span className="text-[var(--primary-container)]">{MONTHS[selectedMonth]}</span>
-                <span className="text-[var(--secondary-container)]">{selectedDay}</span>
-                <span className="text-[var(--on-surface-variant)]">,</span>
-                <span className="text-[var(--primary-container)]">{selectedYear}</span>
+            {/* Month Screen */}
+            {activeTab === 'month' && (
+              <div className="grid grid-cols-3 gap-1.5 py-1">
+                {SHORT_MONTHS.map((m, idx) => {
+                  const isSelected = selectedMonth === idx
+                  return (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => handleSelectMonth(idx)}
+                      className={`py-2 text-xs rounded-lg font-semibold transition-all ${
+                        isSelected
+                          ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                          : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
+                      }`}
+                    >
+                      {m}
+                    </button>
+                  )
+                })}
               </div>
+            )}
 
-              {/* Tab Selector Bar */}
-              <div className="flex bg-[var(--surface-container-lowest)] p-1 rounded-xl border border-[var(--line)]">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('month')}
-                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-                    activeTab === 'month'
-                      ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                      : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
-                  }`}
-                >
-                  Month
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('date')}
-                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-                    activeTab === 'date'
-                      ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                      : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
-                  }`}
-                >
-                  Date
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setActiveTab('year')}
-                  className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
-                    activeTab === 'year'
-                      ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                      : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
-                  }`}
-                >
-                  Year
-                </button>
+            {/* Date Screen (No days header label) */}
+            {activeTab === 'date' && (
+              <div className="grid grid-cols-7 gap-1 py-1">
+                {daysArray.map((d) => {
+                  const isSelected = selectedDay === d
+                  const today = new Date()
+                  const isToday =
+                    today.getDate() === d &&
+                    today.getMonth() === selectedMonth &&
+                    today.getFullYear() === selectedYear
+                  return (
+                    <button
+                      key={d}
+                      type="button"
+                      onClick={() => setSelectedDay(d)}
+                      className={`py-1.5 text-xs rounded-lg font-semibold transition-all ${
+                        isSelected
+                          ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                          : isToday
+                            ? 'border border-[var(--primary-container)] text-[var(--primary-container)] bg-[var(--primary-container)]/10'
+                            : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
+                      }`}
+                    >
+                      {d}
+                    </button>
+                  )
+                })}
               </div>
+            )}
 
-              {/* Month Screen */}
-              {activeTab === 'month' && (
-                <div className="grid grid-cols-3 gap-2.5 py-2">
-                  {SHORT_MONTHS.map((m, idx) => {
-                    const isSelected = selectedMonth === idx
-                    return (
-                      <button
-                        key={m}
-                        type="button"
-                        onClick={() => handleSelectMonth(idx)}
-                        className={`py-3 text-sm rounded-xl font-semibold transition-all ${
-                          isSelected
-                            ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                            : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)] active:scale-95'
-                        }`}
-                      >
-                        {MONTHS[idx]}
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
+            {/* Year Screen */}
+            {activeTab === 'year' && (
+              <div className="grid grid-cols-4 gap-1 py-1 overflow-y-auto max-h-48 pr-1 custom-scrollbar">
+                {yearsRange.map((y) => {
+                  const isSelected = selectedYear === y
+                  return (
+                    <button
+                      key={y}
+                      type="button"
+                      onClick={() => handleSelectYear(y)}
+                      className={`py-1.5 text-xs rounded-lg font-semibold transition-all ${
+                        isSelected
+                          ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                          : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
+                      }`}
+                    >
+                      {y}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
 
-              {/* Date Screen (No days header label) */}
-              {activeTab === 'date' && (
-                <div className="grid grid-cols-7 gap-1.5 py-2">
-                  {daysArray.map((d) => {
-                    const isSelected = selectedDay === d
-                    const today = new Date()
-                    const isToday =
-                      today.getDate() === d &&
-                      today.getMonth() === selectedMonth &&
-                      today.getFullYear() === selectedYear
-                    return (
-                      <button
-                        key={d}
-                        type="button"
-                        onClick={() => setSelectedDay(d)}
-                        className={`h-11 flex items-center justify-center text-sm rounded-xl font-semibold transition-all ${
-                          isSelected
-                            ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)] active:scale-95'
-                            : isToday
-                              ? 'border border-[var(--primary-container)] text-[var(--primary-container)] bg-[var(--primary-container)]/10'
-                              : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
-                        }`}
-                      >
-                        {d}
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-
-              {/* Year Screen */}
-              {activeTab === 'year' && (
-                <div className="grid grid-cols-4 gap-2 py-2 overflow-y-auto max-h-[30vh] pr-1 custom-scrollbar">
-                  {yearsRange.map((y) => {
-                    const isSelected = selectedYear === y
-                    return (
-                      <button
-                        key={y}
-                        type="button"
-                        onClick={() => handleSelectYear(y)}
-                        className={`py-3 text-sm rounded-xl font-semibold transition-all ${
-                          isSelected
-                            ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
-                            : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)] active:scale-95'
-                        }`}
-                      >
-                        {y}
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-
-              {/* Commit Action Button */}
-              <div className="flex gap-3 pt-2">
+            {/* Action Footer */}
+            <div className="mt-4 pt-3 border-t border-[var(--line)] flex items-center justify-between">
+              <button
+                type="button"
+                onClick={handleReset}
+                className="text-xs font-semibold text-[var(--on-surface-variant)] hover:text-[var(--on-surface)] transition-colors"
+              >
+                Reset
+              </button>
+              <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={handleReset}
-                  className="flex-1 py-3 bg-[var(--surface-container-low)] text-[var(--on-surface)] font-semibold rounded-xl border border-[var(--line)] active:scale-95 transition-transform"
+                  onClick={() => setIsOpen(false)}
+                  className="text-xs font-semibold px-3 py-1.5 border border-[var(--line)] hover:bg-[var(--link-bg-hover)] rounded-lg text-[var(--on-surface)] transition-colors"
                 >
-                  Reset
+                  Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleApply}
-                  className="flex-1 py-3 bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold rounded-xl shadow-[0_0_20px_rgba(195,244,0,0.3)] hover:opacity-90 active:scale-95 transition-transform"
+                  className="text-xs px-3 py-1.5 bg-[var(--primary-container)] text-[var(--on-primary-container)] rounded-lg font-bold hover:brightness-110 active:scale-95 transition-all"
                 >
                   Apply
                 </button>
               </div>
             </div>
-            {/* Bottom safe area padding */}
-            <div className="h-8 bg-[var(--surface-container)]" />
-          </div>
-        </>
-      )}
+          </div>,
+          document.body,
+        )}
+
+      {/* Mobile Modal Backdrop & Bottom Sheet */}
+      {isOpen &&
+        isMobile &&
+        createPortal(
+          <>
+            {/* Backdrop Blur Overlay */}
+            <div
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 bg-[color-mix(in_srgb,var(--background)_78%,transparent)] backdrop-blur-sm z-[9998] transition-opacity duration-300 opacity-100"
+            />
+
+            {/* Slide-Up Bottom Sheet */}
+            <div className="fixed bottom-0 left-0 w-full z-[9999] bg-[var(--surface-container)] rounded-t-[32px] overflow-hidden flex flex-col border-t border-[var(--line)] max-h-[90vh]">
+              {/* Modal Header */}
+              <div className="flex justify-between items-center w-full px-6 h-16 border-b border-[var(--line)] bg-[var(--surface-container-lowest)]">
+                <button
+                  type="button"
+                  className="p-2 active:scale-95 transition-transform"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span className="material-symbols-outlined text-[var(--on-surface)]">close</span>
+                </button>
+                <h2 className="text-lg font-bold text-[var(--on-surface)]">Select Date</h2>
+                <button
+                  type="button"
+                  className="text-sm font-semibold text-[var(--primary-container)] px-4 py-2 hover:bg-[var(--link-bg-hover)] rounded-lg active:scale-95 transition-transform"
+                  onClick={handleApply}
+                >
+                  Done
+                </button>
+              </div>
+
+              {/* Datepicker Content */}
+              <div className="overflow-y-auto p-6 space-y-4">
+                {/* Summary Display */}
+                <div className="text-center py-2.5 bg-[var(--surface-container-low)] rounded-xl border border-[var(--line)] flex justify-center items-center gap-1.5 font-bold text-[var(--on-surface)] text-md tracking-wide">
+                  <span className="text-[var(--primary-container)]">{MONTHS[selectedMonth]}</span>
+                  <span className="text-[var(--secondary-container)]">{selectedDay}</span>
+                  <span className="text-[var(--on-surface-variant)]">,</span>
+                  <span className="text-[var(--primary-container)]">{selectedYear}</span>
+                </div>
+
+                {/* Tab Selector Bar */}
+                <div className="flex bg-[var(--surface-container-lowest)] p-1 rounded-xl border border-[var(--line)]">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('month')}
+                    className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                      activeTab === 'month'
+                        ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                        : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
+                    }`}
+                  >
+                    Month
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('date')}
+                    className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                      activeTab === 'date'
+                        ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                        : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
+                    }`}
+                  >
+                    Date
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('year')}
+                    className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${
+                      activeTab === 'year'
+                        ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                        : 'text-[var(--on-surface)] hover:bg-[var(--link-bg-hover)]'
+                    }`}
+                  >
+                    Year
+                  </button>
+                </div>
+
+                {/* Month Screen */}
+                {activeTab === 'month' && (
+                  <div className="grid grid-cols-3 gap-2.5 py-2">
+                    {SHORT_MONTHS.map((m, idx) => {
+                      const isSelected = selectedMonth === idx
+                      return (
+                        <button
+                          key={m}
+                          type="button"
+                          onClick={() => handleSelectMonth(idx)}
+                          className={`py-3 text-sm rounded-xl font-semibold transition-all ${
+                            isSelected
+                              ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                              : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)] active:scale-95'
+                          }`}
+                        >
+                          {MONTHS[idx]}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* Date Screen (No days header label) */}
+                {activeTab === 'date' && (
+                  <div className="grid grid-cols-7 gap-1.5 py-2">
+                    {daysArray.map((d) => {
+                      const isSelected = selectedDay === d
+                      const today = new Date()
+                      const isToday =
+                        today.getDate() === d &&
+                        today.getMonth() === selectedMonth &&
+                        today.getFullYear() === selectedYear
+                      return (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => setSelectedDay(d)}
+                          className={`h-11 flex items-center justify-center text-sm rounded-xl font-semibold transition-all ${
+                            isSelected
+                              ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)] active:scale-95'
+                              : isToday
+                                ? 'border border-[var(--primary-container)] text-[var(--primary-container)] bg-[var(--primary-container)]/10'
+                                : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)]'
+                          }`}
+                        >
+                          {d}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* Year Screen */}
+                {activeTab === 'year' && (
+                  <div className="grid grid-cols-4 gap-2 py-2 overflow-y-auto max-h-[30vh] pr-1 custom-scrollbar">
+                    {yearsRange.map((y) => {
+                      const isSelected = selectedYear === y
+                      return (
+                        <button
+                          key={y}
+                          type="button"
+                          onClick={() => handleSelectYear(y)}
+                          className={`py-3 text-sm rounded-xl font-semibold transition-all ${
+                            isSelected
+                              ? 'bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold shadow-[0_0_8px_rgba(195,244,0,0.4)]'
+                              : 'text-[var(--on-surface)] bg-[var(--surface-container-low)] hover:bg-[var(--surface-container-high)] active:scale-95'
+                          }`}
+                        >
+                          {y}
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
+
+                {/* Commit Action Button */}
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="flex-1 py-3 bg-[var(--surface-container-low)] text-[var(--on-surface)] font-semibold rounded-xl border border-[var(--line)] active:scale-95 transition-transform"
+                  >
+                    Reset
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleApply}
+                    className="flex-1 py-3 bg-[var(--primary-container)] text-[var(--on-primary-container)] font-bold rounded-xl shadow-[0_0_20px_rgba(195,244,0,0.3)] hover:opacity-90 active:scale-95 transition-transform"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+              {/* Bottom safe area padding */}
+              <div className="h-8 bg-[var(--surface-container)]" />
+            </div>
+          </>,
+          document.body,
+        )}
     </div>
   )
 }
