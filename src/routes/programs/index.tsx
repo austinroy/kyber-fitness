@@ -73,18 +73,14 @@ function ProgramsDashboardPage() {
       setClients(activeClients)
     } catch (err) {
       console.error(err)
-      setError('Failed to sync routine templates registry.')
+      setError('Failed to load programs.')
     } finally {
       setLoading(false)
     }
   }
 
   const handleDelete = async (programId: string) => {
-    if (
-      !confirm(
-        'Are you sure you want to delete this program template? This action is irreversible.',
-      )
-    ) {
+    if (!confirm('Are you sure you want to delete this program? This action cannot be undone.')) {
       return
     }
 
@@ -93,7 +89,7 @@ function ProgramsDashboardPage() {
       setPrograms(programs.filter((p) => p.id !== programId))
     } catch (err) {
       console.error(err)
-      alert('Failed to delete workout template.')
+      alert('Could not delete program.')
     }
   }
 
@@ -116,7 +112,7 @@ function ProgramsDashboardPage() {
   const handleAssignProgram = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedProgram || !selectedClientId) {
-      setAssignError('Please select a valid athlete client.')
+      setAssignError('Please select a client.')
       return
     }
 
@@ -136,7 +132,7 @@ function ProgramsDashboardPage() {
         },
       })
 
-      setAssignSuccess("Program successfully assigned! It is now active on the athlete's console.")
+      setAssignSuccess('Program assigned successfully!')
 
       // Update template summary list counters locally
       setPrograms(
@@ -150,7 +146,9 @@ function ProgramsDashboardPage() {
       }, 2000)
     } catch (err: unknown) {
       console.error(err)
-      setAssignError(err instanceof Error ? err.message : 'Failed to complete routine assignment.')
+      setAssignError(
+        err instanceof Error ? err.message : 'Could not assign program. Please try again.',
+      )
     } finally {
       setAssigning(false)
     }
@@ -158,32 +156,30 @@ function ProgramsDashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Streaming program database...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading programs...</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-8 py-2">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8 py-2">
       {/* Top action header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-6">
         <div>
-          <div className="chip chip-cyan mb-2">STITCH KINETIC ROUTINE MODULE</div>
-          <h1 className="display-lg text-3xl font-black m-0 text-white uppercase">
-            Program Builder
+          <div className="chip chip-cyan mb-2">WORKOUT PLANS</div>
+          <h1 className="display-lg text-3xl font-black m-0 text-slate-900 dark:text-white uppercase">
+            Workout Programs
           </h1>
           <p className="body-md text-[var(--on-surface-variant)] m-0">
-            Design reusable coaching templates and assign them directly to athlete consoles.
+            Create reusable workout templates and assign them to your clients.
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link to="/programs/new" className="btn btn-primary">
-            <span className="material-symbols-outlined mr-2">add</span>
-            Create Template
+          <Link to="/programs/new" className="btn btn-primary text-xs">
+            <span className="material-symbols-outlined mr-1.5 text-base">add</span>
+            Create Program
           </Link>
         </div>
       </div>
@@ -200,15 +196,13 @@ function ProgramsDashboardPage() {
           <span className="material-symbols-outlined text-[var(--secondary-container)] text-6xl mb-4 animate-bounce">
             fitness_center
           </span>
-          <h3 className="headline-lg font-black text-white text-xl">
-            No program templates created yet
-          </h3>
+          <h3 className="headline-lg font-black text-white text-xl">No workout programs yet</h3>
           <p className="body-md text-[var(--on-surface-variant)] text-sm max-w-md mx-auto mb-8 mt-2">
-            Build specialized routine sheets containing set counts, targets, and coaching notes to
-            reuse across clients.
+            Build reusable workout routines with target sets, reps, and notes to share with your
+            clients.
           </p>
-          <Link to="/programs/new" className="btn btn-primary px-8 py-3">
-            Design First Template
+          <Link to="/programs/new" className="btn btn-primary text-xs px-4 py-2">
+            Create Your First Program
           </Link>
         </div>
       ) : (
@@ -236,14 +230,14 @@ function ProgramsDashboardPage() {
                       to="/programs/new"
                       search={{ programId: prog.id }}
                       className="btn p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded text-white flex items-center justify-center"
-                      title="Edit Template"
+                      title="Edit Program"
                     >
                       <span className="material-symbols-outlined text-sm">edit</span>
                     </Link>
                     <button
                       onClick={() => handleDelete(prog.id)}
                       className="btn p-1.5 bg-red-950/20 hover:bg-red-950/60 border border-red-900/30 rounded text-red-400 flex items-center justify-center"
-                      title="Delete Template"
+                      title="Delete Program"
                     >
                       <span className="material-symbols-outlined text-sm">delete</span>
                     </button>
@@ -286,7 +280,7 @@ function ProgramsDashboardPage() {
                   className="btn py-2 w-full text-xs font-bold bg-[var(--secondary-container)] hover:bg-[var(--secondary-container)]/90 text-black flex items-center justify-center gap-2 rounded-md transition-all shadow-[0_0_10px_rgba(0,238,252,0.2)]"
                 >
                   <span className="material-symbols-outlined text-sm">send</span>
-                  <span>Push to Client Console</span>
+                  <span>Assign to Client</span>
                 </button>
               </div>
             </div>
@@ -297,12 +291,12 @@ function ProgramsDashboardPage() {
       {/* Modal Dialog: Assign Program to Client */}
       {showAssignModal && selectedProgram && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="card w-full max-w-md space-y-6 relative border border-[var(--secondary-container)] bg-[#121212] shadow-2xl">
+          <div className="card w-full max-w-md space-y-6 relative border border-[var(--secondary-container)] bg-[#121212] shadow-2xl max-h-[88vh] overflow-y-auto">
             <div className="flex justify-between items-center border-b border-white/5 pb-3">
               <div>
-                <span className="chip chip-cyan mb-1 text-[9px]">DIRECT ASSIGNMENT</span>
+                <span className="chip chip-cyan mb-1 text-[9px]">ASSIGN PROGRAM</span>
                 <h3 className="headline-md text-lg font-black text-white uppercase tracking-tight">
-                  Push Routine to Athlete
+                  Assign to Client
                 </h3>
               </div>
               <button
@@ -329,24 +323,23 @@ function ProgramsDashboardPage() {
               <form onSubmit={handleAssignProgram} className="space-y-4">
                 <div className="p-3 bg-white/5 rounded border border-white/5 space-y-1">
                   <p className="text-[10px] text-[var(--on-surface-variant)] uppercase tracking-wider m-0">
-                    Target Program
+                    Program
                   </p>
                   <p className="body-md font-bold text-white m-0 text-sm">
                     {selectedProgram.title}
                   </p>
                   <p className="text-[11px] text-[var(--on-surface-variant)] m-0">
-                    Consists of {selectedProgram.exerciseCount} target movements.
+                    {selectedProgram.exerciseCount} exercises.
                   </p>
                 </div>
 
                 <div className="input-group">
                   <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                    Select Active Athlete
+                    Select Client
                   </label>
                   {clients.length === 0 ? (
                     <div className="p-3 rounded bg-red-950/10 border border-red-900/20 text-red-300 text-xs">
-                      No active clients currently registered. Go to <strong>My Clients</strong> to
-                      link client consoles.
+                      No active clients. Go to <strong>Clients</strong> to invite clients first.
                     </div>
                   ) : (
                     <select
@@ -366,10 +359,10 @@ function ProgramsDashboardPage() {
 
                 <div className="input-group">
                   <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                    Coach Instruction Notes (Optional)
+                    Notes for Client (Optional)
                   </label>
                   <textarea
-                    placeholder="Write a custom note for the athlete (e.g., 'Try this custom set for your leg day today! Keep weights moderate.')"
+                    placeholder="Add notes or instructions (e.g. Focus on tempo on the eccentric phase)"
                     value={coachNotes}
                     onChange={(e) => setCoachNotes(e.target.value)}
                     className="input-field bg-[var(--surface-container-lowest)] text-white w-full min-h-[100px] resize-none text-xs"
@@ -412,10 +405,10 @@ function ProgramsDashboardPage() {
                     }
                     className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
                   >
-                    <option value="none">One-time assignment</option>
-                    <option value="weekly">Weekly routine</option>
-                    <option value="biweekly">Biweekly routine</option>
-                    <option value="monthly">Monthly routine</option>
+                    <option value="none">One-time</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="biweekly">Every two weeks</option>
+                    <option value="monthly">Monthly</option>
                   </select>
                 </div>
 
@@ -433,7 +426,7 @@ function ProgramsDashboardPage() {
                     className="btn py-1.5 px-6 text-xs bg-[var(--secondary-container)] hover:bg-[var(--secondary-container)]/90 text-black font-bold"
                     disabled={assigning || clients.length === 0}
                   >
-                    {assigning ? 'Syncing Assignment...' : 'Push Direct'}
+                    {assigning ? 'Assigning...' : 'Assign Program'}
                   </button>
                 </div>
               </form>

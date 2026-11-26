@@ -48,28 +48,26 @@ function WorkoutsPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Streaming activity database...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading your workouts...</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6 py-2">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 py-2">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/5 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-4">
         <div className="min-w-0">
-          <div className="chip mb-1">PERFORMANCE ARCHIVES</div>
-          <h1 className="headline-lg font-black text-white m-0 text-2xl sm:text-3xl break-words">
-            WORKOUT HISTORY
+          <div className="chip mb-1">WORKOUTS</div>
+          <h1 className="headline-lg font-black text-slate-900 dark:text-white m-0 text-2xl sm:text-3xl break-words">
+            Workout History
           </h1>
         </div>
-        <Link to="/workouts/new" className="btn btn-primary w-full sm:w-auto">
-          <span className="material-symbols-outlined mr-2">add</span>
-          Log Session
+        <Link to="/workouts/new" className="btn btn-primary text-xs w-full sm:w-auto">
+          <span className="material-symbols-outlined mr-1.5 text-base">add</span>
+          Log a Workout
         </Link>
       </div>
 
@@ -78,13 +76,12 @@ function WorkoutsPage() {
           <span className="material-symbols-outlined text-white/10 text-6xl mb-4">
             fitness_center
           </span>
-          <h3 className="headline-md font-bold text-white text-xl">No workouts in database</h3>
+          <h3 className="headline-md font-bold text-white text-xl">No workouts logged yet</h3>
           <p className="body-md text-[var(--on-surface-variant)] max-w-md mx-auto mt-2 mb-6">
-            Keep moving! Log your strength resistance training or aerobic cardiorespiratory metrics
-            to begin analysis.
+            Track your strength and cardio sessions to start building your workout history.
           </p>
-          <Link to="/workouts/new" className="btn btn-primary px-8 py-3">
-            Log Activity Now
+          <Link to="/workouts/new" className="btn btn-primary text-xs px-4 py-2">
+            Log your first workout
           </Link>
         </div>
       ) : (
@@ -92,7 +89,7 @@ function WorkoutsPage() {
           {/* List panel */}
           <div className="lg:col-span-1 space-y-4">
             <h3 className="label-md text-[var(--on-surface-variant)] text-xs mb-2">
-              Logs ({sessions.length})
+              Workouts ({sessions.length})
             </h3>
             <div className="space-y-3 overflow-y-auto max-h-none lg:max-h-[70vh] lg:pr-2">
               {sessions.map((sess) => (
@@ -114,13 +111,15 @@ function WorkoutsPage() {
                     </span>
                   </div>
                   <p className="body-md text-xs text-[var(--on-surface-variant)] mt-1 mb-3">
-                    {sess.exercises.length} exercise{sess.exercises.length === 1 ? '' : 's'}{' '}
-                    recorded
+                    {sess.exercises.length} exercise{sess.exercises.length === 1 ? '' : 's'}
                   </p>
 
                   <div className="flex flex-wrap gap-1">
                     {sess.exercises.map((ex) => (
-                      <span key={ex.id} className="chip py-0.5 px-2 text-[8px] max-w-full break-words">
+                      <span
+                        key={ex.id}
+                        className="chip py-0.5 px-2 text-[8px] max-w-full break-words"
+                      >
                         {ex.name}
                       </span>
                     ))}
@@ -131,7 +130,7 @@ function WorkoutsPage() {
                     onClick={(event) => event.stopPropagation()}
                     className="btn btn-secondary mt-3 w-full justify-center text-[10px] py-1.5"
                   >
-                    Open Detail
+                    View Details
                   </Link>
                 </div>
               ))}

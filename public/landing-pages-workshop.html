@@ -1,0 +1,2758 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kyber Fitness — Landing Page Redesign Workshop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600;700&family=Lexend:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #090a0f;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #262a35;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #3b4252;
+      }
+
+      .theme-view {
+        display: none;
+      }
+      .theme-view.active {
+        display: block;
+      }
+
+      /* Direction 1: Stealth Luxury Font */
+      .font-stealth {
+        font-family:
+          'Geist',
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+      }
+      .font-stealth-mono {
+        font-family: 'Geist Mono', monospace;
+      }
+
+      /* Direction 2: Utility Font */
+      .font-utility {
+        font-family: 'Space Grotesk', sans-serif;
+      }
+      .font-utility-mono {
+        font-family: 'IBM Plex Mono', monospace;
+      }
+
+      /* Direction 3: Cyber Font */
+      .font-cyber {
+        font-family: 'Lexend', sans-serif;
+      }
+
+      /* Direction 4: Humanist Font */
+      .font-humanist {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      }
+
+      /* Glow utilities */
+      .glow-lime {
+        box-shadow: 0 0 35px -5px rgba(212, 255, 0, 0.35);
+      }
+      .glow-cyan {
+        box-shadow: 0 0 35px -5px rgba(0, 240, 255, 0.35);
+      }
+      .glow-orange {
+        box-shadow: 0 0 30px -5px rgba(255, 77, 0, 0.35);
+      }
+      .glow-emerald {
+        box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.3);
+      }
+      .glow-terracotta {
+        box-shadow: 0 0 30px -5px rgba(224, 122, 95, 0.3);
+      }
+    </style>
+  </head>
+  <body class="bg-[#050608] text-zinc-100 antialiased min-h-screen">
+    <!-- TOP PERSISTENT SWITCHER BAR -->
+    <aside
+      class="sticky top-0 z-50 bg-[#090b10]/95 backdrop-blur-md border-b border-white/10 px-4 py-3 shadow-2xl"
+    >
+      <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 via-amber-400 to-cyan-400 p-[1px]"
+          >
+            <div
+              class="w-full h-full bg-black rounded-[7px] flex items-center justify-center font-bold text-xs text-white"
+            >
+              KF
+            </div>
+          </div>
+          <div>
+            <span class="text-xs font-mono tracking-widest text-zinc-400 uppercase"
+              >Design Workshop</span
+            >
+            <h1 class="text-sm font-bold text-white tracking-tight">
+              Kyber Fitness Landing Page Shootout
+            </h1>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs for the 4 directions + Compare View -->
+        <nav
+          class="flex flex-wrap items-center justify-center gap-1.5 bg-black/60 p-1 rounded-xl border border-white/10 text-xs"
+        >
+          <button
+            onclick="setTheme('stealth')"
+            id="btn-stealth"
+            class="theme-btn px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 bg-white/10 text-white shadow"
+          >
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>1. Stealth Luxury</span>
+            <span class="text-[10px] opacity-70 px-1 bg-white/10 rounded">Recommended</span>
+          </button>
+          <button
+            onclick="setTheme('utility')"
+            id="btn-utility"
+            class="theme-btn px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 text-zinc-400 hover:text-white"
+          >
+            <span class="w-2 h-2 rounded-full bg-[#FF4D00]"></span>
+            <span>2. Minimalist Utility</span>
+          </button>
+          <button
+            onclick="setTheme('cyber')"
+            id="btn-cyber"
+            class="theme-btn px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 text-zinc-400 hover:text-white"
+          >
+            <span class="w-2 h-2 rounded-full bg-[#D4FF00]"></span>
+            <span>3. Refined Cyber 2.0</span>
+          </button>
+          <button
+            onclick="setTheme('humanist')"
+            id="btn-humanist"
+            class="theme-btn px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5 text-zinc-400 hover:text-white"
+          >
+            <span class="w-2 h-2 rounded-full bg-[#E07A5F]"></span>
+            <span>4. Warm Humanist</span>
+          </button>
+          <div class="w-[1px] h-4 bg-zinc-800 mx-1"></div>
+          <button
+            onclick="setTheme('compare')"
+            id="btn-compare"
+            class="theme-btn px-3 py-1.5 rounded-lg font-mono font-medium transition flex items-center gap-1.5 text-zinc-400 hover:text-white"
+          >
+            <span>Quad Matrix</span>
+          </button>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- ========================================================================= -->
+    <!-- DIRECTION 1: STEALTH LUXURY / PRO PERFORMANCE (WHOOP / APPLE PRO STYLE) -->
+    <!-- ========================================================================= -->
+    <main
+      id="view-stealth"
+      class="theme-view active font-stealth bg-[#08090C] text-zinc-100 min-h-screen"
+    >
+      <!-- Sub-header metadata strip -->
+      <div
+        class="border-b border-white/[0.06] bg-[#0E1015]/60 text-xs px-6 py-2.5 text-zinc-400 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-4">
+          <span
+            class="font-stealth-mono text-emerald-400 text-[11px] font-semibold tracking-wider uppercase"
+            >Direction 01</span
+          >
+          <span>Stealth Luxury / Pro Performance</span>
+          <span class="text-zinc-600">&bull;</span>
+          <span class="text-zinc-500">Inspiration: Whoop 4.0, Apple Watch Ultra, Ten Thousand</span>
+        </div>
+        <div class="font-stealth-mono text-[11px] text-zinc-500 hidden md:block">
+          Base: #08090C &bull; Cards: #12141A &bull; Accents: #10B981 & #38BDF8 &bull; Typography:
+          Geist
+        </div>
+      </div>
+
+      <!-- Navigation Header -->
+      <header class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-7 h-7 rounded bg-zinc-100 flex items-center justify-center font-bold text-black text-xs font-stealth-mono"
+          >
+            K
+          </div>
+          <span class="text-base font-bold tracking-tight text-white">KYBER</span>
+          <span class="text-[11px] font-stealth-mono text-zinc-500 uppercase tracking-widest pl-1"
+            >PRO</span
+          >
+        </div>
+        <div class="hidden md:flex items-center gap-8 text-xs font-medium text-zinc-400">
+          <a href="#stealth-logging" class="hover:text-white transition">Logging</a>
+          <a href="#stealth-network" class="hover:text-white transition">Coach Network</a>
+          <a href="#stealth-biometrics" class="hover:text-white transition">Biometrics</a>
+          <a href="#stealth-enterprise" class="hover:text-white transition">Coaching Portal</a>
+        </div>
+        <div class="flex items-center gap-3">
+          <button class="text-xs text-zinc-300 hover:text-white px-3 py-1.5 transition">
+            Sign In
+          </button>
+          <button
+            class="text-xs font-semibold bg-zinc-100 hover:bg-white text-black px-4 py-2 rounded-lg transition shadow-sm font-stealth"
+          >
+            Start Training
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero Section -->
+      <section
+        class="max-w-7xl mx-auto px-6 pt-12 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+      >
+        <div class="lg:col-span-6 space-y-6">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/80 border border-white/10 text-xs font-stealth-mono text-zinc-300"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span>ENGINEERED FOR ELITE EXECUTION</span>
+          </div>
+          <h1
+            class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.08]"
+          >
+            Radical clarity for your heaviest training days.
+          </h1>
+          <p class="text-base text-zinc-400 leading-relaxed max-w-xl">
+            The unified training platform connecting serious athletes with credentialed coaches.
+            Sub-second set logging, granular RPE tracking, and verifiable consent-driven client
+            dashboards.
+          </p>
+          <div class="flex flex-wrap items-center gap-3 pt-2">
+            <button
+              class="px-6 py-3 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs tracking-wide transition shadow-lg flex items-center gap-2"
+            >
+              <span>GET STARTED FREE</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
+              </svg>
+            </button>
+            <button
+              class="px-5 py-3 rounded-lg bg-[#12141A] hover:bg-[#181B23] border border-white/10 text-zinc-300 hover:text-white font-medium text-xs font-stealth-mono transition"
+            >
+              REQUEST COACH PORTAL DEMO
+            </button>
+          </div>
+          <div
+            class="pt-6 flex items-center gap-8 text-xs text-zinc-500 font-stealth-mono border-t border-white/[0.05]"
+          >
+            <div>
+              <div class="text-zinc-200 font-bold text-sm">0.2s</div>
+              <div>LOG LATENCY</div>
+            </div>
+            <div>
+              <div class="text-zinc-200 font-bold text-sm">100%</div>
+              <div>CONSENT DRIVEN</div>
+            </div>
+            <div>
+              <div class="text-zinc-200 font-bold text-sm">ZERO</div>
+              <div>TRACKING CLUTTER</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Dashboard Visual Card (Stealth Style) -->
+        <div class="lg:col-span-6">
+          <div
+            class="rounded-2xl bg-[#0D0F14] border border-white/[0.08] p-6 shadow-2xl relative overflow-hidden"
+          >
+            <div class="flex items-center justify-between pb-4 border-b border-white/[0.06] mb-5">
+              <div class="flex items-center gap-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <div>
+                  <span class="text-xs font-stealth-mono text-zinc-400 uppercase"
+                    >ACTIVE SESSION &bull; BLOCK B</span
+                  >
+                  <div class="text-sm font-bold text-white">Lower Body Hypertrophy & Force</div>
+                </div>
+              </div>
+              <div
+                class="font-stealth-mono text-xs text-zinc-400 px-2.5 py-1 rounded bg-[#161922] border border-white/[0.05]"
+              >
+                REST: <span class="text-emerald-400 font-bold">01:42</span>
+              </div>
+            </div>
+
+            <!-- Active Set Component -->
+            <div class="p-4 rounded-xl bg-[#12141A] border border-white/[0.05] space-y-3 mb-4">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-white">1. Barbell Back Squat</span>
+                  <span
+                    class="px-1.5 py-0.5 rounded text-[10px] font-stealth-mono bg-zinc-800 text-zinc-300"
+                    >RPE 8.5</span
+                  >
+                </div>
+                <span class="text-xs font-stealth-mono text-emerald-400 font-medium"
+                  >SET 4 / 5</span
+                >
+              </div>
+
+              <div class="grid grid-cols-4 gap-2 font-stealth-mono text-center">
+                <div class="p-2 rounded bg-[#090A0C] border border-white/[0.04]">
+                  <div class="text-[9px] uppercase text-zinc-500">SET 1</div>
+                  <div class="text-xs font-semibold text-zinc-300">120 kg &times; 6</div>
+                </div>
+                <div class="p-2 rounded bg-[#090A0C] border border-white/[0.04]">
+                  <div class="text-[9px] uppercase text-zinc-500">SET 2</div>
+                  <div class="text-xs font-semibold text-zinc-300">130 kg &times; 5</div>
+                </div>
+                <div class="p-2 rounded bg-[#090A0C] border border-white/[0.04]">
+                  <div class="text-[9px] uppercase text-zinc-500">SET 3</div>
+                  <div class="text-xs font-semibold text-zinc-300">140 kg &times; 5</div>
+                </div>
+                <div class="p-2 rounded bg-emerald-950/30 border border-emerald-500/30">
+                  <div class="text-[9px] uppercase text-emerald-400">SET 4 (PR)</div>
+                  <div class="text-xs font-bold text-emerald-300">145 kg &times; 5</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Coach Consent Indicator -->
+            <div
+              class="flex items-center justify-between p-3 rounded-xl bg-[#12141A] border border-white/[0.05] text-xs"
+            >
+              <div class="flex items-center gap-2.5">
+                <div
+                  class="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center font-stealth-mono text-[10px] text-zinc-300 font-bold"
+                >
+                  MC
+                </div>
+                <div>
+                  <span class="text-zinc-200 font-medium">Marcus Chen, CSCS</span>
+                  <span class="text-zinc-500 text-[11px] block"
+                    >Verified Coach &bull; Read & Program Permission Active</span
+                  >
+                </div>
+              </div>
+              <span
+                class="px-2 py-0.5 rounded text-[10px] font-stealth-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+              >
+                SYNCED
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 Core Pillars -->
+      <section class="max-w-7xl mx-auto px-6 py-16 border-t border-white/[0.06]">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-6 rounded-xl bg-[#0D0F14] border border-white/[0.06] space-y-3">
+            <div
+              class="w-9 h-9 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center text-emerald-400"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-white tracking-tight">Rapid Session Logging</h3>
+            <p class="text-xs text-zinc-400 leading-relaxed">
+              Record reps, kilo/pound increments, RPE scales, and customized rest intervals with
+              zero friction between heavy working sets.
+            </p>
+          </div>
+          <div class="p-6 rounded-xl bg-[#0D0F14] border border-white/[0.06] space-y-3">
+            <div
+              class="w-9 h-9 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center text-sky-400"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-white tracking-tight">Granular Consent Protocol</h3>
+            <p class="text-xs text-zinc-400 leading-relaxed">
+              Trainers can only view health metrics or assign program schedules when granted
+              explicit, revocable authorization by the athlete.
+            </p>
+          </div>
+          <div class="p-6 rounded-xl bg-[#0D0F14] border border-white/[0.06] space-y-3">
+            <div
+              class="w-9 h-9 rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center text-amber-400"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-white tracking-tight">Longitudinal Biometrics</h3>
+            <p class="text-xs text-zinc-400 leading-relaxed">
+              Correlate body weight trends, resting cardiovascular markers, and cumulative weekly
+              training volume with clean tabular charts.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- DIRECTION 2: HIGH-CONTRAST MINIMALIST / TECHNICAL UTILITY (TRACKSMITH / SWISS) -->
+    <!-- ========================================================================= -->
+    <main id="view-utility" class="theme-view font-utility bg-[#040404] text-zinc-100 min-h-screen">
+      <!-- Sub-header metadata strip -->
+      <div
+        class="border-b border-zinc-800 bg-[#0c0c0c] text-xs px-6 py-2.5 text-zinc-400 flex items-center justify-between font-utility-mono"
+      >
+        <div class="flex items-center gap-4">
+          <span class="text-[#FF4D00] text-[11px] font-bold uppercase">// DIRECTION 02</span>
+          <span>HIGH-CONTRAST TECHNICAL UTILITY</span>
+          <span class="text-zinc-600">/</span>
+          <span class="text-zinc-500"
+            >Tracksmith &bull; Swiss Modernism &bull; Architectural Brutalism</span
+          >
+        </div>
+        <div class="text-[11px] text-zinc-500 hidden md:block">
+          BASE: #040404 &bull; ACCENT: #FF4D00 &bull; 0PX RADIUS &bull; FONT: SPACE GROTESK
+        </div>
+      </div>
+
+      <!-- Navigation Header -->
+      <header
+        class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between border-b border-zinc-800"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-7 h-7 bg-[#FF4D00] flex items-center justify-center font-bold text-black text-xs font-utility-mono"
+          >
+            KF
+          </div>
+          <span class="text-lg font-bold tracking-tight text-white uppercase"
+            >KYBER / ATHLETICS</span
+          >
+        </div>
+        <div
+          class="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-wider text-zinc-400 font-utility-mono"
+        >
+          <a href="#" class="hover:text-white transition">[01] LOGGING</a>
+          <a href="#" class="hover:text-white transition">[02] COACHING</a>
+          <a href="#" class="hover:text-white transition">[03] METRICS</a>
+          <a href="#" class="hover:text-white transition">[04] ARCHIVE</a>
+        </div>
+        <div class="flex items-center gap-3 font-utility-mono">
+          <button class="text-xs text-zinc-300 hover:text-white px-3 py-1.5 uppercase font-bold">
+            PORTAL
+          </button>
+          <button
+            class="text-xs font-extrabold bg-[#FF4D00] hover:bg-[#ff651f] text-black px-5 py-2 uppercase tracking-wider transition"
+          >
+            ENTER &rarr;
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero Section -->
+      <section
+        class="max-w-7xl mx-auto px-6 pt-16 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+      >
+        <div class="lg:col-span-7 space-y-6">
+          <div
+            class="inline-block px-3 py-1 bg-zinc-900 border border-zinc-700 text-xs font-utility-mono text-zinc-300 uppercase tracking-widest"
+          >
+            SYSTEM SPEC: ATHLETIC PROTOCOL V4
+          </div>
+          <h1
+            class="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-none uppercase"
+          >
+            RAW FORCE. <br />
+            <span class="text-[#FF4D00]">STARK PRECISION.</span>
+          </h1>
+          <p class="text-base text-zinc-300 font-utility max-w-xl leading-relaxed">
+            The unapologetic interface for strength athletes and performance coaches. No soft
+            gradients, no decorative fluff. Just your numbers, your progression, and your coach.
+          </p>
+          <div class="flex flex-wrap items-center gap-4 pt-4 font-utility-mono">
+            <button
+              class="px-7 py-3.5 bg-[#FF4D00] hover:bg-[#ff651f] text-black font-extrabold text-xs uppercase tracking-widest transition"
+            >
+              INITIALIZE ATHLETE PROFILE
+            </button>
+            <button
+              class="px-6 py-3.5 border-2 border-zinc-700 hover:border-white text-white font-bold text-xs uppercase tracking-widest transition"
+            >
+              COACH DIRECTORY
+            </button>
+          </div>
+          <div
+            class="grid grid-cols-3 gap-0 border-t border-b border-zinc-800 divide-x divide-zinc-800 pt-4 pb-4 font-utility-mono text-xs"
+          >
+            <div class="pr-4">
+              <div class="text-[#FF4D00] font-bold text-lg">100%</div>
+              <div class="text-zinc-500 uppercase">SERVER ENFORCED</div>
+            </div>
+            <div class="px-4">
+              <div class="text-white font-bold text-lg">&lt; 150MS</div>
+              <div class="text-zinc-500 uppercase">TURSO LIBSQL SYNC</div>
+            </div>
+            <div class="pl-4">
+              <div class="text-white font-bold text-lg">ZERO</div>
+              <div class="text-zinc-500 uppercase">AD BLOAT</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Dashboard Visual Card (Utility Style) -->
+        <div class="lg:col-span-5">
+          <div class="bg-[#0A0A0A] border-2 border-zinc-700 p-6 space-y-4 font-utility-mono">
+            <div class="flex items-center justify-between border-b-2 border-zinc-800 pb-3">
+              <div>
+                <span class="text-[10px] text-zinc-500 uppercase tracking-widest"
+                  >// ACTIVE LOG</span
+                >
+                <div class="text-base font-bold text-white uppercase">
+                  WEEK 06 &bull; SQUAT PEAK
+                </div>
+              </div>
+              <span
+                class="px-2 py-0.5 bg-[#FF4D00]/20 text-[#FF4D00] border border-[#FF4D00] text-[11px] font-bold"
+              >
+                REC
+              </span>
+            </div>
+
+            <div class="border border-zinc-800 divide-y divide-zinc-800 text-xs">
+              <div class="p-3 bg-[#111] flex justify-between items-center">
+                <div>
+                  <span class="text-zinc-400 font-bold block text-[10px]">EXERCISE 01</span>
+                  <span class="text-white font-bold">BARBELL BACK SQUAT</span>
+                </div>
+                <span class="text-[#FF4D00] font-bold">SET 03/05</span>
+              </div>
+              <div class="p-3 grid grid-cols-3 gap-2 bg-[#090909] text-center">
+                <div>
+                  <div class="text-[9px] text-zinc-500">MASS</div>
+                  <div class="text-lg font-bold text-white">140 KG</div>
+                </div>
+                <div>
+                  <div class="text-[9px] text-zinc-500">REPETITIONS</div>
+                  <div class="text-lg font-bold text-white">5</div>
+                </div>
+                <div>
+                  <div class="text-[9px] text-zinc-500">EFFORT</div>
+                  <div class="text-lg font-bold text-[#FF4D00]">RPE 8.5</div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="p-2.5 bg-zinc-900 border-l-4 border-[#FF4D00] flex justify-between items-center text-xs"
+            >
+              <span class="text-white font-bold uppercase text-[11px]">COACH DIRECTIVE:</span>
+              <span class="text-zinc-400 text-[11px]">"Hold bottom pause 1 sec"</span>
+            </div>
+
+            <button
+              class="w-full py-3 bg-[#FF4D00] text-black font-extrabold uppercase text-xs tracking-wider"
+            >
+              COMPLETE SET &rarr;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 Pillars Grid -->
+      <section class="max-w-7xl mx-auto px-6 py-16 border-t border-zinc-800">
+        <div
+          class="grid grid-cols-1 md:grid-cols-3 gap-0 border border-zinc-800 divide-y md:divide-y-0 md:divide-x divide-zinc-800 font-utility-mono"
+        >
+          <div class="p-8 space-y-3">
+            <div class="text-[#FF4D00] text-sm font-bold">// 01. STRENGTH LOGGER</div>
+            <h3 class="text-base font-bold text-white uppercase font-utility">Sub-Second Entry</h3>
+            <p class="text-xs text-zinc-400 font-utility leading-relaxed">
+              Optimized for sweaty gym hands. Huge tap targets, zero dropdown lag, instant local
+              SQLite persistence.
+            </p>
+          </div>
+          <div class="p-8 space-y-3">
+            <div class="text-[#FF4D00] text-sm font-bold">// 02. CONSENT DESK</div>
+            <h3 class="text-base font-bold text-white uppercase font-utility">
+              Bilateral Permission
+            </h3>
+            <p class="text-xs text-zinc-400 font-utility leading-relaxed">
+              Athletes control data sovereignty. Grant coaches permission to program or view history
+              with one toggle.
+            </p>
+          </div>
+          <div class="p-8 space-y-3">
+            <div class="text-[#FF4D00] text-sm font-bold">// 03. BIO METRICS</div>
+            <h3 class="text-base font-bold text-white uppercase font-utility">
+              Raw Data Chronology
+            </h3>
+            <p class="text-xs text-zinc-400 font-utility leading-relaxed">
+              Plot weight, body comp, and resting heart rates in high contrast tabular curves.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- DIRECTION 3: REFINED NEON CYBER 2.0 (NEXT-GEN KYBER) -->
+    <!-- ========================================================================= -->
+    <main
+      id="view-cyber"
+      class="theme-view font-cyber bg-[#0A0D14] text-zinc-100 min-h-screen relative overflow-hidden"
+    >
+      <!-- Ambient glowing blurs -->
+      <div
+        class="absolute top-0 right-1/4 w-96 h-96 bg-[#D4FF00]/5 rounded-full blur-[140px] pointer-events-none"
+      ></div>
+      <div
+        class="absolute bottom-1/3 left-10 w-96 h-96 bg-[#00F0FF]/5 rounded-full blur-[140px] pointer-events-none"
+      ></div>
+
+      <!-- Sub-header metadata strip -->
+      <div
+        class="border-b border-white/[0.08] bg-[#10141F]/80 backdrop-blur text-xs px-6 py-2.5 text-zinc-400 flex items-center justify-between"
+      >
+        <div class="flex items-center gap-4">
+          <span class="text-[#D4FF00] text-[11px] font-bold uppercase tracking-wider"
+            >Direction 03</span
+          >
+          <span>Refined Neon Cyber 2.0</span>
+          <span class="text-zinc-600">&bull;</span>
+          <span class="text-zinc-400">Next-Gen Kyber DNA &bull; Electric Volt & Hyper Cyan</span>
+        </div>
+        <div class="text-[11px] text-zinc-400 hidden md:block">
+          Base: #0A0D14 &bull; Volt: #D4FF00 &bull; Cyan: #00F0FF &bull; Frosted Glass &bull; Font:
+          Lexend
+        </div>
+      </div>
+
+      <!-- Navigation Header -->
+      <header
+        id="cyber-nav-header"
+        class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-10 transition-all duration-300"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#D4FF00] to-[#00F0FF] p-[2px] shadow-[0_0_15px_rgba(212,255,0,0.4)]"
+          >
+            <div
+              class="w-full h-full bg-[#0A0D14] rounded-[10px] flex items-center justify-center font-black text-xs text-[#D4FF00]"
+            >
+              ⚡
+            </div>
+          </div>
+          <span class="text-lg font-black tracking-tight text-white"
+            >KYBER<span class="text-[#D4FF00]">.FIT</span></span
+          >
+        </div>
+        <div class="hidden md:flex items-center gap-8 text-xs font-semibold text-zinc-300">
+          <a href="#" class="hover:text-[#D4FF00] transition">Live Tracker</a>
+          <a href="#" class="hover:text-[#00F0FF] transition">Trainer Network</a>
+          <a href="#" class="hover:text-[#D4FF00] transition">Bio Metrics</a>
+          <a href="#" class="hover:text-white transition">Community</a>
+        </div>
+        <div class="flex items-center gap-3">
+          <button class="text-xs text-zinc-300 hover:text-white px-3 py-1.5 font-semibold">
+            Sign In
+          </button>
+          <button
+            class="text-xs font-black bg-[#D4FF00] hover:bg-[#e2ff40] text-black px-5 py-2.5 rounded-full transition shadow-[0_0_20px_rgba(212,255,0,0.35)]"
+          >
+            GET STARTED FREE
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero Section -->
+      <section
+        class="max-w-7xl mx-auto px-6 pt-12 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10"
+      >
+        <div class="lg:col-span-7 space-y-6">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#D4FF00]/10 border border-[#D4FF00]/30 text-xs font-bold text-[#D4FF00]"
+          >
+            <span>⚡ KINETIC PERFORMANCE SYSTEM 2.0</span>
+          </div>
+          <h1
+            class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.05]"
+          >
+            ELEVATE YOUR <br />
+            <span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-[#D4FF00] via-[#85ff5e] to-[#00F0FF]"
+            >
+              ATHLETIC PEAK.
+            </span>
+          </h1>
+          <p class="text-base text-zinc-300 max-w-xl leading-relaxed font-normal">
+            The high-energy fitness ecosystem for relentless lifters and elite trainers. Streamlined
+            workout logging, live coach oversight, and biometric telemetry wrapped in a sleek
+            futuristic UI.
+          </p>
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <button
+              class="px-7 py-3.5 rounded-full bg-[#D4FF00] hover:bg-[#e2ff40] text-black font-black text-xs tracking-wider transition shadow-[0_0_25px_rgba(212,255,0,0.4)] flex items-center gap-2"
+            >
+              <span>START TRAINING NOW</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
+              </svg>
+            </button>
+            <button
+              class="px-6 py-3.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-white font-semibold text-xs transition"
+            >
+              EXPLORE COACH FEATURES
+            </button>
+          </div>
+        </div>
+
+        <!-- Live Glassmorphism Switcher -->
+        <div
+          class="inline-flex items-center gap-1.5 p-1 rounded-xl bg-black/60 border border-white/10 text-xs"
+        >
+          <span class="text-[10px] uppercase font-bold text-zinc-400 px-2">Surface Mode:</span>
+          <button
+            onclick="setCyberGlass('balanced')"
+            id="glass-btn-balanced"
+            class="glass-toggle-btn px-2.5 py-1 rounded-lg font-bold bg-[#D4FF00] text-black transition"
+          >
+            Balanced Modern Glass
+          </button>
+          <button
+            onclick="setCyberGlass('intense')"
+            id="glass-btn-intense"
+            class="glass-toggle-btn px-2.5 py-1 rounded-lg font-bold text-zinc-400 hover:text-white transition"
+          >
+            High-Intensity Cyber
+          </button>
+          <button
+            onclick="setCyberGlass('matte')"
+            id="glass-btn-matte"
+            class="glass-toggle-btn px-2.5 py-1 rounded-lg font-bold text-zinc-400 hover:text-white transition"
+          >
+            Matte Carbon + Neon
+          </button>
+        </div>
+
+        <!-- Hero Visual Card (Cyber 2.0 Style - Dynamic Surface) -->
+        <div class="lg:col-span-5">
+          <!-- Wrapper container for dynamic border / glow -->
+          <div
+            id="cyber-hero-card"
+            class="rounded-3xl bg-[#111622]/90 backdrop-blur-2xl border border-white/10 p-6 shadow-[0_12px_40px_rgba(0,0,0,0.6)] relative overflow-hidden transition-all duration-300"
+          >
+            <div
+              id="cyber-ambient-orb"
+              class="absolute -top-12 -right-12 w-32 h-32 bg-[#D4FF00]/10 rounded-full blur-2xl pointer-events-none transition-all duration-300"
+            ></div>
+
+            <div
+              class="flex items-center justify-between pb-4 border-b border-white/10 mb-4 relative z-10"
+            >
+              <div>
+                <span class="text-[10px] font-bold text-[#00F0FF] uppercase tracking-wider"
+                  >CIRCUIT A &bull; STRENGTH PEAK</span
+                >
+                <div class="text-base font-black text-white">Barbell Back Squat</div>
+              </div>
+              <span
+                class="px-3 py-1 rounded-full text-xs font-black bg-[#D4FF00]/15 text-[#D4FF00] border border-[#D4FF00]/30"
+              >
+                SET 3 / 5
+              </span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 mb-4 relative z-10">
+              <div
+                id="cyber-stat-1"
+                class="p-3.5 rounded-2xl bg-white/[0.04] border border-white/5 text-center transition-all duration-300"
+              >
+                <div class="text-[10px] uppercase font-bold text-zinc-400">WEIGHT</div>
+                <div class="text-2xl font-black text-white">
+                  140<span class="text-xs font-normal text-zinc-400 ml-0.5">kg</span>
+                </div>
+              </div>
+              <div
+                id="cyber-stat-2"
+                class="p-3.5 rounded-2xl bg-white/[0.04] border border-white/5 text-center transition-all duration-300"
+              >
+                <div class="text-[10px] uppercase font-bold text-zinc-400">REPS</div>
+                <div class="text-2xl font-black text-white">5</div>
+              </div>
+              <div
+                id="cyber-stat-3"
+                class="p-3.5 rounded-2xl bg-white/[0.04] border border-white/5 text-center transition-all duration-300"
+              >
+                <div class="text-[10px] uppercase font-bold text-zinc-400">RPE</div>
+                <div class="text-2xl font-black text-[#00F0FF]">8.5</div>
+              </div>
+            </div>
+
+            <div
+              id="cyber-pr-banner"
+              class="p-3 rounded-2xl bg-[#D4FF00]/10 border border-[#D4FF00]/25 flex items-center justify-between text-xs mb-4 relative z-10 transition-all duration-300"
+            >
+              <div class="flex items-center gap-2">
+                <span class="text-base text-[#D4FF00]">⚡</span>
+                <span class="font-extrabold text-[#D4FF00]">NEW PR REACHED!</span>
+              </div>
+              <span class="text-zinc-300 font-semibold">+5.0 kg</span>
+            </div>
+
+            <button
+              class="w-full py-3 rounded-full bg-[#D4FF00] hover:bg-[#e2ff40] text-black font-black text-xs uppercase tracking-wider transition shadow-[0_0_20px_rgba(212,255,0,0.3)] relative z-10"
+            >
+              LOG SET &bull; 90s REST &rarr;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Side-by-Side Surface Treatment Laboratory -->
+      <section class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10 relative z-10">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="text-[11px] font-mono uppercase text-[#00F0FF] font-bold tracking-widest"
+            >SURFACE LAB</span
+          >
+          <h2 class="text-2xl font-black text-white mt-1">Which Glass Treatment Fits Best?</h2>
+          <p class="text-xs text-zinc-400 mt-2">
+            See the exact same set component rendered across all three surface treatments
+            simultaneously.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Treatment 1: Balanced Modern Glass -->
+          <div
+            class="p-5 rounded-3xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.5)] flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-black text-white">1. Balanced Modern Glass</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4FF00]/15 text-[#D4FF00]"
+                  >RECOMMENDED</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Frosted carbon glass with 12px blur, subtle 1px border highlight (10% white), soft
+                ambient glow behind active cards. Clean and performant.
+              </p>
+              <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
+                <div class="flex justify-between text-xs">
+                  <span class="text-white font-bold">Squat: 140kg &times; 5</span>
+                  <span class="text-[#00F0FF] font-black">RPE 8.5</span>
+                </div>
+                <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-[#D4FF00] h-full w-4/5 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+            <button
+              onclick="setCyberGlass('balanced')"
+              class="w-full mt-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition"
+            >
+              Preview on Hero &uarr;
+            </button>
+          </div>
+
+          <!-- Treatment 2: High-Intensity Cyber -->
+          <div
+            class="p-5 rounded-3xl bg-[#0C101A]/90 backdrop-blur-2xl border-2 border-[#D4FF00]/40 shadow-[0_0_30px_-5px_rgba(212,255,0,0.25)] flex flex-col justify-between relative overflow-hidden"
+          >
+            <div
+              class="absolute -top-10 -right-10 w-24 h-24 bg-[#00F0FF]/20 rounded-full blur-xl pointer-events-none"
+            ></div>
+            <div>
+              <div
+                class="flex items-center justify-between mb-3 pb-2 border-b border-white/10 relative z-10"
+              >
+                <span class="text-xs font-black text-white">2. High-Intensity Cyber</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#00F0FF]/15 text-[#00F0FF]"
+                  >HIGH GLOW</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-300 mb-4 leading-relaxed relative z-10">
+                Luminous multi-color gradient border trims, vivid cyan-to-volt ambient drop shadows,
+                maximum cyber visual impact.
+              </p>
+              <div
+                class="p-3 rounded-2xl bg-black/40 border border-[#D4FF00]/30 space-y-2 relative z-10 shadow-[0_0_15px_rgba(212,255,0,0.15)]"
+              >
+                <div class="flex justify-between text-xs">
+                  <span class="text-white font-bold">Squat: 140kg &times; 5</span>
+                  <span class="text-[#00F0FF] font-black">RPE 8.5</span>
+                </div>
+                <div
+                  class="w-full bg-black/60 h-1.5 rounded-full overflow-hidden p-[1px] border border-white/10"
+                >
+                  <div
+                    class="bg-gradient-to-r from-[#D4FF00] to-[#00F0FF] h-full w-4/5 rounded-full shadow-[0_0_8px_#D4FF00]"
+                  ></div>
+                </div>
+              </div>
+            </div>
+            <button
+              onclick="setCyberGlass('intense')"
+              class="w-full mt-4 py-2 rounded-xl bg-[#D4FF00]/20 hover:bg-[#D4FF00]/30 border border-[#D4FF00]/40 text-[#D4FF00] font-bold text-xs transition relative z-10"
+            >
+              Preview on Hero &uarr;
+            </button>
+          </div>
+
+          <!-- Treatment 3: Matte Carbon with Subtle Glass -->
+          <div
+            class="p-5 rounded-3xl bg-[#0E1017] border border-zinc-800 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-zinc-800">
+                <span class="text-xs font-black text-white">3. Matte Carbon + Neon</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300"
+                  >MATTE</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Opaque deep carbon cards (#0E1017) with zero body blur. Razor-sharp neon Volt
+                buttons and Cyan stats pop against pure matte surfaces.
+              </p>
+              <div class="p-3 rounded-2xl bg-[#141720] border border-zinc-800 space-y-2">
+                <div class="flex justify-between text-xs">
+                  <span class="text-white font-bold">Squat: 140kg &times; 5</span>
+                  <span class="text-[#00F0FF] font-black">RPE 8.5</span>
+                </div>
+                <div class="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
+                  <div class="bg-[#D4FF00] h-full w-4/5 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+            <button
+              onclick="setCyberGlass('matte')"
+              class="w-full mt-4 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-bold text-xs transition"
+            >
+              Preview on Hero &uarr;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Typography & Numerals Laboratory -->
+      <section class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10 relative z-10">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="text-[11px] font-mono uppercase text-[#D4FF00] font-bold tracking-widest"
+            >TYPOGRAPHY LAB</span
+          >
+          <h2 class="text-2xl font-black text-white mt-1">Font & Numeric Formatting Shootout</h2>
+          <p class="text-xs text-zinc-400 mt-2">
+            Compare how the numbers, countdown timer, and exercise headers look across three font
+            systems.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Font Option 1: Pure Lexend + Tabular Numbers -->
+          <div
+            class="p-5 rounded-3xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between font-cyber"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-black text-white">1. Pure Lexend + Tabular</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4FF00]/15 text-[#D4FF00]"
+                  >RECOMMENDED</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Lexend for everything with tabular numerals (<code class="text-zinc-300"
+                  >tabular-nums</code
+                >). High athletic cohesion, perfectly aligned timers with zero layout jump.
+              </p>
+              <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/5 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-black text-white">Barbell Back Squat</span>
+                  <span
+                    class="text-[11px] font-bold text-[#D4FF00] px-2 py-0.5 rounded-full bg-[#D4FF00]/10"
+                    >SET 3 / 5</span
+                  >
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center py-1">
+                  <div class="bg-black/30 p-2 rounded-xl">
+                    <div class="text-[9px] uppercase font-bold text-zinc-400">LOAD</div>
+                    <div class="text-xl font-black text-white tabular-nums">
+                      140<span class="text-xs font-medium text-zinc-400">kg</span>
+                    </div>
+                  </div>
+                  <div class="bg-black/30 p-2 rounded-xl">
+                    <div class="text-[9px] uppercase font-bold text-zinc-400">REPS</div>
+                    <div class="text-xl font-black text-white tabular-nums">5</div>
+                  </div>
+                  <div class="bg-black/30 p-2 rounded-xl">
+                    <div class="text-[9px] uppercase font-bold text-zinc-400">REST</div>
+                    <div class="text-xl font-black text-[#00F0FF] tabular-nums live-timer">
+                      01:42
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              onclick="setCyberFont('lexend-tabular')"
+              class="w-full mt-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition"
+            >
+              Apply Pure Lexend &uarr;
+            </button>
+          </div>
+
+          <!-- Font Option 2: Hybrid Lexend + Monospace Data -->
+          <div
+            class="p-5 rounded-3xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-black text-white font-cyber">2. Lexend + Mono Data</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 font-mono"
+                  >COCKPIT</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed font-cyber">
+                Lexend headers paired with a dedicated technical monospaced font (<code
+                  class="text-zinc-300"
+                  >Geist Mono</code
+                >) for weights, reps, and clock readouts.
+              </p>
+              <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/5 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-black text-white font-cyber">Barbell Back Squat</span>
+                  <span
+                    class="text-[11px] font-mono font-bold text-[#D4FF00] px-2 py-0.5 rounded-full bg-[#D4FF00]/10"
+                    >[SET: 03/05]</span
+                  >
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center py-1 font-mono">
+                  <div class="bg-black/30 p-2 rounded-xl">
+                    <div class="text-[9px] uppercase text-zinc-400">LOAD</div>
+                    <div class="text-lg font-bold text-white">
+                      140.0<span class="text-xs font-normal text-zinc-400">KG</span>
+                    </div>
+                  </div>
+                  <div class="bg-black/30 p-2 rounded-xl">
+                    <div class="text-[9px] uppercase text-zinc-400">REPS</div>
+                    <div class="text-lg font-bold text-white">05</div>
+                  </div>
+                  <div class="bg-black/30 p-2 rounded-xl">
+                    <div class="text-[9px] uppercase text-zinc-400">REST</div>
+                    <div class="text-lg font-bold text-[#00F0FF] live-timer">01:42</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              onclick="setCyberFont('hybrid-mono')"
+              class="w-full mt-4 py-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 font-bold text-xs transition"
+            >
+              Apply Hybrid Mono &uarr;
+            </button>
+          </div>
+
+          <!-- Font Option 3: Geist UI + Lexend Hero Display -->
+          <div
+            class="p-5 rounded-3xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between font-stealth"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">3. Geist UI + Lexend Title</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300"
+                  >DENSE SAAS</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Lexend strictly for big hero banners; Geist for all cards, forms, tables, and
+                buttons. Sleek modern high-density tech aesthetic.
+              </p>
+              <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/5 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-white">Barbell Back Squat</span>
+                  <span
+                    class="text-[11px] font-medium text-[#D4FF00] px-2 py-0.5 rounded-full bg-[#D4FF00]/10"
+                    >Set 3 of 5</span
+                  >
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center py-1">
+                  <div class="bg-black/30 p-2 rounded-xl">
+                    <div class="text-[9px] uppercase text-zinc-400 font-medium">Load</div>
+                    <div class="text-lg font-bold text-white tabular-nums">
+                      140<span class="text-xs font-normal text-zinc-400 ml-0.5">kg</span>
+                    </div>
+                  </div>
+                  <div class="bg-black/30 p-2 rounded-xl">
+                    <div class="text-[9px] uppercase text-zinc-400 font-medium">Reps</div>
+                    <div class="text-lg font-bold text-white tabular-nums">5</div>
+                  </div>
+                  <div class="bg-black/30 p-2 rounded-xl">
+                    <div class="text-[9px] uppercase text-zinc-400 font-medium">Rest</div>
+                    <div class="text-lg font-bold text-[#00F0FF] tabular-nums live-timer">
+                      01:42
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              onclick="setCyberFont('geist-ui')"
+              class="w-full mt-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition"
+            >
+              Apply Geist UI &uarr;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Shape Language & Corner Radii Laboratory -->
+      <section class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10 relative z-10">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="text-[11px] font-mono uppercase text-[#00F0FF] font-bold tracking-widest"
+            >SHAPE LAB</span
+          >
+          <h2 class="text-2xl font-black text-white mt-1">Corner Radii & Geometry Shootout</h2>
+          <p class="text-xs text-zinc-400 mt-2">
+            Compare how card curvature, button shapes, and input outlines alter the personality of
+            the UI.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Radii Option 1: Sleek Modern SaaS -->
+          <div
+            class="p-5 rounded-2xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">1. Modern SaaS (16px / 12px)</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4FF00]/15 text-[#D4FF00]"
+                  >RECOMMENDED</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                16px (<code class="text-zinc-300">rounded-2xl</code>) cards, 10-12px (<code
+                  class="text-zinc-300"
+                  >rounded-xl</code
+                >) buttons & inputs, pill badges. Balanced, professional, high-density modern
+                software.
+              </p>
+              <div class="p-4 rounded-2xl bg-white/[0.04] border border-white/5 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-white">Barbell Back Squat</span>
+                  <span
+                    class="text-[10px] font-mono font-bold text-[#D4FF00] px-2.5 py-0.5 rounded-full bg-[#D4FF00]/10 border border-[#D4FF00]/20"
+                    >SET 03</span
+                  >
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-center py-1">
+                  <div class="bg-black/30 p-2.5 rounded-xl border border-white/5">
+                    <div class="text-[9px] uppercase font-bold text-zinc-400">WEIGHT</div>
+                    <div class="text-lg font-bold text-white">140 kg</div>
+                  </div>
+                  <div class="bg-black/30 p-2.5 rounded-xl border border-white/5">
+                    <div class="text-[9px] uppercase font-bold text-zinc-400">REPS</div>
+                    <div class="text-lg font-bold text-white">5 reps</div>
+                  </div>
+                </div>
+                <button
+                  class="w-full py-2.5 rounded-xl bg-[#D4FF00] text-black font-extrabold text-xs tracking-wide shadow-[0_0_15px_rgba(212,255,0,0.25)]"
+                >
+                  LOG SET (12px RADII)
+                </button>
+              </div>
+            </div>
+            <button
+              onclick="setCyberRadius('modern-saas')"
+              class="w-full mt-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition"
+            >
+              Apply Modern SaaS &uarr;
+            </button>
+          </div>
+
+          <!-- Radii Option 2: Full Pill Athletic -->
+          <div
+            class="p-6 rounded-3xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-black text-white"
+                  >2. Full Pill Athletic (24px / Pill)</span
+                >
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300"
+                  >ORGANIC</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                24px (<code class="text-zinc-300">rounded-3xl</code>) cards, full pill (<code
+                  class="text-zinc-300"
+                  >rounded-full</code
+                >) buttons and inputs. High-energy, consumer-athletic, tactile feel (Nike/Apple
+                style).
+              </p>
+              <div class="p-4 rounded-3xl bg-white/[0.04] border border-white/5 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-black text-white">Barbell Back Squat</span>
+                  <span
+                    class="text-[10px] font-black text-[#D4FF00] px-3 py-1 rounded-full bg-[#D4FF00]/15 border border-[#D4FF00]/30"
+                    >SET 03</span
+                  >
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-center py-1">
+                  <div class="bg-black/30 p-2.5 rounded-2xl border border-white/5">
+                    <div class="text-[9px] uppercase font-bold text-zinc-400">WEIGHT</div>
+                    <div class="text-lg font-black text-white">140 kg</div>
+                  </div>
+                  <div class="bg-black/30 p-2.5 rounded-2xl border border-white/5">
+                    <div class="text-[9px] uppercase font-bold text-zinc-400">REPS</div>
+                    <div class="text-lg font-black text-white">5 reps</div>
+                  </div>
+                </div>
+                <button
+                  class="w-full py-2.5 rounded-full bg-[#D4FF00] text-black font-black text-xs tracking-wider shadow-[0_0_18px_rgba(212,255,0,0.3)]"
+                >
+                  LOG SET (FULL PILL)
+                </button>
+              </div>
+            </div>
+            <button
+              onclick="setCyberRadius('full-pill')"
+              class="w-full mt-4 py-2 rounded-full bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 font-bold text-xs transition"
+            >
+              Apply Full Pill &uarr;
+            </button>
+          </div>
+
+          <!-- Radii Option 3: Angular Precision -->
+          <div
+            class="p-5 rounded-lg bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">3. Angular Precision (8px / 6px)</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-zinc-800 text-zinc-300"
+                  >TECHNICAL</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                8px (<code class="text-zinc-300">rounded-lg</code>) containers, 6px (<code
+                  class="text-zinc-300"
+                  >rounded-md</code
+                >) buttons, crisp 4px square tags. Dense, cockpit-engineered, utilitarian.
+              </p>
+              <div class="p-4 rounded-lg bg-white/[0.04] border border-white/5 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-white">Barbell Back Squat</span>
+                  <span
+                    class="text-[10px] font-mono font-bold text-[#D4FF00] px-2 py-0.5 rounded bg-[#D4FF00]/10 border border-[#D4FF00]/25"
+                    >[SET 03]</span
+                  >
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-center py-1">
+                  <div class="bg-black/30 p-2.5 rounded-md border border-white/5">
+                    <div class="text-[9px] uppercase font-bold text-zinc-400">WEIGHT</div>
+                    <div class="text-lg font-bold text-white">140 kg</div>
+                  </div>
+                  <div class="bg-black/30 p-2.5 rounded-md border border-white/5">
+                    <div class="text-[9px] uppercase font-bold text-zinc-400">REPS</div>
+                    <div class="text-lg font-bold text-white">5 reps</div>
+                  </div>
+                </div>
+                <button
+                  class="w-full py-2.5 rounded-md bg-[#D4FF00] text-black font-extrabold text-xs tracking-wider shadow-[0_0_12px_rgba(212,255,0,0.2)]"
+                >
+                  LOG SET (6px RADII)
+                </button>
+              </div>
+            </div>
+            <button
+              onclick="setCyberRadius('angular-precision')"
+              class="w-full mt-4 py-2 rounded-md bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition"
+            >
+              Apply Angular &uarr;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Theme & Light Mode Laboratory -->
+      <section class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10 relative z-10">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="text-[11px] font-mono uppercase text-[#D4FF00] font-bold tracking-widest"
+            >THEME & LIGHT MODE LAB</span
+          >
+          <h2 class="text-2xl font-black text-white mt-1">Light Mode & Multi-Theme Strategy</h2>
+          <p class="text-xs text-zinc-400 mt-2">
+            See how the Neon Cyber aesthetic translates into light environments and daytime
+            tracking.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Theme Option 1: Cyber Frost Light Mode (Dual-Theme) -->
+          <div
+            class="p-5 rounded-2xl bg-[#F8FAFC] border border-slate-200 shadow-xl flex flex-col justify-between text-slate-900"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-200">
+                <span class="text-xs font-bold text-slate-900">1. Cyber Frost (Dual-Theme)</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-lime-500/20 text-lime-800 border border-lime-400"
+                  >RECOMMENDED</span
+                >
+              </div>
+              <p class="text-[11px] text-slate-600 mb-4 leading-relaxed">
+                Default is Dark Cyber; light mode transforms into an ice-slate alpine tech look.
+                Crisp white cards, high-contrast dark graphite text, and framed Volt accents.
+              </p>
+              <div class="p-4 rounded-xl bg-white border border-slate-200 space-y-3 shadow-sm">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-slate-900">Barbell Back Squat</span>
+                  <span
+                    class="text-[10px] font-mono font-bold text-slate-900 px-2 py-0.5 rounded-full bg-[#D4FF00] border border-black/10"
+                    >SET 03</span
+                  >
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center py-1">
+                  <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <div class="text-[9px] uppercase font-bold text-slate-600">LOAD</div>
+                    <div class="text-base font-extrabold text-slate-900">140 kg</div>
+                  </div>
+                  <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <div class="text-[9px] uppercase font-bold text-slate-600">REPS</div>
+                    <div class="text-base font-extrabold text-slate-900">5 reps</div>
+                  </div>
+                  <div class="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <div class="text-[9px] uppercase font-bold text-slate-600">REST</div>
+                    <div class="text-base font-extrabold text-cyan-700">01:42</div>
+                  </div>
+                </div>
+                <button
+                  class="w-full py-2.5 rounded-xl bg-[#D4FF00] hover:bg-[#c6ee00] text-black font-extrabold text-xs tracking-wide shadow-sm border border-black/10"
+                >
+                  LOG SET &bull; CYBER FROST
+                </button>
+              </div>
+            </div>
+            <button
+              onclick="setCyberLightMode('frost')"
+              class="w-full mt-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-900 font-bold text-xs transition"
+            >
+              Preview Cyber Frost on Hero &uarr;
+            </button>
+          </div>
+
+          <!-- Theme Option 2: Pure Dark OLED (Gym-Locked) -->
+          <div
+            class="p-5 rounded-2xl bg-[#000000] border border-zinc-800 shadow-xl flex flex-col justify-between text-white"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-zinc-800">
+                <span class="text-xs font-bold text-white">2. Pure Dark OLED (Gym-Locked)</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300"
+                  >OLED</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Lock app permanently to Dark Mode (like Spotify / Whoop). Pitch black substrate,
+                zero glare under harsh gym lighting, maximizes mobile battery life.
+              </p>
+              <div class="p-4 rounded-xl bg-[#0A0D14] border border-white/10 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-white">Barbell Back Squat</span>
+                  <span
+                    class="text-[10px] font-mono font-bold text-[#D4FF00] px-2 py-0.5 rounded-full bg-[#D4FF00]/10 border border-[#D4FF00]/30"
+                    >SET 03</span
+                  >
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center py-1 font-mono">
+                  <div class="bg-black p-2 rounded-lg border border-white/5">
+                    <div class="text-[9px] uppercase text-zinc-400">LOAD</div>
+                    <div class="text-base font-bold text-white">140 KG</div>
+                  </div>
+                  <div class="bg-black p-2 rounded-lg border border-white/5">
+                    <div class="text-[9px] uppercase text-zinc-400">REPS</div>
+                    <div class="text-base font-bold text-white">05</div>
+                  </div>
+                  <div class="bg-black p-2 rounded-lg border border-white/5">
+                    <div class="text-[9px] uppercase text-zinc-400">REST</div>
+                    <div class="text-base font-bold text-[#00F0FF]">01:42</div>
+                  </div>
+                </div>
+                <button
+                  class="w-full py-2.5 rounded-xl bg-[#D4FF00] text-black font-extrabold text-xs tracking-wider shadow-[0_0_15px_rgba(212,255,0,0.3)]"
+                >
+                  LOG SET &bull; PURE DARK
+                </button>
+              </div>
+            </div>
+            <button
+              onclick="setCyberLightMode('dark')"
+              class="w-full mt-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition"
+            >
+              Preview Pure Dark on Hero &uarr;
+            </button>
+          </div>
+
+          <!-- Theme Option 3: Stark High-Contrast Paper Light -->
+          <div
+            class="p-5 rounded-2xl bg-white border border-black/20 shadow-xl flex flex-col justify-between text-black"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-black/10">
+                <span class="text-xs font-bold text-black">3. Stark Paper Monochrome</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black text-white"
+                  >MONOCHROME</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-600 mb-4 leading-relaxed">
+                Dark mode keeps the neon cyber aesthetic, but daytime light mode shifts to a pure
+                black-on-white editorial paper layout with black buttons and no neon glow.
+              </p>
+              <div class="p-4 rounded-xl bg-zinc-50 border border-zinc-200 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs font-bold text-black uppercase tracking-tight"
+                    >Barbell Back Squat</span
+                  >
+                  <span
+                    class="text-[10px] font-mono font-bold text-black px-2 py-0.5 rounded bg-zinc-200 border border-zinc-400"
+                    >[03/05]</span
+                  >
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center py-1">
+                  <div class="bg-white p-2 rounded-lg border border-zinc-300">
+                    <div class="text-[9px] uppercase font-bold text-zinc-600">LOAD</div>
+                    <div class="text-base font-bold text-black">140 kg</div>
+                  </div>
+                  <div class="bg-white p-2 rounded-lg border border-zinc-300">
+                    <div class="text-[9px] uppercase font-bold text-zinc-600">REPS</div>
+                    <div class="text-base font-bold text-black">5</div>
+                  </div>
+                  <div class="bg-white p-2 rounded-lg border border-zinc-300">
+                    <div class="text-[9px] uppercase font-bold text-zinc-600">REST</div>
+                    <div class="text-base font-bold text-black">01:42</div>
+                  </div>
+                </div>
+                <button
+                  class="w-full py-2.5 rounded-xl bg-black text-white font-bold text-xs uppercase tracking-wider hover:bg-zinc-800"
+                >
+                  LOG SET &bull; PAPER MODE
+                </button>
+              </div>
+            </div>
+            <button
+              onclick="setCyberLightMode('paper')"
+              class="w-full mt-4 py-2 rounded-xl bg-black text-white font-bold text-xs hover:bg-zinc-800 transition"
+            >
+              Preview Paper Light on Hero &uarr;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Navigation Architecture Laboratory -->
+      <section class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10 relative z-10">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="text-[11px] font-mono uppercase text-[#00F0FF] font-bold tracking-widest"
+            >NAVIGATION LAB</span
+          >
+          <h2 class="text-2xl font-black text-white mt-1">App Header & Navigation Architecture</h2>
+          <p class="text-xs text-zinc-400 mt-2">
+            Compare how desktop navigation and mobile layouts feel across three architectural
+            patterns.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Nav Option 1: Floating Glass Island + Mobile Bottom Dock -->
+          <div
+            class="p-5 rounded-2xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">1. Floating Island + Bottom Dock</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4FF00]/15 text-[#D4FF00]"
+                  >RECOMMENDED</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Desktop uses a sleek floating glass capsule with glowing active pills. Mobile
+                switches to a persistent bottom dock for thumb-reach ergonomics.
+              </p>
+
+              <!-- Mini Desktop Floating Nav Mockup -->
+              <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-3">
+                <div class="text-[9px] font-mono uppercase text-zinc-400">
+                  DESKTOP FLOATING CAPSULE:
+                </div>
+                <div
+                  class="p-2 rounded-full bg-[#161D2B]/90 border border-white/10 flex items-center justify-between shadow-lg text-[10px]"
+                >
+                  <div class="flex items-center gap-1.5 pl-2 font-bold text-white">
+                    <span class="text-[#D4FF00]">⚡</span> KYBER
+                  </div>
+                  <div class="flex items-center gap-1 text-[9px] font-medium">
+                    <span class="px-2 py-0.5 rounded-full bg-[#D4FF00] text-black font-bold"
+                      >Workouts</span
+                    >
+                    <span class="px-1.5 py-0.5 text-zinc-400">Programs</span>
+                    <span class="px-1.5 py-0.5 text-zinc-400">Health</span>
+                  </div>
+                  <div
+                    class="w-5 h-5 rounded-full bg-zinc-800 border border-white/20 text-[8px] flex items-center justify-center font-bold text-white"
+                  >
+                    AR
+                  </div>
+                </div>
+
+                <!-- Mini Mobile Bottom Dock Mockup -->
+                <div class="text-[9px] font-mono uppercase text-zinc-400 pt-2">
+                  MOBILE BOTTOM DOCK:
+                </div>
+                <div
+                  class="p-2 rounded-2xl bg-[#161D2B]/95 border border-white/10 flex items-center justify-around text-center shadow-lg"
+                >
+                  <div class="text-zinc-400 text-[9px]">
+                    <div class="text-xs">📊</div>
+                    <span>Dash</span>
+                  </div>
+                  <div class="text-[#D4FF00] text-[9px] font-bold">
+                    <div class="text-xs">🏋️</div>
+                    <span>Train</span>
+                  </div>
+                  <div class="text-zinc-400 text-[9px]">
+                    <div class="text-xs">📋</div>
+                    <span>Plans</span>
+                  </div>
+                  <div class="text-zinc-400 text-[9px]">
+                    <div class="text-xs">❤️</div>
+                    <span>Bio</span>
+                  </div>
+                  <div class="text-zinc-400 text-[9px]">
+                    <div class="text-xs">⚙️</div>
+                    <span>More</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              onclick="setCyberNav('floating')"
+              class="w-full mt-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition"
+            >
+              Preview Floating Island &uarr;
+            </button>
+          </div>
+
+          <!-- Nav Option 2: Persistent Pro Sidebar (Desktop Cockpit) -->
+          <div
+            class="p-5 rounded-2xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">2. Pro Sidebar (Desktop Cockpit)</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300"
+                  >SIDEBAR</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Fixed 240px left glass sidebar. Vertical navigation items with a left-edge Volt
+                indicator line. High information density for coaching portals.
+              </p>
+
+              <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-2">
+                <div class="text-[9px] font-mono uppercase text-zinc-400">SIDEBAR LAYOUT:</div>
+                <div
+                  class="grid grid-cols-12 gap-1.5 h-28 rounded-lg overflow-hidden border border-white/10 bg-[#0B0E16]"
+                >
+                  <!-- Mini Sidebar -->
+                  <div
+                    class="col-span-4 bg-[#121724] border-r border-white/10 p-1.5 space-y-1 text-[8px]"
+                  >
+                    <div class="font-bold text-white pb-1 border-b border-white/5">KYBER</div>
+                    <div
+                      class="px-1 py-0.5 rounded bg-[#D4FF00]/15 text-[#D4FF00] font-bold border-l-2 border-[#D4FF00]"
+                    >
+                      Workouts
+                    </div>
+                    <div class="px-1 py-0.5 text-zinc-400">Clients</div>
+                    <div class="px-1 py-0.5 text-zinc-400">Programs</div>
+                    <div class="px-1 py-0.5 text-zinc-400">Vitals</div>
+                  </div>
+                  <!-- Mini Content Area -->
+                  <div class="col-span-8 p-2 space-y-1">
+                    <div class="h-3 w-3/4 bg-white/10 rounded"></div>
+                    <div class="h-12 w-full bg-white/5 rounded border border-white/5"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              onclick="setCyberNav('sidebar')"
+              class="w-full mt-4 py-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 font-bold text-xs transition"
+            >
+              Preview Pro Sidebar Note &uarr;
+            </button>
+          </div>
+
+          <!-- Nav Option 3: Full-Bleed Sticky Top Bar (Refined Classic) -->
+          <div
+            class="p-5 rounded-2xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">3. Full-Bleed Classic Top Bar</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-zinc-800 text-zinc-300"
+                  >FULL-BLEED</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Standard edge-to-edge sticky top header with horizontal tab links, subtle bottom
+                border line, and standard mobile dropdown hamburger menu.
+              </p>
+
+              <div class="p-3 rounded-xl bg-black/40 border border-white/5 space-y-2">
+                <div class="text-[9px] font-mono uppercase text-zinc-400">FULL-WIDTH HEADER:</div>
+                <div
+                  class="h-28 rounded-lg overflow-hidden border border-white/10 bg-[#0B0E16] flex flex-col"
+                >
+                  <div
+                    class="h-8 bg-[#121724] border-b border-white/10 px-2 flex items-center justify-between text-[8px]"
+                  >
+                    <span class="font-bold text-white">KYBER</span>
+                    <div class="flex gap-2 text-zinc-400">
+                      <span class="text-white border-b border-[#D4FF00] font-bold">Workouts</span>
+                      <span>Programs</span>
+                      <span>Clients</span>
+                    </div>
+                    <div class="w-3.5 h-3.5 rounded-full bg-zinc-700"></div>
+                  </div>
+                  <div class="p-2 space-y-1">
+                    <div class="h-3 w-1/2 bg-white/10 rounded"></div>
+                    <div class="h-10 w-full bg-white/5 rounded"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button
+              onclick="setCyberNav('full-bleed')"
+              class="w-full mt-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-bold text-xs transition"
+            >
+              Preview Full-Bleed Nav &uarr;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Data Visualization & Telemetry Laboratory -->
+      <section class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10 relative z-10">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="text-[11px] font-mono uppercase text-[#D4FF00] font-bold tracking-widest"
+            >CHART LAB</span
+          >
+          <h2 class="text-2xl font-black text-white mt-1">
+            Data Visualization & Telemetry Styling
+          </h2>
+          <p class="text-xs text-zinc-400 mt-2">
+            Compare how biometric health trends, resting heart rate curves, and weekly volume charts
+            look.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Chart Option 1: Glowing Gradient Area & Neon Nodes -->
+          <div
+            class="p-5 rounded-2xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">1. Glowing Area & Neon Nodes</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4FF00]/15 text-[#D4FF00]"
+                  >RECOMMENDED</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Hyper Cyan neon stroke with a smooth gradient area fill. Pulsing Volt Lime dots on
+                personal records and milestone dates.
+              </p>
+
+              <!-- SVG Chart Mockup 1 -->
+              <div class="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-2">
+                <div class="flex items-center justify-between text-[10px]">
+                  <span class="font-bold text-white">Body Weight Progression</span>
+                  <span class="font-mono text-emerald-400 font-semibold">-2.4 kg / 30d</span>
+                </div>
+                <div class="relative h-28 w-full pt-1">
+                  <svg class="w-full h-full overflow-visible" viewBox="0 0 280 90">
+                    <defs>
+                      <linearGradient id="cyanAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#00F0FF" stop-opacity="0.35" />
+                        <stop offset="100%" stop-color="#00F0FF" stop-opacity="0.0" />
+                      </linearGradient>
+                      <filter id="cyanGlow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feMerge>
+                          <feMergeNode in="blur" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                      </filter>
+                    </defs>
+                    <!-- Horizontal Grid Lines -->
+                    <line
+                      x1="0"
+                      y1="20"
+                      x2="280"
+                      y2="20"
+                      stroke="rgba(255,255,255,0.06)"
+                      stroke-dasharray="3,3"
+                    />
+                    <line
+                      x1="0"
+                      y1="50"
+                      x2="280"
+                      y2="50"
+                      stroke="rgba(255,255,255,0.06)"
+                      stroke-dasharray="3,3"
+                    />
+                    <line
+                      x1="0"
+                      y1="80"
+                      x2="280"
+                      y2="80"
+                      stroke="rgba(255,255,255,0.06)"
+                      stroke-dasharray="3,3"
+                    />
+
+                    <!-- Area Fill -->
+                    <path
+                      d="M 0 65 Q 45 60, 90 45 T 180 35 T 280 20 L 280 90 L 0 90 Z"
+                      fill="url(#cyanAreaGrad)"
+                    />
+                    <!-- Glowing Stroke Line -->
+                    <path
+                      d="M 0 65 Q 45 60, 90 45 T 180 35 T 280 20"
+                      fill="none"
+                      stroke="#00F0FF"
+                      stroke-width="2.5"
+                      filter="url(#cyanGlow)"
+                    />
+
+                    <!-- Milestone Dots -->
+                    <circle cx="180" cy="35" r="3.5" fill="#00F0FF" />
+                    <circle
+                      cx="280"
+                      cy="20"
+                      r="5"
+                      fill="#D4FF00"
+                      stroke="#0A0D14"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <div class="flex justify-between text-[8px] font-mono text-zinc-500 pt-1">
+                  <span>WEEK 01</span>
+                  <span>WEEK 02</span>
+                  <span>WEEK 03</span>
+                  <span class="text-[#D4FF00] font-bold">CURRENT</span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 text-[10px] text-zinc-400 font-mono flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-[#00F0FF]"></span>
+              <span>Smooth Bézier Curves + Area Gradient</span>
+            </div>
+          </div>
+
+          <!-- Chart Option 2: Minimalist Hairline Monochrome -->
+          <div
+            class="p-5 rounded-2xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">2. Minimalist Hairline Tech</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300"
+                  >HAIRLINE</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Crisp 1.5px stroke with zero gradient fill. Dotted coordinate crosshairs and
+                high-contrast tabular readout for technical analysis.
+              </p>
+
+              <!-- SVG Chart Mockup 2 -->
+              <div class="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-2 font-mono">
+                <div class="flex items-center justify-between text-[10px]">
+                  <span class="font-bold text-white uppercase text-[9px]">RESTING HR (BPM)</span>
+                  <span class="text-cyan-400 font-bold">54 BPM &bull; OPTIMAL</span>
+                </div>
+                <div class="relative h-28 w-full pt-1">
+                  <svg class="w-full h-full overflow-visible" viewBox="0 0 280 90">
+                    <!-- Grid -->
+                    <line
+                      x1="0"
+                      y1="20"
+                      x2="280"
+                      y2="20"
+                      stroke="rgba(255,255,255,0.08)"
+                      stroke-width="1"
+                    />
+                    <line
+                      x1="0"
+                      y1="50"
+                      x2="280"
+                      y2="50"
+                      stroke="rgba(255,255,255,0.08)"
+                      stroke-width="1"
+                    />
+                    <line
+                      x1="0"
+                      y1="80"
+                      x2="280"
+                      y2="80"
+                      stroke="rgba(255,255,255,0.08)"
+                      stroke-width="1"
+                    />
+
+                    <!-- Hairline Line -->
+                    <polyline
+                      points="0,58 40,62 80,50 120,55 160,42 200,46 240,35 280,30"
+                      fill="none"
+                      stroke="#00F0FF"
+                      stroke-width="1.5"
+                    />
+
+                    <!-- Crosshair line at last point -->
+                    <line
+                      x1="280"
+                      y1="0"
+                      x2="280"
+                      y2="90"
+                      stroke="#00F0FF"
+                      stroke-width="1"
+                      stroke-dasharray="2,2"
+                    />
+                    <circle
+                      cx="280"
+                      cy="30"
+                      r="3"
+                      fill="#FFFFFF"
+                      stroke="#00F0FF"
+                      stroke-width="1.5"
+                    />
+                  </svg>
+                </div>
+                <div class="flex justify-between text-[8px] text-zinc-500 pt-1">
+                  <span>01 OCT</span>
+                  <span>08 OCT</span>
+                  <span>15 OCT</span>
+                  <span class="text-white">TODAY</span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 text-[10px] text-zinc-400 font-mono flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <span>Hairline Polyline &bull; Coordinate Crosshairs</span>
+            </div>
+          </div>
+
+          <!-- Chart Option 3: Segmented Strain Histogram Bars -->
+          <div
+            class="p-5 rounded-2xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">3. Segmented Volume Histogram</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-zinc-800 text-zinc-300"
+                  >BARS</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Discrete vertical volume bars with multi-color intensity zoning (Cyan for recovery,
+                Volt for progressive overload, Amber for max capacity).
+              </p>
+
+              <!-- SVG Chart Mockup 3 -->
+              <div class="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-2">
+                <div class="flex items-center justify-between text-[10px]">
+                  <span class="font-bold text-white">Weekly Training Volume</span>
+                  <span class="text-[#D4FF00] font-bold">18,450 kg</span>
+                </div>
+                <div class="relative h-28 w-full pt-1 flex items-end justify-between gap-1.5 px-2">
+                  <!-- Bar 1 (Mon) -->
+                  <div class="flex-1 flex flex-col items-center gap-1">
+                    <div
+                      class="w-full bg-[#00F0FF]/60 hover:bg-[#00F0FF] rounded-t-lg transition"
+                      style="height: 48px"
+                    ></div>
+                    <span class="text-[8px] font-mono text-zinc-500">M</span>
+                  </div>
+                  <!-- Bar 2 (Tue) -->
+                  <div class="flex-1 flex flex-col items-center gap-1">
+                    <div
+                      class="w-full bg-[#00F0FF]/60 hover:bg-[#00F0FF] rounded-t-lg transition"
+                      style="height: 62px"
+                    ></div>
+                    <span class="text-[8px] font-mono text-zinc-500">T</span>
+                  </div>
+                  <!-- Bar 3 (Wed) -->
+                  <div class="flex-1 flex flex-col items-center gap-1">
+                    <div class="w-full bg-white/10 rounded-t-lg" style="height: 12px"></div>
+                    <span class="text-[8px] font-mono text-zinc-600">W</span>
+                  </div>
+                  <!-- Bar 4 (Thu) -->
+                  <div class="flex-1 flex flex-col items-center gap-1">
+                    <div
+                      class="w-full bg-[#D4FF00] hover:bg-[#e2ff40] rounded-t-lg shadow-[0_0_10px_rgba(212,255,0,0.3)] transition"
+                      style="height: 78px"
+                    ></div>
+                    <span class="text-[8px] font-mono text-[#D4FF00] font-bold">T</span>
+                  </div>
+                  <!-- Bar 5 (Fri) -->
+                  <div class="flex-1 flex flex-col items-center gap-1">
+                    <div
+                      class="w-full bg-[#00F0FF]/60 hover:bg-[#00F0FF] rounded-t-lg transition"
+                      style="height: 55px"
+                    ></div>
+                    <span class="text-[8px] font-mono text-zinc-500">F</span>
+                  </div>
+                  <!-- Bar 6 (Sat) -->
+                  <div class="flex-1 flex flex-col items-center gap-1">
+                    <div
+                      class="w-full bg-amber-400 hover:bg-amber-300 rounded-t-lg shadow-[0_0_10px_rgba(245,158,11,0.3)] transition"
+                      style="height: 86px"
+                    ></div>
+                    <span class="text-[8px] font-mono text-amber-400 font-bold">S</span>
+                  </div>
+                  <!-- Bar 7 (Sun) -->
+                  <div class="flex-1 flex flex-col items-center gap-1">
+                    <div class="w-full bg-white/10 rounded-t-lg" style="height: 10px"></div>
+                    <span class="text-[8px] font-mono text-zinc-600">S</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 text-[10px] text-zinc-400 font-mono flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-[#D4FF00]"></span>
+              <span>Intensity-Zoned Volume Bars (Whoop / Apple)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Landing Page Experience & Hero Flow Laboratory -->
+      <section class="max-w-7xl mx-auto px-6 py-12 border-t border-white/10 relative z-10">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span class="text-[11px] font-mono uppercase text-[#00F0FF] font-bold tracking-widest"
+            >HERO FLOW LAB</span
+          >
+          <h2 class="text-2xl font-black text-white mt-1">
+            Landing Page Hero & Conversion Experience
+          </h2>
+          <p class="text-xs text-zinc-400 mt-2">
+            Compare how the homepage bridges both individual athletes and professional personal
+            trainers.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Flow Option 1: Dual-Persona Split (Athlete + Coach) -->
+          <div
+            class="p-5 rounded-2xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">1. Dual-Persona Split</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#D4FF00]/15 text-[#D4FF00]"
+                  >RECOMMENDED</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Hero card has an interactive tab: athletes see live set logging; coaches see
+                real-time client sync & program assignments. Clear dual CTAs for high conversion.
+              </p>
+
+              <!-- Dual-Persona Interactive Mockup -->
+              <div class="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-3">
+                <!-- Sub Switcher -->
+                <div class="flex gap-1 p-1 rounded-lg bg-white/5 text-[10px]">
+                  <button
+                    onclick="setPersonaDemo('athlete')"
+                    id="persona-btn-athlete"
+                    class="flex-1 py-1 rounded bg-[#D4FF00] text-black font-bold transition"
+                  >
+                    Athlete View
+                  </button>
+                  <button
+                    onclick="setPersonaDemo('coach')"
+                    id="persona-btn-coach"
+                    class="flex-1 py-1 rounded text-zinc-400 hover:text-white font-bold transition"
+                  >
+                    Coach View
+                  </button>
+                </div>
+
+                <!-- Athlete Panel Preview -->
+                <div id="demo-persona-athlete" class="space-y-2">
+                  <div class="flex justify-between items-center text-[10px]">
+                    <span class="text-white font-bold">Barbell Bench Press</span>
+                    <span class="text-[#D4FF00] font-mono font-bold">SET 03</span>
+                  </div>
+                  <div
+                    class="p-2.5 rounded-lg bg-[#141926] border border-white/5 flex items-center justify-between"
+                  >
+                    <div>
+                      <div class="text-[8px] uppercase text-zinc-400 font-mono">
+                        WEIGHT &bull; REPS
+                      </div>
+                      <div class="text-sm font-black text-white font-mono">
+                        <span id="interactive-weight">100.0</span> kg &times; 8
+                      </div>
+                    </div>
+                    <!-- Quick +/- weight buttons -->
+                    <div class="flex gap-1">
+                      <button
+                        onclick="adjustWeight(-2.5)"
+                        class="w-6 h-6 rounded bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center"
+                      >
+                        -
+                      </button>
+                      <button
+                        onclick="adjustWeight(2.5)"
+                        class="w-6 h-6 rounded bg-[#D4FF00] hover:bg-[#e2ff40] text-black font-bold text-xs flex items-center justify-center"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <button
+                    class="w-full py-2 rounded-lg bg-[#D4FF00] text-black font-black text-[10px] uppercase tracking-wider shadow"
+                  >
+                    LOG REPS &bull; REST 90S
+                  </button>
+                </div>
+
+                <!-- Coach Panel Preview (Hidden by default) -->
+                <div id="demo-persona-coach" class="space-y-2 hidden">
+                  <div class="flex justify-between items-center text-[10px]">
+                    <span class="text-white font-bold">Client Roster &bull; Active</span>
+                    <span class="text-emerald-400 font-mono text-[9px] font-bold">SYNCED</span>
+                  </div>
+                  <div
+                    class="p-2.5 rounded-lg bg-[#141926] border border-white/5 space-y-1.5 text-[10px]"
+                  >
+                    <div class="flex items-center justify-between">
+                      <span class="text-white font-bold">Sarah Jenkins</span>
+                      <span class="text-[9px] font-mono text-cyan-400">Week 4 Meso</span>
+                    </div>
+                    <div class="text-[9px] text-zinc-400 flex items-center gap-1.5">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      <span>Consent Active: Can Program & View Vitals</span>
+                    </div>
+                  </div>
+                  <button
+                    class="w-full py-2 rounded-lg bg-cyan-400 text-black font-black text-[10px] uppercase tracking-wider shadow"
+                  >
+                    ASSIGN 4-WEEK PROGRAM &rarr;
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 text-[10px] text-zinc-400 font-mono flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-[#D4FF00]"></span>
+              <span>Interactive Persona Switcher & Live Adjuster</span>
+            </div>
+          </div>
+
+          <!-- Flow Option 2: Full Cinematic Feature Tour -->
+          <div
+            class="p-5 rounded-2xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">2. Feature Tab Walkthrough</span>
+                <span
+                  class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300"
+                  >TOUR</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Hero transitions into a 4-tab product tour: 1. Set Logging, 2. Consent Matrix, 3.
+                Biometric Telemetry, 4. Meso-cycle Builder with live tabs.
+              </p>
+
+              <div class="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-2">
+                <div
+                  class="flex gap-1 text-[8px] font-mono border-b border-white/10 pb-1.5 text-zinc-400"
+                >
+                  <span class="text-[#D4FF00] font-bold">1. LOGGER</span>
+                  <span>2. CONSENT</span>
+                  <span>3. VITALS</span>
+                  <span>4. MESO</span>
+                </div>
+                <div class="p-3 rounded-lg bg-[#141926] border border-white/5 text-[9px] space-y-1">
+                  <div class="font-bold text-white">Feature 01: Sub-Second Set Capture</div>
+                  <p class="text-zinc-400 text-[8px]">
+                    Designed specifically for sweaty fingers and high heart rates.
+                  </p>
+                  <div
+                    class="h-10 w-full bg-white/5 rounded mt-1 border border-white/5 flex items-center justify-center font-mono text-[9px] text-[#00F0FF]"
+                  >
+                    [LIVE INTERFACE TOUR]
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 text-[10px] text-zinc-400 font-mono flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+              <span>Tabbed Interactive Narrative Tour</span>
+            </div>
+          </div>
+
+          <!-- Flow Option 3: Minimalist High-Octane Action -->
+          <div
+            class="p-5 rounded-2xl bg-[#111622]/80 backdrop-blur-xl border border-white/10 shadow-xl flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 pb-2 border-b border-white/10">
+                <span class="text-xs font-bold text-white">3. Minimalist Action Hero</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-zinc-800 text-zinc-300"
+                  >STREAMLINED</span
+                >
+              </div>
+              <p class="text-[11px] text-zinc-400 mb-4 leading-relaxed">
+                Stripped down, massive athletic headline, single high-conversion email input box,
+                social proof badges, and straight-to-dashboard CTA.
+              </p>
+
+              <div class="p-3.5 rounded-xl bg-black/40 border border-white/5 space-y-3">
+                <div class="text-[10px] font-black text-white leading-tight">
+                  "NO EXCUSES. JUST PROGRESS."
+                </div>
+                <div class="flex gap-1.5">
+                  <input
+                    type="text"
+                    placeholder="athlete@email.com"
+                    class="flex-1 bg-white/5 border border-white/10 rounded px-2 py-1 text-[9px] text-zinc-300"
+                    disabled
+                  />
+                  <button
+                    class="px-2.5 py-1 bg-[#D4FF00] text-black font-extrabold text-[9px] rounded"
+                  >
+                    JOIN
+                  </button>
+                </div>
+                <div class="text-[8px] font-mono text-zinc-500">
+                  &bull; 10,000+ athletes &bull; 500+ verified coaches
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 text-[10px] text-zinc-400 font-mono flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-[#D4FF00]"></span>
+              <span>Single-Field Fast Onboarding Flow</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 Pillars Grid -->
+      <section class="max-w-7xl mx-auto px-6 py-16 border-t border-white/10 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-6 rounded-2xl bg-[#111622]/60 border border-white/10 space-y-3">
+            <div class="text-2xl text-[#D4FF00]">🏋️</div>
+            <h3 class="text-lg font-black text-white">Hyper Logger</h3>
+            <p class="text-xs text-zinc-400 leading-relaxed">
+              Record every rep and micro-load with high-speed tactile feedback and automatic
+              countdown timers.
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-[#111622]/60 border border-white/10 space-y-3">
+            <div class="text-2xl text-[#00F0FF]">🤝</div>
+            <h3 class="text-lg font-black text-white">Trainer Network</h3>
+            <p class="text-xs text-zinc-400 leading-relaxed">
+              Coaches build template programs, assign structured meso-cycles, and sync metrics in
+              real-time.
+            </p>
+          </div>
+          <div class="p-6 rounded-2xl bg-[#111622]/60 border border-white/10 space-y-3">
+            <div class="text-2xl text-[#D4FF00]">📈</div>
+            <h3 class="text-lg font-black text-white">Bio Telemetry</h3>
+            <p class="text-xs text-zinc-400 leading-relaxed">
+              Vibrant SVG charts showing body weight curves, body fat progression, and resting heart
+              rate trends.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- DIRECTION 4: WARM HUMANIST / HOLISTIC LONGEVITY (OURA / LEVELS STYLE) -->
+    <!-- ========================================================================= -->
+    <main
+      id="view-humanist"
+      class="theme-view font-humanist bg-[#121110] text-[#F5F2EB] min-h-screen"
+    >
+      <!-- Sub-header metadata strip -->
+      <div
+        class="border-b border-[#2B2724] bg-[#181614] text-xs px-6 py-2.5 text-[#9C958A] flex items-center justify-between"
+      >
+        <div class="flex items-center gap-4">
+          <span class="text-[#E07A5F] text-[11px] font-bold uppercase tracking-wider"
+            >Direction 04</span
+          >
+          <span>Warm Humanist & Longevity</span>
+          <span class="text-[#3E3A36]">&bull;</span>
+          <span class="text-[#9C958A]">Inspiration: Oura Ring Gen 3, Levels, Eight Sleep</span>
+        </div>
+        <div class="text-[11px] text-[#9C958A] hidden md:block">
+          Base: #121110 &bull; Terracotta: #E07A5F &bull; Sage: #81B29A &bull; Pebble Curves &bull;
+          Font: Plus Jakarta Sans
+        </div>
+      </div>
+
+      <!-- Navigation Header -->
+      <header class="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-8 h-8 rounded-full bg-[#E07A5F] flex items-center justify-center font-bold text-[#121110] text-xs"
+          >
+            K
+          </div>
+          <span class="text-lg font-bold tracking-tight text-[#F5F2EB]"
+            >Kyber <span class="text-[#9C958A] font-normal">Health</span></span
+          >
+        </div>
+        <div class="hidden md:flex items-center gap-8 text-xs font-semibold text-[#9C958A]">
+          <a href="#" class="hover:text-[#F5F2EB] transition">Training Log</a>
+          <a href="#" class="hover:text-[#F5F2EB] transition">Coaching Care</a>
+          <a href="#" class="hover:text-[#F5F2EB] transition">Biometrics</a>
+          <a href="#" class="hover:text-[#F5F2EB] transition">Recovery</a>
+        </div>
+        <div class="flex items-center gap-3">
+          <button class="text-xs text-[#9C958A] hover:text-[#F5F2EB] px-3 py-1.5 font-medium">
+            Log In
+          </button>
+          <button
+            class="text-xs font-bold bg-[#E07A5F] hover:bg-[#e98970] text-[#121110] px-5 py-2.5 rounded-full transition shadow-md shadow-[#E07A5F]/20"
+          >
+            Begin Journey
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero Section -->
+      <section
+        class="max-w-7xl mx-auto px-6 pt-12 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center"
+      >
+        <div class="lg:col-span-7 space-y-6">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#201D1A] border border-[#302C28] text-xs font-semibold text-[#D4CDC3]"
+          >
+            <span class="w-2 h-2 rounded-full bg-[#81B29A]"></span>
+            <span>Holistic Athletic Performance & Longevity</span>
+          </div>
+          <h1
+            class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#F5F2EB] leading-[1.1]"
+          >
+            Mindful strength for a lifetime of performance.
+          </h1>
+          <p class="text-base text-[#9C958A] max-w-xl leading-relaxed font-normal">
+            Designed for athletes and coaches who prioritize sustainable progress over burn-out.
+            Track strength milestones, sleep and recovery vitals, and shared training notes in a
+            warm, welcoming space.
+          </p>
+          <div class="flex flex-wrap items-center gap-4 pt-2">
+            <button
+              class="px-7 py-3.5 rounded-full bg-[#E07A5F] hover:bg-[#e98970] text-[#121110] font-bold text-xs tracking-wide transition shadow-lg shadow-[#E07A5F]/25 flex items-center gap-2"
+            >
+              <span>Start Training Free</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
+              </svg>
+            </button>
+            <button
+              class="px-6 py-3.5 rounded-full bg-[#201D1A] hover:bg-[#282521] border border-[#302C28] text-[#D4CDC3] font-semibold text-xs transition"
+            >
+              Explore Coaching Circles
+            </button>
+          </div>
+        </div>
+
+        <!-- Hero Visual Card (Humanist Style) -->
+        <div class="lg:col-span-5">
+          <div class="rounded-3xl bg-[#1C1A17] border border-[#2B2724] p-6 shadow-xl space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-[#2B2724]">
+              <div>
+                <span class="text-[11px] font-semibold text-[#81B29A] uppercase tracking-wider"
+                  >Morning Session &bull; Restorative</span
+                >
+                <div class="text-base font-bold text-[#F5F2EB]">Barbell Back Squat</div>
+              </div>
+              <span
+                class="px-3 py-1 rounded-full text-xs font-semibold bg-[#26231F] text-[#D4CDC3] border border-[#3A3530]"
+              >
+                Set 3 of 5
+              </span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+              <div class="p-3.5 rounded-2xl bg-[#23201C] border border-[#2E2A26] text-center">
+                <div class="text-[10px] uppercase font-semibold text-[#9C958A]">Load</div>
+                <div class="text-xl font-bold text-[#F5F2EB]">
+                  140<span class="text-xs font-normal text-[#9C958A] ml-0.5">kg</span>
+                </div>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-[#23201C] border border-[#2E2A26] text-center">
+                <div class="text-[10px] uppercase font-semibold text-[#9C958A]">Reps</div>
+                <div class="text-xl font-bold text-[#F5F2EB]">5</div>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-[#23201C] border border-[#2E2A26] text-center">
+                <div class="text-[10px] uppercase font-semibold text-[#9C958A]">Effort</div>
+                <div class="text-xl font-bold text-[#E07A5F]">8 / 10</div>
+              </div>
+            </div>
+
+            <div
+              class="p-3 rounded-2xl bg-[#81B29A]/10 border border-[#81B29A]/20 flex items-center justify-between text-xs"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-[#81B29A]"></span>
+                <span class="font-semibold text-[#A8D5BF]">Consistent Form & Recovery</span>
+              </div>
+              <span class="text-[#81B29A] font-medium">+5 kg smoothed</span>
+            </div>
+
+            <button
+              class="w-full py-3.5 rounded-2xl bg-[#E07A5F] text-[#121110] font-bold text-xs transition shadow-md shadow-[#E07A5F]/20"
+            >
+              Log Set &bull; Rest 2 min
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 Pillars Grid -->
+      <section class="max-w-7xl mx-auto px-6 py-16 border-t border-[#2B2724]">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="p-6 rounded-3xl bg-[#1C1A17] border border-[#2B2724] space-y-3">
+            <div
+              class="w-9 h-9 rounded-2xl bg-[#26231F] flex items-center justify-center text-[#E07A5F] font-bold"
+            >
+              🌿
+            </div>
+            <h3 class="text-base font-bold text-[#F5F2EB]">Tactile Session Log</h3>
+            <p class="text-xs text-[#9C958A] leading-relaxed">
+              Gentle feedback, intuitive set progression, and zero pressure. Designed to build
+              sustainable movement habits.
+            </p>
+          </div>
+          <div class="p-6 rounded-3xl bg-[#1C1A17] border border-[#2B2724] space-y-3">
+            <div
+              class="w-9 h-9 rounded-2xl bg-[#26231F] flex items-center justify-center text-[#81B29A] font-bold"
+            >
+              🤝
+            </div>
+            <h3 class="text-base font-bold text-[#F5F2EB]">Trainer Sanctuary</h3>
+            <p class="text-xs text-[#9C958A] leading-relaxed">
+              Secure client relationships governed by transparent consent, private coaching
+              reflections, and respectful communication.
+            </p>
+          </div>
+          <div class="p-6 rounded-3xl bg-[#1C1A17] border border-[#2B2724] space-y-3">
+            <div
+              class="w-9 h-9 rounded-2xl bg-[#26231F] flex items-center justify-center text-[#E6C280] font-bold"
+            >
+              📊
+            </div>
+            <h3 class="text-base font-bold text-[#F5F2EB]">Longevity Vitals</h3>
+            <p class="text-xs text-[#9C958A] leading-relaxed">
+              Monitor resting heart rate trends, body composition, and cumulative strain across
+              seasons.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- QUAD MATRIX / COMPARISON VIEW -->
+    <!-- ========================================================================= -->
+    <main id="view-compare" class="theme-view max-w-7xl mx-auto px-6 py-10 min-h-screen">
+      <div class="text-center mb-10">
+        <h2 class="text-2xl font-bold text-white mb-2">Quad Matrix Comparison</h2>
+        <p class="text-zinc-400 text-sm">
+          Compare each visual system across key dimensions at a glance.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <!-- Card 1 -->
+        <div class="p-6 rounded-2xl bg-[#08090C] border border-white/10 space-y-4 font-stealth">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-stealth-mono text-emerald-400 font-bold uppercase"
+              >1. Stealth Luxury / Pro</span
+            >
+            <span
+              class="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 font-stealth-mono"
+              >RECOMMENDED</span
+            >
+          </div>
+          <h3 class="text-xl font-bold text-white">Whoop &bull; Apple Ultra &bull; Ten Thousand</h3>
+          <p class="text-xs text-zinc-400">
+            Understated, elite obsidian black, tabular numbers, hairline borders. Recedes into the
+            background so the athlete's raw numbers stand out.
+          </p>
+          <button
+            onclick="setTheme('stealth')"
+            class="w-full py-2.5 rounded-lg bg-zinc-100 text-black font-semibold text-xs hover:bg-white transition"
+          >
+            View Full Stealth Landing Page &rarr;
+          </button>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="p-6 rounded-none bg-[#040404] border-2 border-zinc-700 space-y-4 font-utility">
+          <div class="flex items-center justify-between font-utility-mono">
+            <span class="text-xs text-[#FF4D00] font-bold uppercase">// 2. MINIMALIST UTILITY</span>
+            <span class="text-xs px-2 py-0.5 bg-zinc-800 text-white font-bold">BRUTALIST</span>
+          </div>
+          <h3 class="text-xl font-bold text-white uppercase">Tracksmith &bull; Swiss Modernism</h3>
+          <p class="text-xs text-zinc-400 font-utility">
+            Stark 0px corners, pure black substrate, racing orange punch, strict grid dividers.
+            Uncompromising architectural clarity.
+          </p>
+          <button
+            onclick="setTheme('utility')"
+            class="w-full py-2.5 bg-[#FF4D00] text-black font-extrabold text-xs uppercase tracking-wider hover:bg-[#ff651f] transition font-utility-mono"
+          >
+            View Full Utility Landing Page &rarr;
+          </button>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="p-6 rounded-2xl bg-[#0A0D14] border border-white/10 space-y-4 font-cyber">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-[#D4FF00] font-bold uppercase">3. Refined Cyber 2.0</span>
+            <span
+              class="text-xs px-2 py-0.5 rounded-full bg-[#D4FF00]/10 text-[#D4FF00] border border-[#D4FF00]/30"
+              >HIGH-ENERGY</span
+            >
+          </div>
+          <h3 class="text-xl font-black text-white">Next-Gen Kyber &bull; Electric Volt</h3>
+          <p class="text-xs text-zinc-400">
+            Evolution of Kyber's existing DNA. Translucent frosted glass, radiant electric lime
+            CTAs, cyan accents, high athletic motivation.
+          </p>
+          <button
+            onclick="setTheme('cyber')"
+            class="w-full py-2.5 rounded-full bg-[#D4FF00] text-black font-black text-xs hover:bg-[#e2ff40] transition"
+          >
+            View Full Cyber Landing Page &rarr;
+          </button>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="p-6 rounded-3xl bg-[#181614] border border-[#2B2724] space-y-4 font-humanist">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-[#E07A5F] font-bold uppercase">4. Warm Humanist</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-[#E07A5F]/10 text-[#E07A5F]"
+              >LONGEVITY</span
+            >
+          </div>
+          <h3 class="text-xl font-bold text-[#F5F2EB]">Oura &bull; Levels &bull; Eight Sleep</h3>
+          <p class="text-xs text-[#9C958A]">
+            Velvety espresso stone, generous pebble curves, terracotta and sage bio-accents.
+            Calming, sustainable health.
+          </p>
+          <button
+            onclick="setTheme('humanist')"
+            class="w-full py-2.5 rounded-full bg-[#E07A5F] text-[#121110] font-bold text-xs hover:bg-[#e98970] transition"
+          >
+            View Full Humanist Landing Page &rarr;
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function setTheme(theme) {
+        // Hide all views
+        document.querySelectorAll('.theme-view').forEach((el) => el.classList.remove('active'))
+        // Show selected view
+        document.getElementById('view-' + theme).classList.add('active')
+
+        // Update button states
+        document.querySelectorAll('.theme-btn').forEach((btn) => {
+          btn.classList.remove('bg-white/10', 'text-white', 'shadow')
+          btn.classList.add('text-zinc-400')
+        })
+        const activeBtn = document.getElementById('btn-' + theme)
+        if (activeBtn) {
+          activeBtn.classList.remove('text-zinc-400')
+          activeBtn.classList.add('bg-white/10', 'text-white', 'shadow')
+        }
+
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+
+      function setCyberGlass(mode) {
+        // Update toggle buttons
+        document.querySelectorAll('.glass-toggle-btn').forEach((btn) => {
+          btn.classList.remove('bg-[#D4FF00]', 'text-black')
+          btn.classList.add('text-zinc-400')
+        })
+        const activeBtn = document.getElementById('glass-btn-' + mode)
+        if (activeBtn) {
+          activeBtn.classList.remove('text-zinc-400')
+          activeBtn.classList.add('bg-[#D4FF00]', 'text-black')
+        }
+
+        const card = document.getElementById('cyber-hero-card')
+        const orb = document.getElementById('cyber-ambient-orb')
+        const stats = [
+          document.getElementById('cyber-stat-1'),
+          document.getElementById('cyber-stat-2'),
+          document.getElementById('cyber-stat-3'),
+        ]
+        const pr = document.getElementById('cyber-pr-banner')
+
+        if (mode === 'balanced') {
+          card.className =
+            'rounded-3xl bg-[#111622]/90 backdrop-blur-2xl border border-white/10 p-6 shadow-[0_12px_40px_rgba(0,0,0,0.6)] relative overflow-hidden transition-all duration-300'
+          orb.className =
+            'absolute -top-12 -right-12 w-32 h-32 bg-[#D4FF00]/10 rounded-full blur-2xl pointer-events-none transition-all duration-300 block'
+          stats.forEach((s) => {
+            s.className =
+              'p-3.5 rounded-2xl bg-white/[0.04] border border-white/5 text-center transition-all duration-300'
+          })
+          pr.className =
+            'p-3 rounded-2xl bg-[#D4FF00]/10 border border-[#D4FF00]/25 flex items-center justify-between text-xs mb-4 relative z-10 transition-all duration-300'
+        } else if (mode === 'intense') {
+          card.className =
+            'rounded-3xl bg-[#0C101A]/90 backdrop-blur-2xl border-2 border-[#D4FF00]/50 p-6 shadow-[0_0_40px_-5px_rgba(212,255,0,0.35)] relative overflow-hidden transition-all duration-300'
+          orb.className =
+            'absolute -top-12 -right-12 w-48 h-48 bg-gradient-to-br from-[#D4FF00]/30 to-[#00F0FF]/30 rounded-full blur-3xl pointer-events-none transition-all duration-300 animate-pulse block'
+          stats.forEach((s) => {
+            s.className =
+              'p-3.5 rounded-2xl bg-black/50 border border-[#D4FF00]/20 text-center transition-all duration-300 shadow-[0_0_15px_rgba(212,255,0,0.1)]'
+          })
+          pr.className =
+            'p-3 rounded-2xl bg-[#D4FF00]/20 border border-[#D4FF00]/40 flex items-center justify-between text-xs mb-4 relative z-10 transition-all duration-300 shadow-[0_0_20px_rgba(212,255,0,0.25)]'
+        } else if (mode === 'matte') {
+          card.className =
+            'rounded-3xl bg-[#0E1017] border border-zinc-800 p-6 shadow-2xl relative overflow-hidden transition-all duration-300'
+          orb.className = 'hidden'
+          stats.forEach((s) => {
+            s.className =
+              'p-3.5 rounded-2xl bg-[#141720] border border-zinc-800 text-center transition-all duration-300'
+          })
+          pr.className =
+            'p-3 rounded-2xl bg-[#D4FF00]/10 border border-[#D4FF00]/20 flex items-center justify-between text-xs mb-4 relative z-10 transition-all duration-300'
+        }
+      }
+
+      function setCyberFont(fontMode) {
+        const card = document.getElementById('cyber-hero-card')
+        if (fontMode === 'lexend-tabular') {
+          card.style.fontFamily = "'Lexend', sans-serif"
+        } else if (fontMode === 'hybrid-mono') {
+          card.style.fontFamily = "'Lexend', sans-serif"
+        } else if (fontMode === 'geist-ui') {
+          card.style.fontFamily = "'Geist', sans-serif"
+        }
+      }
+
+      function setCyberRadius(radiusMode) {
+        const card = document.getElementById('cyber-hero-card')
+        const stats = [
+          document.getElementById('cyber-stat-1'),
+          document.getElementById('cyber-stat-2'),
+          document.getElementById('cyber-stat-3'),
+        ]
+        const pr = document.getElementById('cyber-pr-banner')
+        const btn = card.querySelector('button')
+
+        if (radiusMode === 'modern-saas') {
+          card.style.borderRadius = '1rem' // 16px (rounded-2xl)
+          stats.forEach((s) => (s.style.borderRadius = '0.75rem')) // 12px (rounded-xl)
+          if (pr) pr.style.borderRadius = '0.75rem'
+          if (btn) btn.style.borderRadius = '0.75rem'
+        } else if (radiusMode === 'full-pill') {
+          card.style.borderRadius = '1.5rem' // 24px (rounded-3xl)
+          stats.forEach((s) => (s.style.borderRadius = '1rem')) // 16px (rounded-2xl)
+          if (pr) pr.style.borderRadius = '9999px'
+          if (btn) btn.style.borderRadius = '9999px'
+        } else if (radiusMode === 'angular-precision') {
+          card.style.borderRadius = '0.5rem' // 8px (rounded-lg)
+          stats.forEach((s) => (s.style.borderRadius = '0.375rem')) // 6px (rounded-md)
+          if (pr) pr.style.borderRadius = '0.25rem'
+          if (btn) btn.style.borderRadius = '0.375rem'
+        }
+      }
+
+      function setCyberLightMode(mode) {
+        const card = document.getElementById('cyber-hero-card')
+        const orb = document.getElementById('cyber-ambient-orb')
+        const stats = [
+          document.getElementById('cyber-stat-1'),
+          document.getElementById('cyber-stat-2'),
+          document.getElementById('cyber-stat-3'),
+        ]
+        const pr = document.getElementById('cyber-pr-banner')
+        const btn = card.querySelector('button')
+        const title = card.querySelector('.text-base.font-black')
+
+        if (mode === 'frost') {
+          card.className =
+            'rounded-3xl bg-white border border-slate-200 p-6 shadow-2xl relative overflow-hidden transition-all duration-300'
+          if (title) title.className = 'text-base font-black text-slate-900'
+          if (orb)
+            orb.className =
+              'absolute -top-12 -right-12 w-32 h-32 bg-[#D4FF00]/20 rounded-full blur-2xl pointer-events-none transition-all duration-300 block'
+          stats.forEach((s) => {
+            s.className =
+              'p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-center transition-all duration-300'
+            const num = s.querySelector('.text-2xl')
+            if (num && !num.classList.contains('text-[#00F0FF]'))
+              num.className = 'text-2xl font-black text-slate-900'
+          })
+          if (pr)
+            pr.className =
+              'p-3 rounded-2xl bg-lime-500/20 border border-lime-400 text-slate-900 flex items-center justify-between text-xs mb-4 relative z-10 transition-all duration-300'
+          if (btn)
+            btn.className =
+              'w-full py-3 rounded-xl bg-[#D4FF00] hover:bg-[#c6ee00] text-black font-black text-xs uppercase tracking-wider transition shadow-md border border-black/10 relative z-10'
+        } else if (mode === 'paper') {
+          card.className =
+            'rounded-3xl bg-white border-2 border-black p-6 shadow-none relative overflow-hidden transition-all duration-300'
+          if (title) title.className = 'text-base font-black text-black'
+          if (orb) orb.className = 'hidden'
+          stats.forEach((s) => {
+            s.className =
+              'p-3.5 rounded-2xl bg-zinc-50 border border-zinc-300 text-center transition-all duration-300'
+            const num = s.querySelector('.text-2xl')
+            if (num && !num.classList.contains('text-[#00F0FF]'))
+              num.className = 'text-2xl font-black text-black'
+          })
+          if (pr)
+            pr.className =
+              'p-3 rounded-2xl bg-black text-white flex items-center justify-between text-xs mb-4 relative z-10 transition-all duration-300'
+          if (btn)
+            btn.className =
+              'w-full py-3 rounded-xl bg-black hover:bg-zinc-800 text-white font-black text-xs uppercase tracking-wider transition relative z-10'
+        } else if (mode === 'dark') {
+          setCyberGlass('balanced')
+        }
+      }
+
+      function setCyberNav(navMode) {
+        const header = document.getElementById('cyber-nav-header')
+        if (!header) return
+
+        if (navMode === 'floating') {
+          header.className =
+            'max-w-5xl mx-auto px-6 py-3.5 mt-4 flex items-center justify-between relative z-50 rounded-full bg-[#111622]/90 backdrop-blur-xl border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.6)] transition-all duration-300'
+        } else if (navMode === 'full-bleed') {
+          header.className =
+            'w-full px-8 py-4 flex items-center justify-between relative z-50 border-b border-white/10 bg-[#0A0D14]/90 backdrop-blur-md transition-all duration-300'
+        } else if (navMode === 'sidebar') {
+          header.className =
+            'max-w-7xl mx-auto px-6 py-6 flex items-center justify-between relative z-10 transition-all duration-300'
+          alert(
+            'Pro Sidebar Layout is active on in-app authenticated views (/dashboard, /workouts, /clients, /health). On public landing pages, it displays the standard header.',
+          )
+        }
+      }
+
+      function setPersonaDemo(persona) {
+        const athleteBtn = document.getElementById('persona-btn-athlete')
+        const coachBtn = document.getElementById('persona-btn-coach')
+        const athletePanel = document.getElementById('demo-persona-athlete')
+        const coachPanel = document.getElementById('demo-persona-coach')
+
+        if (persona === 'athlete') {
+          athleteBtn.className = 'flex-1 py-1 rounded bg-[#D4FF00] text-black font-bold transition'
+          coachBtn.className =
+            'flex-1 py-1 rounded text-zinc-400 hover:text-white font-bold transition'
+          athletePanel.classList.remove('hidden')
+          coachPanel.classList.add('hidden')
+        } else {
+          coachBtn.className = 'flex-1 py-1 rounded bg-cyan-400 text-black font-bold transition'
+          athleteBtn.className =
+            'flex-1 py-1 rounded text-zinc-400 hover:text-white font-bold transition'
+          coachPanel.classList.remove('hidden')
+          athletePanel.classList.add('hidden')
+        }
+      }
+
+      let currentWeight = 100.0
+      function adjustWeight(delta) {
+        currentWeight = Math.max(20, currentWeight + delta)
+        const el = document.getElementById('interactive-weight')
+        if (el) el.textContent = currentWeight.toFixed(1)
+      }
+
+      // Live countdown timer simulation
+      let secondsLeft = 102 // 01:42
+      setInterval(() => {
+        secondsLeft = secondsLeft > 0 ? secondsLeft - 1 : 120
+        const mins = String(Math.floor(secondsLeft / 60)).padStart(2, '0')
+        const secs = String(secondsLeft % 60).padStart(2, '0')
+        const formatted = `${mins}:${secs}`
+        document.querySelectorAll('.live-timer').forEach((el) => {
+          el.textContent = formatted
+        })
+      }, 1000)
+    </script>
+  </body>
+</html>

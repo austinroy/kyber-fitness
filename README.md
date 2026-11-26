@@ -1,19 +1,19 @@
-# Kyber Fitness — High-Performance Biometric Portal
+# Kyber Fitness — Modern Workout Tracking & Coaching Platform
 
-Kyber Fitness is a premium, full-stack fitness and athletic coaching dashboard built for high-performance individual athletes and professional personal trainers. Designed with the high-voltage Stitch Kinetic aesthetic system, it provides a unified platform to log workouts, track health trends, build reusable coaching programs, assign routines to athletes, and coordinate secure trainer-client collaborations.
+Kyber Fitness is a full-stack fitness and athletic coaching app built for individual athletes and personal trainers. It provides a clean, fast platform to log workouts, track health trends, build reusable workout plans, assign routines to clients, and manage trainer-client partnerships with clear permissions.
 
 ---
 
 ## Architectural Core & Stack
 
-Kyber Fitness utilizes an isomorphic, typesafe React 19 stack built on the edge:
+Kyber Fitness utilizes an isomorphic, typesafe React 19 stack:
 
 - **App Framework:** [TanStack Start](https://tanstack.com/start) (React 19 + Vinxi SSR) for high-performance isomorphic rendering and server functions.
 - **Routing System:** [TanStack Router](https://tanstack.com/router) for typesafe, file-system-based navigation and automatic code splitting.
-- **Identity & Authentication:** [Clerk](https://clerk.com) (`@clerk/tanstack-start`) for seamless user sessions and multi-tenant portal gates.
+- **Identity & Authentication:** [Clerk](https://clerk.com) (`@clerk/tanstack-start`) for authentication and secure session management.
 - **Database & Persistence:** [Drizzle ORM](https://orm.drizzle.team) + **Turso/libSQL** for durable production SQLite, with a local `fitness.db` fallback for development.
-- **Design & Layout:** [Tailwind CSS v4](https://tailwindcss.com) + custom **Vanilla CSS** tokens providing glassmorphic bento blocks, dynamic grid layouts, light/dark theme modes, and custom micro-animations.
-- **Telemetry Visuals:** Glowing custom **SVG trendlines** and Lucide React icons for advanced biometric charting.
+- **Design & Layout:** [Tailwind CSS v4](https://tailwindcss.com) + custom **Vanilla CSS** tokens providing glassmorphic cards, dynamic grid layouts, light/dark theme modes, and smooth micro-animations.
+- **Progress Visuals:** Clean **SVG trend lines** and Lucide React icons for tracking health metrics.
 - **Quality Tooling:** [Oxlint](https://oxc.rs/docs/guide/usage/linter) for fast JavaScript/TypeScript linting and [Prettier](https://prettier.io) for repo-wide formatting.
 
 Shared TypeScript data-transfer and form/editor shapes live under `src/types`. Component-only prop/helper types live beside their component in `*.types.ts` files. This keeps route files focused on behavior and prevents duplicated workout, program, profile, and trainer-client shapes from drifting.
@@ -22,9 +22,9 @@ Shared TypeScript data-transfer and form/editor shapes live under `src/types`. C
 
 ## Current Product Surface
 
-- **Landing and auth:** A premium public landing page plus Clerk-powered `/sign-in` and `/sign-up` routes with splat support for path-based multi-step auth.
-- **Onboarding and settings:** Role-aware onboarding for athletes and trainers, with unified profile and credential editing in `/settings`.
-- **Athlete dashboard:** Workout totals, assigned-routine prompts, quick body-weight logging, and recent activity summaries.
+- **Landing and auth:** A public landing page with an interactive dual-persona hero (live workout tracker preview with weight adjusters and rest timer alongside a coach client management preview), feature pillars, progress charts, and Clerk-powered `/sign-in` and `/sign-up` routes.
+- **Navigation architecture:** Elevated floating capsule header on desktop with a mobile circular hamburger toggle that slides out a right-side navigation drawer, paired with a thumb-friendly 5-icon persistent mobile bottom dock (Home, Train, Plans/Clients, Vitals, Settings) with live notification badges.
+- **Dashboards for athletes and coaches:** Role-tailored consoles — athlete view with workout totals, assigned-routine prompts, quick body-weight logging, and recent activity summaries; coach view with business overview, active client network counts, program template metrics, quick coaching desk shortcuts, recent client snapshot, and coaching guidance.
 - **Workout logging and review:** Custom workout session builder with global/custom exercises, set targets, reps, load, distance, duration, rest, intensity, notes, dedicated session detail pages, and permission-checked edit/delete flows.
 - **Health metrics:** Timelines for weight, body fat, and resting heart rate, including trainer-supported client metric logging plus permission-checked metric correction and deletion when access allows.
 - **Trainer clients:** Client invitation, active relationship management, athlete profile/metric views, and permission-guarded client logging.
@@ -35,15 +35,19 @@ Shared TypeScript data-transfer and form/editor shapes live under `src/types`. C
 
 ---
 
-## Stitch Kinetic Aesthetic Guidelines
+## Refined Neon Cyber 2.0 Aesthetic Guidelines
 
-The application strictly implements the Kinetic design principles to create a visual-first SaaS dashboard:
+The application strictly implements the **Refined Neon Cyber 2.0** design principles:
 
-- **Contrast Base:** Deep, low-fatigue charcoal surfaces (`#0a0a0a` / `#131313`) generating premium modern depth.
-- **Theme Modes:** Light, dark, and system-auto modes are available through the app shell theme toggle. The initial mode is applied before hydration to prevent visible theme flash.
-- **CTA Highlighters:** **Electric Lime** (`#c3f400`) primary markers for success nodes, action triggers, and primary biometric progress.
-- **Tech Accents:** **Cyan** (`#00eefc`) secondary lines for charting trends, diagnostic metrics, and structural borders.
-- **Glassmorphic Surfaces:** Backdrop-filtered translucent panels (`rgba(255, 255, 255, 0.03)` with `backdrop-filter: blur(12px)`) that let glowing background meshes bleed through.
+- **Contrast Base:** Deep Carbon (`#0A0D14` base, `#0C101A` / `#111622` cards) generating high-contrast, low-fatigue athletic surfaces.
+- **Cyber Frost Light Mode:** Clean ice-slate surfaces (`#F8FAFC` base, `#FFFFFF` cards, `#0F172A` text, `#E2E8F0` borders) preserving high-contrast athletic Volt and Cyan accents.
+- **Theme Modes:** Light, dark, and system-auto modes are available through `ThemeToggle.tsx`. The initial mode is applied before hydration to prevent visible theme flash. All navigation bars and SVG data charts dynamically adapt to the active theme.
+- **CTA Highlighters & Charts:** **Volt Lime** (`#D4FF00` dark, `#4D7C0F` light) primary markers for success nodes, action triggers, PR celebrations, active workout timers, and primary biometric progress.
+- **Tech Accents & Curves:** **Hyper Cyan** (`#00F0FF` dark, `#0891B2` light) secondary lines for charting trends, diagnostic metrics, coach sync status, and structural borders.
+- **Surfaces:** Semi-transparent **Balanced Modern Glass** (`rgba(17, 22, 34, 0.85)` in dark, `rgba(255, 255, 255, 0.85)` in light with `backdrop-filter: blur(16px)`, clean 1px border highlights, and soft ambient radial glow behind active cards).
+- **Typography:** `Lexend` for hero/display titles, `Geist` for clean SaaS body/forms, and `Geist Mono` with `tabular-nums` for clock readouts and weights without layout jitter.
+- **Component & Container Sizing:** In-app buttons adhere to compact, high-performance SaaS scaling (`8px 16px` at 12px font size with `btn-sm` and `btn-xs` variants). Signed-in page components are constrained to `max-w-6xl mx-auto px-4 sm:px-6`, matching the landing page design and floating navigation header width for cohesive visual alignment.
+- **Mobile Responsiveness & Ergonomics:** Viewport configuration supports `viewport-fit=cover` with iOS safe area offsets (`env(safe-area-inset-bottom)`) on the persistent bottom navigation dock and main viewports. Multi-column set logging tables are guarded with horizontal scroll wrappers and minimum widths (`min-w-[540px]`), client console tabs feature frictionless horizontal scrolling, and dialog modals enforce max-height constraints (`max-h-[88vh] overflow-y-auto`) for mobile keyboards.
 
 ---
 
@@ -70,17 +74,17 @@ erDiagram
     workout_program_exercises ||--o{ workout_program_sets : "has target sets"
 ```
 
-1.  **`users`:** Secure credentials container syncing Clerk auth ids with role specifications (`individual` or `trainer`).
-2.  **`profiles`:** Bio metrics (Date of Birth, gender, height, activity coefficient, fitness goals).
-3.  **`trainer_profiles`:** Pro coach directory listing studio business titles, specialty fields, bios, and experience durations.
-4.  **`trainer_clients`:** Network mapping between trainers and athletes with status flags (`pending`, `active`, `declined`) and granular reading/writing permissions.
-5.  **`workout_sessions`:** Workout containers cataloging date, title, duration, and notes.
-6.  **`exercises` & `exercise_sets`:** Logged movements preloaded with 15 global standard routines (strength, cardio, bodyweight) plus custom client-created sets tracking reps, weights, distances, durations, and intensity (RPE).
-7.  **`health_metrics`:** Historical timelines of athlete tracking (body weight, body fat %, resting heart rate).
-8.  **`workout_programs`, `workout_program_exercises`, `workout_program_sets`:** Trainer-owned reusable routine templates with ordered movements, reusable block labels, progression plans, target sets, and coaching instructions.
-9.  **`program_assignments`:** Direct trainer-to-athlete routine assignments with `pending` and `completed` states, optional scheduling/due metadata, recurrence cadence, and completed session linkage.
-10. **`coaching_notes`:** Trainer-private client notes with pinned status and update timestamps, guarded by active trainer-client relationships.
-11. **`notifications`:** In-app inbox records for invites, assignments, coaching alerts, unread status, and deep links back to the relevant workflow.
+1.  **`users`:** Account records mapping Clerk user IDs with roles (`individual` or `trainer`).
+2.  **`profiles`:** Athlete profile information (date of birth, gender, height, activity level, fitness goals).
+3.  **`trainer_profiles`:** Trainer profiles with gym/studio name, specialization, bio, and years of experience.
+4.  **`trainer_clients`:** Trainer-client relationships with status (`pending`, `active`, `declined`) and permissions (e.g. view health data, log workouts).
+5.  **`workout_sessions`:** Logged workouts with date, title, duration, and notes.
+6.  **`exercises` & `exercise_sets`:** Logged exercises preloaded with standard movements (strength, cardio, bodyweight) plus custom exercises, tracking sets, reps, weight, distance, duration, and intensity (RPE).
+7.  **`health_metrics`:** Health metrics history (body weight, body fat percentage, resting heart rate).
+8.  **`workout_programs`, `workout_program_exercises`, `workout_program_sets`:** Trainer-owned workout plans and templates with exercises, block labels, target sets, and coaching notes.
+9.  **`program_assignments`:** Workout plan assignments from trainers to clients with scheduled dates, due dates, recurrence cadence, and completion tracking.
+10. **`coaching_notes`:** Trainer-private client notes with pinned status, guarded by active trainer-client relationships.
+11. **`notifications`:** In-app notifications for invites and program assignments with unread badges.
 
 ---
 
@@ -103,7 +107,7 @@ During the development process, we implemented several critical configurations t
 ### 3. Server-Side Access Validation Hook
 
 - **Symptom:** Protecting database transactions against unauthorized clients.
-- **Resolution:** Enforced `verifyTrainerClientAccess(trainerId, clientId)` inside server actions. A trainer can only query or log biometric details for an athlete if an active relationship (`trainerClients.status = 'active'`) exists with the correct permissions.
+- **Resolution:** Enforced `verifyTrainerClientAccess(trainerId, clientId)` inside server actions. A trainer can only query or log health metrics for an athlete if an active relationship (`trainerClients.status = 'active'`) exists with the correct permissions.
 
 ### 4. Program Ownership and Assignment Validation
 
@@ -264,12 +268,12 @@ To resolve Rolldown/Vite compilation errors under pnpm's strict dependency model
 
 ---
 
-## Security & Permissive Operations Matrix
+## Security & Permissions Matrix
 
-- **Profile Settings:** Both athletes and trainers have access to the `/settings` interface to dynamically manage their registration variables, biometrics ledger (height, goal, activity level), or coaching credentials (specialization, studio business title, experience).
-- **Athletes:** Complete control over personal biometric inputs, weight history, and private logging. Athletes have explicit authority to revoke trainer access at any time from the `/my-trainers` console.
+- **Profile Settings:** Both athletes and trainers can use `/settings` to manage their profile details (height, fitness goal, activity level) or trainer credentials (specialization, gym/studio name, experience).
+- **Athletes:** Complete control over personal health metrics, workout history, and personal logging. Athletes can review or revoke trainer access at any time from `/my-trainers`.
 - **Trainers:** Access is strictly read-only for metrics unless the client grants explicit write permissions (`canAddSessions = true`). All database writes are signed with `recordedByUserId` for full accountability.
-- **Program Templates:** Trainers can edit/delete only templates they created. Athletes can view assigned program content only through their own assignment records.
+- **Program Templates:** Trainers can edit or delete only templates they created. Athletes can view assigned program content only through their own assignment records.
 - **Assignment Completion:** Workout assignment completion is validated server-side against the current athlete, the assignment ID, and `status = 'pending'`.
 
 ---

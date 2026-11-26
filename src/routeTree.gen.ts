@@ -9,37 +9,27 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SettingsRouteImport } from './routes/settings'
-import { Route as OnboardingRouteImport } from './routes/onboarding'
-import { Route as NotificationsRouteImport } from './routes/notifications'
-import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as WorkoutsIndexRouteImport } from './routes/workouts/index'
-import { Route as SignUpIndexRouteImport } from './routes/sign-up/index'
-import { Route as SignInIndexRouteImport } from './routes/sign-in/index'
-import { Route as ProgramsIndexRouteImport } from './routes/programs/index'
-import { Route as MyTrainersIndexRouteImport } from './routes/my-trainers/index'
-import { Route as HealthIndexRouteImport } from './routes/health/index'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ClientsIndexRouteImport } from './routes/clients/index'
-import { Route as WorkoutsNewRouteImport } from './routes/workouts/new'
-import { Route as WorkoutsSessionIdRouteImport } from './routes/workouts/$sessionId'
-import { Route as SignUpSplatRouteImport } from './routes/sign-up/$'
-import { Route as SignInSplatRouteImport } from './routes/sign-in/$'
+import { Route as HealthIndexRouteImport } from './routes/health/index'
+import { Route as MyTrainersIndexRouteImport } from './routes/my-trainers/index'
+import { Route as ProgramsIndexRouteImport } from './routes/programs/index'
 import { Route as ProgramsNewRouteImport } from './routes/programs/new'
+import { Route as SignInIndexRouteImport } from './routes/sign-in/index'
+import { Route as SignInSplatRouteImport } from './routes/sign-in/$'
+import { Route as SignUpIndexRouteImport } from './routes/sign-up/index'
+import { Route as SignUpSplatRouteImport } from './routes/sign-up/$'
+import { Route as WorkoutsIndexRouteImport } from './routes/workouts/index'
+import { Route as WorkoutsSessionIdRouteImport } from './routes/workouts/$sessionId'
+import { Route as WorkoutsNewRouteImport } from './routes/workouts/new'
 
-const SettingsRoute = SettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OnboardingRoute = OnboardingRouteImport.update({
-  id: '/onboarding',
-  path: '/onboarding',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotificationsRoute = NotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -47,39 +37,19 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorkoutsIndexRoute = WorkoutsIndexRouteImport.update({
-  id: '/workouts/',
-  path: '/workouts/',
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SignUpIndexRoute = SignUpIndexRouteImport.update({
-  id: '/sign-up/',
-  path: '/sign-up/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignInIndexRoute = SignInIndexRouteImport.update({
-  id: '/sign-in/',
-  path: '/sign-in/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProgramsIndexRoute = ProgramsIndexRouteImport.update({
-  id: '/programs/',
-  path: '/programs/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MyTrainersIndexRoute = MyTrainersIndexRouteImport.update({
-  id: '/my-trainers/',
-  path: '/my-trainers/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HealthIndexRoute = HealthIndexRouteImport.update({
-  id: '/health/',
-  path: '/health/',
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClientsIndexRoute = ClientsIndexRouteImport.update({
@@ -87,19 +57,29 @@ const ClientsIndexRoute = ClientsIndexRouteImport.update({
   path: '/clients/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorkoutsNewRoute = WorkoutsNewRouteImport.update({
-  id: '/workouts/new',
-  path: '/workouts/new',
+const HealthIndexRoute = HealthIndexRouteImport.update({
+  id: '/health/',
+  path: '/health/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WorkoutsSessionIdRoute = WorkoutsSessionIdRouteImport.update({
-  id: '/workouts/$sessionId',
-  path: '/workouts/$sessionId',
+const MyTrainersIndexRoute = MyTrainersIndexRouteImport.update({
+  id: '/my-trainers/',
+  path: '/my-trainers/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SignUpSplatRoute = SignUpSplatRouteImport.update({
-  id: '/sign-up/$',
-  path: '/sign-up/$',
+const ProgramsIndexRoute = ProgramsIndexRouteImport.update({
+  id: '/programs/',
+  path: '/programs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgramsNewRoute = ProgramsNewRouteImport.update({
+  id: '/programs/new',
+  path: '/programs/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignInIndexRoute = SignInIndexRouteImport.update({
+  id: '/sign-in/',
+  path: '/sign-in/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignInSplatRoute = SignInSplatRouteImport.update({
@@ -107,9 +87,29 @@ const SignInSplatRoute = SignInSplatRouteImport.update({
   path: '/sign-in/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProgramsNewRoute = ProgramsNewRouteImport.update({
-  id: '/programs/new',
-  path: '/programs/new',
+const SignUpIndexRoute = SignUpIndexRouteImport.update({
+  id: '/sign-up/',
+  path: '/sign-up/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignUpSplatRoute = SignUpSplatRouteImport.update({
+  id: '/sign-up/$',
+  path: '/sign-up/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkoutsIndexRoute = WorkoutsIndexRouteImport.update({
+  id: '/workouts/',
+  path: '/workouts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkoutsSessionIdRoute = WorkoutsSessionIdRouteImport.update({
+  id: '/workouts/$sessionId',
+  path: '/workouts/$sessionId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkoutsNewRoute = WorkoutsNewRouteImport.update({
+  id: '/workouts/new',
+  path: '/workouts/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -253,25 +253,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/settings': {
-      id: '/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof SettingsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/onboarding': {
-      id: '/onboarding'
-      path: '/onboarding'
-      fullPath: '/onboarding'
-      preLoaderRoute: typeof OnboardingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notifications': {
-      id: '/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof NotificationsRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -281,53 +267,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/workouts/': {
-      id: '/workouts/'
-      path: '/workouts'
-      fullPath: '/workouts/'
-      preLoaderRoute: typeof WorkoutsIndexRouteImport
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sign-up/': {
-      id: '/sign-up/'
-      path: '/sign-up'
-      fullPath: '/sign-up/'
-      preLoaderRoute: typeof SignUpIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sign-in/': {
-      id: '/sign-in/'
-      path: '/sign-in'
-      fullPath: '/sign-in/'
-      preLoaderRoute: typeof SignInIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/programs/': {
-      id: '/programs/'
-      path: '/programs'
-      fullPath: '/programs/'
-      preLoaderRoute: typeof ProgramsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/my-trainers/': {
-      id: '/my-trainers/'
-      path: '/my-trainers'
-      fullPath: '/my-trainers/'
-      preLoaderRoute: typeof MyTrainersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/health/': {
-      id: '/health/'
-      path: '/health'
-      fullPath: '/health/'
-      preLoaderRoute: typeof HealthIndexRouteImport
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/clients/': {
@@ -337,25 +295,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/workouts/new': {
-      id: '/workouts/new'
-      path: '/workouts/new'
-      fullPath: '/workouts/new'
-      preLoaderRoute: typeof WorkoutsNewRouteImport
+    '/health/': {
+      id: '/health/'
+      path: '/health'
+      fullPath: '/health/'
+      preLoaderRoute: typeof HealthIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/workouts/$sessionId': {
-      id: '/workouts/$sessionId'
-      path: '/workouts/$sessionId'
-      fullPath: '/workouts/$sessionId'
-      preLoaderRoute: typeof WorkoutsSessionIdRouteImport
+    '/my-trainers/': {
+      id: '/my-trainers/'
+      path: '/my-trainers'
+      fullPath: '/my-trainers/'
+      preLoaderRoute: typeof MyTrainersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sign-up/$': {
-      id: '/sign-up/$'
-      path: '/sign-up/$'
-      fullPath: '/sign-up/$'
-      preLoaderRoute: typeof SignUpSplatRouteImport
+    '/programs/': {
+      id: '/programs/'
+      path: '/programs'
+      fullPath: '/programs/'
+      preLoaderRoute: typeof ProgramsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/programs/new': {
+      id: '/programs/new'
+      path: '/programs/new'
+      fullPath: '/programs/new'
+      preLoaderRoute: typeof ProgramsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in/': {
+      id: '/sign-in/'
+      path: '/sign-in'
+      fullPath: '/sign-in/'
+      preLoaderRoute: typeof SignInIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/sign-in/$': {
@@ -365,11 +337,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignInSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/programs/new': {
-      id: '/programs/new'
-      path: '/programs/new'
-      fullPath: '/programs/new'
-      preLoaderRoute: typeof ProgramsNewRouteImport
+    '/sign-up/': {
+      id: '/sign-up/'
+      path: '/sign-up'
+      fullPath: '/sign-up/'
+      preLoaderRoute: typeof SignUpIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-up/$': {
+      id: '/sign-up/$'
+      path: '/sign-up/$'
+      fullPath: '/sign-up/$'
+      preLoaderRoute: typeof SignUpSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workouts/': {
+      id: '/workouts/'
+      path: '/workouts'
+      fullPath: '/workouts/'
+      preLoaderRoute: typeof WorkoutsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workouts/$sessionId': {
+      id: '/workouts/$sessionId'
+      path: '/workouts/$sessionId'
+      fullPath: '/workouts/$sessionId'
+      preLoaderRoute: typeof WorkoutsSessionIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workouts/new': {
+      id: '/workouts/new'
+      path: '/workouts/new'
+      fullPath: '/workouts/new'
+      preLoaderRoute: typeof WorkoutsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
   }

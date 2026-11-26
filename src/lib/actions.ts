@@ -137,7 +137,11 @@ async function syncPendingTrainerInviteNotifications(clientId: string) {
 }
 
 async function getUserName(userId: string) {
-  const rows = await db.select({ name: users.name }).from(users).where(eq(users.id, userId)).limit(1)
+  const rows = await db
+    .select({ name: users.name })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1)
   return rows[0]?.name || 'Kyber user'
 }
 
@@ -184,7 +188,7 @@ export const getCurrentUserProfile = createServerFn({ method: 'GET' }).handler(a
 })
 
 export const getNotifications = createServerFn({ method: 'GET' })
-  .inputValidator((data?: { unreadOnly?: boolean }) => data)
+  .validator((data?: { unreadOnly?: boolean }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const userId = auth.userId
@@ -221,8 +225,8 @@ export const getNotifications = createServerFn({ method: 'GET' })
       }
 
       throw error
-  }
-})
+    }
+  })
 
 export const getReceivedNotificationCount = createServerFn({ method: 'GET' }).handler(async () => {
   const auth = await requireAuthUser()
@@ -267,7 +271,7 @@ export const getUnreadNotificationCount = createServerFn({ method: 'GET' }).hand
 })
 
 export const markNotificationRead = createServerFn({ method: 'POST' })
-  .inputValidator((data: { notificationId: string }) => data)
+  .validator((data: { notificationId: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const userId = auth.userId
@@ -310,7 +314,7 @@ export const markAllNotificationsRead = createServerFn({ method: 'POST' }).handl
 
 // 2. Onboard User (Select role and set initial parameters)
 export const onboardUser = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     (data: {
       role: 'individual' | 'trainer'
       name: string
@@ -384,7 +388,7 @@ export const onboardUser = createServerFn({ method: 'POST' })
 
 // 2b. Update User Profile & Health Data / Credentials
 export const updateUserProfile = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     (data: {
       name: string
       // Shared profile details
@@ -468,7 +472,7 @@ export const getExercisesList = createServerFn({ method: 'GET' }).handler(async 
 
 // 4. Create Custom Exercise
 export const createCustomExercise = createServerFn({ method: 'POST' })
-  .inputValidator((data: { name: string; category: string; defaultUnit: string }) => data)
+  .validator((data: { name: string; category: string; defaultUnit: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const userId = auth.userId
@@ -593,7 +597,7 @@ async function getProgramDetailsById(programId: string) {
 
 // 5. Save Workout Session
 export const saveWorkoutSession = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     (data: {
       title: string
       sessionDate: string
@@ -753,7 +757,7 @@ export const saveWorkoutSession = createServerFn({ method: 'POST' })
 
 // 6. Get Workout Sessions History
 export const getWorkoutSessionsHistory = createServerFn({ method: 'GET' })
-  .inputValidator((data?: { clientId?: string }) => data)
+  .validator((data?: { clientId?: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const currentUserId = auth.userId
@@ -835,7 +839,7 @@ export const getWorkoutSessionsHistory = createServerFn({ method: 'GET' })
   })
 
 export const getWorkoutSessionDetails = createServerFn({ method: 'GET' })
-  .inputValidator((data: { sessionId: string; clientId?: string }) => data)
+  .validator((data: { sessionId: string; clientId?: string }) => data)
   .handler(async ({ data }) => {
     const sessions = await getWorkoutSessionsHistory({
       data: data.clientId ? { clientId: data.clientId } : undefined,
@@ -850,7 +854,7 @@ export const getWorkoutSessionDetails = createServerFn({ method: 'GET' })
   })
 
 export const updateWorkoutSession = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     (data: {
       sessionId: string
       title: string
@@ -962,7 +966,7 @@ export const updateWorkoutSession = createServerFn({ method: 'POST' })
   })
 
 export const deleteWorkoutSession = createServerFn({ method: 'POST' })
-  .inputValidator((data: { sessionId: string; clientId?: string }) => data)
+  .validator((data: { sessionId: string; clientId?: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const currentUserId = auth.userId
@@ -1032,7 +1036,7 @@ export const getTrainerClientsList = createServerFn({ method: 'GET' }).handler(a
 })
 
 export const getCoachingNotes = createServerFn({ method: 'GET' })
-  .inputValidator((data: { clientId: string }) => data)
+  .validator((data: { clientId: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const trainerId = auth.userId
@@ -1050,14 +1054,9 @@ export const getCoachingNotes = createServerFn({ method: 'GET' })
   })
 
 export const saveCoachingNote = createServerFn({ method: 'POST' })
-  .inputValidator(
-    (data: {
-      clientId: string
-      noteId?: string
-      title: string
-      body: string
-      pinned?: boolean
-    }) => data,
+  .validator(
+    (data: { clientId: string; noteId?: string; title: string; body: string; pinned?: boolean }) =>
+      data,
   )
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
@@ -1133,7 +1132,7 @@ export const saveCoachingNote = createServerFn({ method: 'POST' })
   })
 
 export const deleteCoachingNote = createServerFn({ method: 'POST' })
-  .inputValidator((data: { clientId: string; noteId: string }) => data)
+  .validator((data: { clientId: string; noteId: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const trainerId = auth.userId
@@ -1166,7 +1165,7 @@ export const deleteCoachingNote = createServerFn({ method: 'POST' })
 
 // 8. Invite Client via Email (Flow A: Trainer invites client by email)
 export const inviteClientByEmail = createServerFn({ method: 'POST' })
-  .inputValidator((data: { email: string }) => data)
+  .validator((data: { email: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const trainerId = auth.userId
@@ -1279,7 +1278,7 @@ export const getIndividualTrainersList = createServerFn({ method: 'GET' }).handl
 
 // 10. Respond to Trainer Invitation Request
 export const respondToTrainerInvitation = createServerFn({ method: 'POST' })
-  .inputValidator((data: { relationshipId: string; accept: boolean }) => data)
+  .validator((data: { relationshipId: string; accept: boolean }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const clientId = auth.userId
@@ -1317,7 +1316,7 @@ export const respondToTrainerInvitation = createServerFn({ method: 'POST' })
 
 // 11. Log Health Metric
 export const logHealthMetric = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     (data: {
       metricType: 'weight' | 'body_fat' | 'resting_hr'
       value: number
@@ -1369,7 +1368,7 @@ export const logHealthMetric = createServerFn({ method: 'POST' })
 
 // 12. Get Health Metrics History (e.g. body weight)
 export const getHealthMetricsHistory = createServerFn({ method: 'GET' })
-  .inputValidator(
+  .validator(
     (data?: { clientId?: string; metricType?: 'weight' | 'body_fat' | 'resting_hr' }) => data,
   )
   .handler(async ({ data }) => {
@@ -1398,7 +1397,7 @@ export const getHealthMetricsHistory = createServerFn({ method: 'GET' })
   })
 
 export const updateHealthMetric = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     (data: {
       metricId: string
       metricType: 'weight' | 'body_fat' | 'resting_hr'
@@ -1452,7 +1451,7 @@ export const updateHealthMetric = createServerFn({ method: 'POST' })
   })
 
 export const deleteHealthMetric = createServerFn({ method: 'POST' })
-  .inputValidator((data: { metricId: string; clientId?: string }) => data)
+  .validator((data: { metricId: string; clientId?: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const currentUserId = auth.userId
@@ -1544,7 +1543,7 @@ export const getWorkoutPrograms = createServerFn({ method: 'GET' }).handler(asyn
 
 // 14. Get Program details (exercises + sets)
 export const getWorkoutProgramDetails = createServerFn({ method: 'GET' })
-  .inputValidator((data: { programId: string }) => data)
+  .validator((data: { programId: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const userId = auth.userId
@@ -1581,7 +1580,7 @@ export const getWorkoutProgramDetails = createServerFn({ method: 'GET' })
 
 // 14b. Get assigned program details for the current athlete
 export const getAssignedWorkoutProgramDetails = createServerFn({ method: 'GET' })
-  .inputValidator((data: { assignmentId: string }) => data)
+  .validator((data: { assignmentId: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const clientId = auth.userId
@@ -1628,7 +1627,7 @@ export const getAssignedWorkoutProgramDetails = createServerFn({ method: 'GET' }
 
 // 15. Create or Edit a Workout Program Template
 export const saveWorkoutProgram = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     (data: {
       programId?: string // If editing
       title: string
@@ -1748,7 +1747,7 @@ export const saveWorkoutProgram = createServerFn({ method: 'POST' })
 
 // 16. Delete Workout Program Template
 export const deleteWorkoutProgram = createServerFn({ method: 'POST' })
-  .inputValidator((data: { programId: string }) => data)
+  .validator((data: { programId: string }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const trainerId = auth.userId
@@ -1775,7 +1774,7 @@ export const deleteWorkoutProgram = createServerFn({ method: 'POST' })
 
 // 17. Direct Assignment of Program to Client
 export const assignProgramToClient = createServerFn({ method: 'POST' })
-  .inputValidator(
+  .validator(
     (data: {
       programId: string
       clientId: string
@@ -1839,7 +1838,7 @@ export const assignProgramToClient = createServerFn({ method: 'POST' })
 
 // 18. Get Athlete Client's Assigned Programs
 export const getClientAssignedPrograms = createServerFn({ method: 'GET' })
-  .inputValidator((data?: { status?: 'pending' | 'completed' }) => data)
+  .validator((data?: { status?: 'pending' | 'completed' }) => data)
   .handler(async ({ data }) => {
     const auth = await requireAuthUser()
     const clientId = auth.userId

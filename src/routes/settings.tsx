@@ -41,6 +41,24 @@ function SettingsPage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [navLayout, setNavLayout] = useState<'floating' | 'full-bleed' | 'sidebar'>('floating')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = window.localStorage.getItem('kyber_header_layout')
+      if (stored === 'full-bleed' || stored === 'floating' || stored === 'sidebar') {
+        setNavLayout(stored)
+      }
+    }
+  }, [])
+
+  const handleNavLayoutChange = (layout: 'floating' | 'full-bleed' | 'sidebar') => {
+    setNavLayout(layout)
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem('kyber_header_layout', layout)
+      window.dispatchEvent(new Event('kyber_header_layout_change'))
+    }
+  }
 
   useEffect(() => {
     if (isLoaded) {
@@ -135,11 +153,9 @@ function SettingsPage() {
 
   if (profileLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Retrieving biometric settings console...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading settings...</p>
       </div>
     )
   }
@@ -147,15 +163,15 @@ function SettingsPage() {
   const isTrainer = dbUser?.role === 'trainer'
 
   return (
-    <div className="max-w-2xl mx-auto py-4 px-4 space-y-6">
+    <div className="max-w-4xl mx-auto py-4 px-4 sm:px-6 space-y-6">
       {/* Settings Header */}
-      <div className="flex flex-col gap-2 border-b border-white/5 pb-6">
-        <div className="chip chip-lime">PROFILE CONFIGURATION</div>
-        <h1 className="display-lg text-3xl font-black m-0 text-white">
-          {isTrainer ? 'COACH CREDENTIALS' : 'ATHLETE BIOMETRICS'}
+      <div className="flex flex-col gap-2 border-b border-slate-200 dark:border-white/5 pb-6">
+        <div className="chip chip-lime">ACCOUNT & PREFERENCES</div>
+        <h1 className="display-lg text-3xl font-black m-0 text-slate-900 dark:text-white">
+          Settings
         </h1>
         <p className="body-md text-[var(--on-surface-variant)] m-0">
-          Modify your central registration database settings and biometric tracking defaults.
+          Manage your personal details, training preferences, and app navigation.
         </p>
       </div>
 
@@ -171,7 +187,7 @@ function SettingsPage() {
         <div className="p-4 rounded-md bg-emerald-950/40 border border-emerald-900 text-emerald-300 body-md flex items-center justify-between gap-3 animate-fade-in">
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-emerald-400">check_circle</span>
-            <span>Biometric ledger updated successfully. Core changes saved.</span>
+            <span>Settings saved successfully.</span>
           </div>
           <button
             onClick={() => setSuccess(false)}
@@ -187,7 +203,7 @@ function SettingsPage() {
         <div className="card space-y-4">
           <div className="flex items-center gap-2 border-b border-white/5 pb-2">
             <span className="material-symbols-outlined text-[var(--primary-container)]">badge</span>
-            <h3 className="headline-md text-lg font-bold text-white">Base Directory Details</h3>
+            <h3 className="headline-md text-lg font-bold text-white">Profile Information</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -203,7 +219,7 @@ function SettingsPage() {
               />
             </div>
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">Registered Email</label>
+              <label className="label-md text-[var(--on-surface-variant)]">Email Address</label>
               <input
                 type="email"
                 value={email}
@@ -224,7 +240,7 @@ function SettingsPage() {
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 fitness_center
               </span>
-              <h3 className="headline-md text-lg font-bold text-white">Athlete Metrics Ledger</h3>
+              <h3 className="headline-md text-lg font-bold text-white">About You</h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -271,18 +287,16 @@ function SettingsPage() {
                   <option value="light">Lightly Active (1-3 days/week)</option>
                   <option value="moderate">Moderately Active (3-5 days/week)</option>
                   <option value="very-active">Very Active (6-7 days/week)</option>
-                  <option value="extreme">Athlete/Professional Training</option>
+                  <option value="extreme">Very intense training</option>
                 </select>
               </div>
               <div className="input-group">
-                <label className="label-md text-[var(--on-surface-variant)]">
-                  Primary Fitness Goal
-                </label>
+                <label className="label-md text-[var(--on-surface-variant)]">Fitness Goal</label>
                 <input
                   type="text"
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
-                  placeholder="e.g. Body recomposition, run a 5k"
+                  placeholder="e.g. Build strength, run a 5k"
                   className="input-field"
                 />
               </div>
@@ -290,12 +304,12 @@ function SettingsPage() {
 
             <div className="input-group">
               <label className="label-md text-[var(--on-surface-variant)]">
-                Medical / Injury Notes
+                Health & Injury Notes
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="List any past injuries, physical limits, or coaching requests..."
+                placeholder="List any past injuries, physical limits, or notes for your coach..."
                 className="input-field min-h-[100px]"
               />
             </div>
@@ -307,19 +321,19 @@ function SettingsPage() {
               <span className="material-symbols-outlined text-[var(--secondary-container)]">
                 sports
               </span>
-              <h3 className="headline-md text-lg font-bold text-white">Coaching Credentials</h3>
+              <h3 className="headline-md text-lg font-bold text-white">Coaching Details</h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="input-group">
                 <label className="label-md text-[var(--on-surface-variant)]">
-                  Business / Studio Name
+                  Business or Gym Name
                 </label>
                 <input
                   type="text"
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
-                  placeholder="e.g. Kinetic Labs Studio"
+                  placeholder="e.g. Peak Performance Gym"
                   className="input-field"
                 />
               </div>
@@ -338,48 +352,136 @@ function SettingsPage() {
             </div>
 
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">
-                Specialization Areas
-              </label>
+              <label className="label-md text-[var(--on-surface-variant)]">Specialties</label>
               <input
                 type="text"
                 value={specialization}
                 onChange={(e) => setSpecialization(e.target.value)}
-                placeholder="e.g. Powerlifting, Olympic weightlifting, HIIT"
+                placeholder="e.g. Strength training, endurance, mobility"
                 className="input-field"
               />
             </div>
 
             <div className="input-group">
-              <label className="label-md text-[var(--on-surface-variant)]">Bio Summary</label>
+              <label className="label-md text-[var(--on-surface-variant)]">Bio</label>
               <textarea
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                placeholder="Describe your training philosophy and credentials..."
+                placeholder="Describe your coaching philosophy and background..."
                 className="input-field min-h-[100px]"
               />
             </div>
           </div>
         )}
 
+        {/* Appearance & Navigation Layout Card */}
+        <div className="card space-y-4">
+          <div className="flex items-center justify-between border-b border-white/5 pb-2">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[var(--secondary-container)]">
+                dashboard_customize
+              </span>
+              <h3 className="headline-md text-lg font-bold text-white">Navigation Style</h3>
+            </div>
+          </div>
+
+          <p className="body-md text-[var(--on-surface-variant)] text-xs">
+            Pick how you want to navigate the app. Changes apply right away.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            {/* Floating Island Option */}
+            <button
+              type="button"
+              onClick={() => handleNavLayoutChange('floating')}
+              className={`p-4 rounded-2xl border text-left transition-all ${
+                navLayout === 'floating'
+                  ? 'border-[#D4FF00] bg-[#D4FF00]/10 shadow-[0_0_20px_rgba(212,255,0,0.15)]'
+                  : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05]'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-white">Floating Island</span>
+                {navLayout === 'floating' && (
+                  <span className="w-2 h-2 rounded-full bg-[#D4FF00] shadow-[0_0_8px_#D4FF00]"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Glass capsule floating at top of screen with mobile bottom dock.
+              </p>
+              <span className="mt-3 inline-block text-[9px] font-mono px-2 py-0.5 rounded bg-[#D4FF00]/15 text-[#D4FF00] font-bold">
+                DEFAULT
+              </span>
+            </button>
+
+            {/* Full-Bleed Top Bar Option */}
+            <button
+              type="button"
+              onClick={() => handleNavLayoutChange('full-bleed')}
+              className={`p-4 rounded-2xl border text-left transition-all ${
+                navLayout === 'full-bleed'
+                  ? 'border-[#00F0FF] bg-[#00F0FF]/10 shadow-[0_0_20px_rgba(0,240,255,0.15)]'
+                  : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05]'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-white">Full-Bleed Top Bar</span>
+                {navLayout === 'full-bleed' && (
+                  <span className="w-2 h-2 rounded-full bg-[#00F0FF] shadow-[0_0_8px_#00F0FF]"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Edge-to-edge sticky top navigation bar across the viewport.
+              </p>
+              <span className="mt-3 inline-block text-[9px] font-mono px-2 py-0.5 rounded bg-white/10 text-zinc-300 font-bold">
+                CLASSIC
+              </span>
+            </button>
+
+            {/* Classic Sidebar Option */}
+            <button
+              type="button"
+              onClick={() => handleNavLayoutChange('sidebar')}
+              className={`p-4 rounded-2xl border text-left transition-all ${
+                navLayout === 'sidebar'
+                  ? 'border-emerald-400 bg-emerald-500/10 shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+                  : 'border-white/10 bg-white/[0.02] hover:bg-white/[0.05]'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-white">Left Sidebar Rail</span>
+                {navLayout === 'sidebar' && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#10B981]"></span>
+                )}
+              </div>
+              <p className="text-[11px] text-zinc-400 leading-relaxed">
+                Dedicated desktop left navigation rail with sticky links.
+              </p>
+              <span className="mt-3 inline-block text-[9px] font-mono px-2 py-0.5 rounded bg-white/10 text-zinc-300 font-bold">
+                DESKTOP RAIL
+              </span>
+            </button>
+          </div>
+        </div>
+
         {/* Submit Actions */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
             type="submit"
             disabled={submitting}
-            className={`btn btn-primary flex-1 py-3.5 flex items-center justify-center gap-2 ${
+            className={`btn btn-primary flex-1 py-2 text-xs flex items-center justify-center gap-2 ${
               submitting ? 'btn-disabled' : ''
             }`}
           >
             {submitting ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
-                <span>Syncing Database...</span>
+                <span>Saving...</span>
               </>
             ) : (
               <>
-                <span className="material-symbols-outlined text-sm">cloud_sync</span>
-                <span>Apply Core Changes</span>
+                <span className="material-symbols-outlined text-sm">check</span>
+                <span>Save Changes</span>
               </>
             )}
           </button>
@@ -388,9 +490,9 @@ function SettingsPage() {
             type="button"
             onClick={() => navigate({ to: '/dashboard' })}
             disabled={submitting}
-            className="btn btn-secondary py-3.5"
+            className="btn btn-secondary text-xs py-2 px-6"
           >
-            Cancel & Return
+            Cancel
           </button>
         </div>
       </form>

@@ -6,12 +6,16 @@ import {
   getWorkoutSessionsHistory,
   logHealthMetric,
   getClientAssignedPrograms,
+  getTrainerClientsList,
+  getWorkoutPrograms,
 } from '../lib/actions'
 import type {
   ProgramAssignmentRecord,
   ProfileRecord,
+  TrainerClientRecord,
   TrainerProfileRecord,
   UserRecord,
+  WorkoutProgramSummary,
   WorkoutSessionRecord,
 } from '../types/domain'
 
@@ -31,6 +35,8 @@ function DashboardPage() {
   const [trainerProfile, setTrainerProfile] = useState<TrainerProfileRecord | null>(null)
   const [workouts, setWorkouts] = useState<WorkoutSessionRecord[]>([])
   const [assignedPrograms, setAssignedPrograms] = useState<ProgramAssignmentRecord[]>([])
+  const [trainerClients, setTrainerClients] = useState<TrainerClientRecord[]>([])
+  const [programs, setPrograms] = useState<WorkoutProgramSummary[]>([])
 
   // Quick log states
   const [weight, setWeight] = useState('')
@@ -59,11 +65,15 @@ function DashboardPage() {
                 const assignFetch = isAthlete
                   ? getClientAssignedPrograms({ data: { status: 'pending' } })
                   : Promise.resolve([])
+                const clientFetch = !isAthlete ? getTrainerClientsList() : Promise.resolve([])
+                const programFetch = !isAthlete ? getWorkoutPrograms() : Promise.resolve([])
 
-                Promise.all([workoutFetch, assignFetch])
-                  .then(([hist, assigned]) => {
+                Promise.all([workoutFetch, assignFetch, clientFetch, programFetch])
+                  .then(([hist, assigned, clientsList, programsList]) => {
                     setWorkouts(hist || [])
                     setAssignedPrograms(assigned || [])
+                    setTrainerClients(clientsList || [])
+                    setPrograms(programsList || [])
                     setProfileLoading(false)
                   })
                   .catch(() => setProfileLoading(false))
@@ -105,77 +115,95 @@ function DashboardPage() {
 
   if (profileLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Streaming biometric console...
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-slate-200 dark:border-white/10 border-t-lime-600 dark:border-t-[#D4FF00]"></div>
+        <p className="body-md text-slate-500 dark:text-zinc-400 text-xs mt-4">
+          Loading your dashboard...
         </p>
       </div>
     )
   }
 
   const isTrainer = dbUser?.role === 'trainer'
+  const activeClients = trainerClients.filter((c) => c.status === 'active')
 
   return (
-    <div className="space-y-6 md:space-y-8 py-2">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 md:space-y-8 py-2">
       {/* Top Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/5 pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-6">
         <div className="min-w-0">
-          <div className="chip chip-cyan mb-2">PORTAL ACTIVE</div>
-          <h1 className="display-lg text-2xl sm:text-3xl font-black m-0 text-white capitalize break-words">
-            {isTrainer ? 'COACH TERMINAL' : 'ATHLETE CONSOLE'}
+          <div className="chip chip-cyan mb-2">{isTrainer ? 'COACH CONSOLE' : 'DASHBOARD'}</div>
+          <h1 className="display-lg text-2xl sm:text-3xl font-black m-0 text-slate-900 dark:text-white capitalize break-words">
+            {isTrainer ? 'Coach Dashboard' : 'Athlete Dashboard'}
           </h1>
-          <p className="body-md text-[var(--on-surface-variant)] m-0">
-            Biometric sync ok. Logged in as{' '}
-            <span className="text-white font-bold">{dbUser?.name}</span>.
+          <p className="body-md text-slate-600 dark:text-zinc-400 text-xs sm:text-sm m-0 mt-0.5">
+            Welcome back,{' '}
+            <span className="text-slate-900 dark:text-white font-bold">{dbUser?.name}</span>.
           </p>
         </div>
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <Link to="/workouts/new" className="btn btn-primary w-full md:w-auto">
-            <span className="material-symbols-outlined mr-2">add</span>
-            Log Activity
-          </Link>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full md:w-auto">
+          {isTrainer ? (
+            <>
+              <Link to="/clients" className="btn btn-secondary text-xs flex-1 sm:flex-initial">
+                <span className="material-symbols-outlined mr-1 text-sm">groups</span>
+                Clients ({trainerClients.length})
+              </Link>
+              <Link to="/programs/new" className="btn btn-secondary text-xs flex-1 sm:flex-initial">
+                <span className="material-symbols-outlined mr-1 text-sm">library_add</span>
+                New Program
+              </Link>
+              <Link to="/workouts/new" className="btn btn-primary text-xs flex-1 sm:flex-initial">
+                <span className="material-symbols-outlined mr-1 text-sm">add</span>
+                Log Workout
+              </Link>
+            </>
+          ) : (
+            <Link to="/workouts/new" className="btn btn-primary text-xs w-full sm:w-auto">
+              <span className="material-symbols-outlined mr-1 text-sm">add</span>
+              Log a Workout
+            </Link>
+          )}
         </div>
       </div>
 
-      {/* Pending Coach Assignments Banner */}
+      {/* Pending Coach Assignments Banner for Athletes */}
       {!isTrainer && assignedPrograms.length > 0 && (
         <div className="space-y-4">
           {assignedPrograms.map((assign) => (
             <div
               key={assign.id}
-              className="card relative overflow-hidden p-4 sm:p-6 border border-[var(--secondary-container)] bg-gradient-to-r from-black/60 to-[rgba(0,238,252,0.03)] shadow-[0_0_20px_rgba(0,238,252,0.08)] flex flex-col md:flex-row justify-between items-start md:items-center gap-5 md:gap-6"
+              className="card relative overflow-hidden p-4 sm:p-6 border border-cyan-500/30 dark:border-[var(--secondary-container)] bg-gradient-to-r from-cyan-500/5 to-transparent shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-5 md:gap-6"
             >
               {/* Left design glow border overlay */}
-              <div className="absolute top-0 left-0 w-1.5 h-full bg-[var(--secondary-container)]"></div>
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-cyan-600 dark:bg-[var(--secondary-container)]"></div>
 
               <div className="space-y-2 flex-1 pl-2 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="chip chip-cyan text-[9px] uppercase font-black tracking-widest">
-                    ASSIGNED BY COACH {assign.trainerName}
+                    ASSIGNED BY {assign.trainerName}
                   </span>
-                  <span className="text-[10px] text-[var(--on-surface-variant)]">
+                  <span className="text-[10px] text-slate-500 dark:text-zinc-400">
                     Received {new Date(assign.assignedAt).toLocaleDateString()}
                   </span>
                   {assign.recurrence && assign.recurrence !== 'none' && (
-                    <span className="chip py-0.5 px-2 text-[9px] bg-white/10 border border-white/5 text-white">
+                    <span className="chip py-0.5 px-2 text-[9px] bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-white/5">
                       {assign.recurrence}
                     </span>
                   )}
                 </div>
 
-                <h3 className="headline-md text-white font-black text-lg sm:text-xl tracking-tight uppercase m-0 break-words">
+                <h3 className="headline-md text-slate-900 dark:text-white font-black text-lg sm:text-xl tracking-tight uppercase m-0 break-words">
                   {assign.programTitle}
                 </h3>
 
                 {assign.notes && (
-                  <p className="body-md text-[var(--on-surface-variant)] text-xs m-0 italic bg-white/[0.02] p-3 rounded border border-white/5 max-w-2xl">
-                    Coaching Note: "{assign.notes}"
+                  <p className="body-md text-slate-600 dark:text-zinc-400 text-xs m-0 italic bg-slate-50 dark:bg-white/[0.02] p-3 rounded border border-slate-200 dark:border-white/5 max-w-2xl">
+                    Note: "{assign.notes}"
                   </p>
                 )}
 
                 {(assign.scheduledFor || assign.dueAt) && (
-                  <div className="flex flex-wrap gap-2 text-[10px] text-[var(--on-surface-variant)] uppercase tracking-wider">
+                  <div className="flex flex-wrap gap-2 text-[10px] text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
                     {assign.scheduledFor && (
                       <span>Scheduled {new Date(assign.scheduledFor).toLocaleDateString()}</span>
                     )}
@@ -188,12 +216,12 @@ function DashboardPage() {
                 <Link
                   to="/workouts/new"
                   search={{ assignmentId: assign.id }}
-                  className="btn py-2 px-6 w-full md:w-auto text-sm font-black bg-[var(--secondary-container)] hover:bg-[var(--secondary-container)]/95 text-black flex items-center justify-center gap-2 rounded-md shadow-[0_0_15px_rgba(0,238,252,0.25)] transition-all"
+                  className="btn btn-secondary text-xs font-bold py-2 px-4 w-full md:w-auto flex items-center justify-center gap-1.5 shadow-sm"
                 >
-                  <span className="material-symbols-outlined text-sm font-bold animate-bounce">
+                  <span className="material-symbols-outlined text-sm font-bold">
                     fitness_center
                   </span>
-                  <span>Record Routine</span>
+                  <span>Start Workout</span>
                 </Link>
               </div>
             </div>
@@ -201,83 +229,144 @@ function DashboardPage() {
         </div>
       )}
 
-      {/* Profile Overview Widgets */}
+      {/* Profile Overview Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
         {isTrainer ? (
           <>
-            <div className="card card-featured">
-              <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl mb-2">
-                sports
-              </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Coaching Hub</p>
-              <h2 className="headline-lg font-black text-white mt-1">
-                {trainerProfile?.businessName || 'Elite Training'}
-              </h2>
-            </div>
+            {/* Card 1: Your Business */}
             <div className="card">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
-                group
-              </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Active Partnerships</p>
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-700 dark:text-[#00F0FF] dark:bg-[#00F0FF]/10 flex items-center justify-center mb-3">
+                <span className="material-symbols-outlined text-xl">sports</span>
+              </div>
+              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-zinc-400 font-semibold m-0">
+                Your Business
+              </p>
+              <h2 className="headline-lg text-lg sm:text-xl font-black text-slate-900 dark:text-white mt-1 break-words">
+                {trainerProfile?.businessName || 'Independent Coach'}
+              </h2>
+              <div className="mt-2.5">
+                <span className="chip chip-cyan py-0.5 px-2 text-[10px] inline-flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse"></span>
+                  Verified Coach
+                </span>
+              </div>
+            </div>
+
+            {/* Card 2: Client Network */}
+            <div className="card">
+              <div className="w-10 h-10 rounded-xl bg-lime-500/10 text-lime-700 dark:text-[#D4FF00] dark:bg-[#D4FF00]/10 flex items-center justify-center mb-3">
+                <span className="material-symbols-outlined text-xl">groups</span>
+              </div>
+              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-zinc-400 font-semibold m-0">
+                Client Network
+              </p>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="metric-xl text-3xl leading-none">Manage</span>
+                <span className="text-3xl sm:text-4xl font-black font-display text-slate-900 dark:text-white tabular-nums">
+                  {trainerClients.length}
+                </span>
+                <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+                  {activeClients.length} active
+                </span>
               </div>
               <Link
                 to="/clients"
-                className="label-md text-[var(--secondary-container)] text-xs font-bold hover:underline block mt-3"
+                className="text-xs font-bold text-cyan-700 dark:text-[#00F0FF] hover:underline flex items-center gap-1 mt-2.5"
               >
-                Open Client Desk &rarr;
+                View client roster{' '}
+                <span className="material-symbols-outlined text-xs">arrow_forward</span>
               </Link>
             </div>
+
+            {/* Card 3: Program Templates */}
             <div className="card">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
-                military_tech
-              </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Specialization</p>
-              <h3 className="headline-md font-bold text-white text-base mt-2 line-clamp-2">
-                {trainerProfile?.specialization || 'General Strength'}
-              </h3>
-            </div>
-            <div className="card">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
-                history
-              </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Experience</p>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="metric-xl text-4xl">{trainerProfile?.yearsExperience || 0}</span>
-                <span className="body-md text-[var(--on-surface-variant)] text-xs">years</span>
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-700 dark:text-[#00F0FF] dark:bg-[#00F0FF]/10 flex items-center justify-center mb-3">
+                <span className="material-symbols-outlined text-xl">splitscreen</span>
               </div>
+              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-zinc-400 font-semibold m-0">
+                Program Templates
+              </p>
+              <div className="flex items-baseline gap-2 mt-1">
+                <span className="text-3xl sm:text-4xl font-black font-display text-slate-900 dark:text-white tabular-nums">
+                  {programs.length}
+                </span>
+                <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+                  routines
+                </span>
+              </div>
+              <Link
+                to="/programs"
+                className="text-xs font-bold text-cyan-700 dark:text-[#00F0FF] hover:underline flex items-center gap-1 mt-2.5"
+              >
+                Manage programs{' '}
+                <span className="material-symbols-outlined text-xs">arrow_forward</span>
+              </Link>
+            </div>
+
+            {/* Card 4: Coaching Experience */}
+            <div className="card">
+              <div className="w-10 h-10 rounded-xl bg-lime-500/10 text-lime-700 dark:text-[#D4FF00] dark:bg-[#D4FF00]/10 flex items-center justify-center mb-3">
+                <span className="material-symbols-outlined text-xl">military_tech</span>
+              </div>
+              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-zinc-400 font-semibold m-0">
+                Coaching Experience
+              </p>
+              <div className="flex items-baseline gap-2 mt-1">
+                <span className="text-3xl sm:text-4xl font-black font-display text-slate-900 dark:text-white tabular-nums">
+                  {trainerProfile?.yearsExperience || 0}
+                </span>
+                <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">years</span>
+              </div>
+              <p
+                className="text-xs text-slate-500 dark:text-zinc-400 font-medium mt-2.5 truncate"
+                title={trainerProfile?.specialization || 'Strength & Conditioning'}
+              >
+                {trainerProfile?.specialization || 'Strength & Conditioning'}
+              </p>
             </div>
           </>
         ) : (
           <>
-            <div className="card card-featured">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
-                fitness_center
-              </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Total Workouts</p>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="metric-xl text-5xl leading-none">{workouts.length}</span>
-                <span className="body-md text-[var(--on-surface-variant)] text-xs">sessions</span>
-              </div>
-            </div>
             <div className="card">
-              <span className="material-symbols-outlined text-[var(--secondary-container)] text-3xl mb-2">
-                height
-              </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Height Details</p>
+              <div className="w-10 h-10 rounded-xl bg-lime-500/10 text-lime-700 dark:text-[#D4FF00] dark:bg-[#D4FF00]/10 flex items-center justify-center mb-3">
+                <span className="material-symbols-outlined text-xl">fitness_center</span>
+              </div>
+              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-zinc-400 font-semibold m-0">
+                Completed Workouts
+              </p>
               <div className="flex items-baseline gap-2 mt-1">
-                <span className="metric-xl text-4xl">{profile?.height || '--'}</span>
-                <span className="body-md text-[var(--on-surface-variant)] text-xs">cm</span>
+                <span className="text-3xl sm:text-4xl font-black font-display text-slate-900 dark:text-white tabular-nums">
+                  {workouts.length}
+                </span>
+                <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+                  sessions
+                </span>
               </div>
             </div>
+
+            <div className="card">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-700 dark:text-[#00F0FF] dark:bg-[#00F0FF]/10 flex items-center justify-center mb-3">
+                <span className="material-symbols-outlined text-xl">height</span>
+              </div>
+              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-zinc-400 font-semibold m-0">
+                Height
+              </p>
+              <div className="flex items-baseline gap-2 mt-1">
+                <span className="text-3xl sm:text-4xl font-black font-display text-slate-900 dark:text-white tabular-nums">
+                  {profile?.height || '--'}
+                </span>
+                <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium">cm</span>
+              </div>
+            </div>
+
             <div className="card sm:col-span-2">
-              <span className="material-symbols-outlined text-[var(--primary-container)] text-3xl mb-2">
-                track_changes
-              </span>
-              <p className="label-md text-[var(--on-surface-variant)] m-0">Current Target Goal</p>
-              <h3 className="headline-md font-bold text-white text-base mt-2 break-words">
-                {profile?.fitnessGoal || 'No goal set yet. Modify in profile onboarding.'}
+              <div className="w-10 h-10 rounded-xl bg-lime-500/10 text-lime-700 dark:text-[#D4FF00] dark:bg-[#D4FF00]/10 flex items-center justify-center mb-3">
+                <span className="material-symbols-outlined text-xl">track_changes</span>
+              </div>
+              <p className="text-[10px] font-mono uppercase tracking-wider text-slate-500 dark:text-zinc-400 font-semibold m-0">
+                Primary Goal
+              </p>
+              <h3 className="headline-md font-bold text-slate-900 dark:text-white text-base mt-1 break-words">
+                {profile?.fitnessGoal || 'No goal set yet. Add one in Settings.'}
               </h3>
             </div>
           </>
@@ -289,33 +378,38 @@ function DashboardPage() {
         {/* Left Column: Recent Logs */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-            <h3 className="headline-md text-lg sm:text-xl font-bold flex items-center gap-2">
-              <span className="material-symbols-outlined text-[var(--primary-container)]">
-                receipt_long
-              </span>
-              Recent Sessions History
-            </h3>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-lime-500/10 text-lime-700 dark:text-[#D4FF00] dark:bg-[#D4FF00]/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-base">receipt_long</span>
+              </div>
+              <h3 className="headline-md text-lg sm:text-xl font-bold text-slate-900 dark:text-white m-0">
+                Recent Workouts
+              </h3>
+            </div>
             <Link
               to="/workouts"
-              className="label-md text-[var(--primary-container)] text-xs hover:underline"
+              className="label-md text-lime-700 dark:text-[#D4FF00] text-xs font-bold hover:underline flex items-center gap-1"
             >
-              View All &rarr;
+              View All <span className="material-symbols-outlined text-xs">arrow_forward</span>
             </Link>
           </div>
 
           {workouts.length === 0 ? (
-            <div className="card text-center py-12 border-dashed">
-              <span className="material-symbols-outlined text-white/20 text-5xl mb-3">
-                fitness_center
-              </span>
-              <h4 className="headline-md font-bold text-white/70 text-lg">
-                No sessions recorded yet
+            <div className="card text-center py-12 border-dashed border-slate-200 dark:border-white/10">
+              <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-3 text-slate-400 dark:text-zinc-500">
+                <span className="material-symbols-outlined text-2xl">fitness_center</span>
+              </div>
+              <h4 className="headline-md font-bold text-slate-900 dark:text-white text-lg m-0">
+                No workouts logged yet
               </h4>
-              <p className="body-md text-[var(--on-surface-variant)] text-sm mb-6">
-                Initialize your performance sync by adding your first workout.
+              <p className="body-md text-slate-600 dark:text-zinc-400 text-xs max-w-sm mx-auto mt-2 mb-6 leading-relaxed">
+                {isTrainer
+                  ? 'Log your personal workouts or test training splits before assigning them to your clients.'
+                  : 'Start tracking your sets, reps, and weights to see your progress trends over time.'}
               </p>
-              <Link to="/workouts/new" className="btn btn-primary px-6 py-2.5">
-                Record First Session
+              <Link to="/workouts/new" className="btn btn-primary text-xs px-4 py-2">
+                <span className="material-symbols-outlined text-sm mr-1.5">add</span>
+                Log Your First Session
               </Link>
             </div>
           ) : (
@@ -325,26 +419,26 @@ function DashboardPage() {
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                        <h4 className="headline-md text-white font-bold text-base m-0 break-words">
+                        <h4 className="headline-md text-slate-900 dark:text-white font-bold text-base m-0 break-words">
                           {sess.title}
                         </h4>
                         <span className="chip py-0.5 px-2 text-[10px]">
                           {sess.exercises.length} Exercises
                         </span>
                       </div>
-                      <p className="body-md text-[var(--on-surface-variant)] text-xs m-0 flex flex-wrap items-center gap-1.5">
+                      <p className="body-md text-slate-600 dark:text-zinc-400 text-xs m-0 flex flex-wrap items-center gap-1.5">
                         <span className="material-symbols-outlined text-xs">calendar_month</span>
                         {sess.sessionDate}
                         {sess.durationMinutes && (
                           <>
-                            <span className="h-1 w-1 rounded-full bg-white/20"></span>
+                            <span className="h-1 w-1 rounded-full bg-slate-300 dark:bg-white/20"></span>
                             <span className="material-symbols-outlined text-xs">schedule</span>
                             {sess.durationMinutes} min
                           </>
                         )}
                         {sess.recordedByName !== 'Self' && (
                           <>
-                            <span className="h-1 w-1 rounded-full bg-white/20"></span>
+                            <span className="h-1 w-1 rounded-full bg-slate-300 dark:bg-white/20"></span>
                             <span className="material-symbols-outlined text-xs">face</span>
                             Logged by Trainer {sess.recordedByName}
                           </>
@@ -353,14 +447,14 @@ function DashboardPage() {
                     </div>
                     <Link
                       to={`/workouts/${sess.id}`}
-                      className="btn btn-secondary py-1.5 px-3 text-[10px] w-full sm:w-auto"
+                      className="btn btn-secondary py-1 px-3 text-xs w-full sm:w-auto"
                     >
                       Details
                     </Link>
                   </div>
 
                   {/* Exercises list summary */}
-                  <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-white/5">
+                  <div className="flex flex-wrap gap-2 mt-4 pt-3 border-t border-slate-100 dark:border-white/5">
                     {sess.exercises.map((ex) => (
                       <span key={ex.id} className="chip chip-cyan py-0.5 px-2 text-[10px]">
                         {ex.name} ({ex.sets.length} sets)
@@ -375,93 +469,212 @@ function DashboardPage() {
 
         {/* Right Column: Dynamic widgets */}
         <div className="space-y-6">
-          {!isTrainer ? (
-            /* Quick Weight Log Widget for Individuals */
-            <div className="card space-y-4">
-              <h3 className="headline-md text-lg font-bold flex items-center gap-2">
-                <span className="material-symbols-outlined text-[var(--secondary-container)]">
-                  scale
-                </span>
-                Quick Weight Log
-              </h3>
-              <p className="body-md text-[var(--on-surface-variant)] text-xs">
-                Log today's weight to maintain your visual progress trend curve.
-              </p>
+          {isTrainer ? (
+            <>
+              {/* Coaching Desk shortcuts for Trainers */}
+              <div className="card space-y-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-cyan-500/10 dark:bg-[#00F0FF]/10 text-cyan-700 dark:text-[#00F0FF] flex items-center justify-center">
+                    <span className="material-symbols-outlined text-lg">admin_panel_settings</span>
+                  </div>
+                  <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white m-0">
+                    Coach Shortcuts
+                  </h3>
+                </div>
+                <p className="body-md text-slate-600 dark:text-zinc-400 text-xs m-0">
+                  Quick access to client management, program builder, and coaching tools.
+                </p>
+                <div className="space-y-2 pt-1">
+                  <Link
+                    to="/clients"
+                    className="btn btn-secondary w-full text-xs justify-between group"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-sm">groups</span>
+                      <span>Client Roster</span>
+                    </span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-zinc-300 font-mono">
+                      {trainerClients.length}
+                    </span>
+                  </Link>
+                  <Link
+                    to="/programs"
+                    className="btn btn-secondary w-full text-xs justify-between group"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-sm">splitscreen</span>
+                      <span>Workout Programs</span>
+                    </span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-200 dark:bg-white/10 text-slate-700 dark:text-zinc-300 font-mono">
+                      {programs.length}
+                    </span>
+                  </Link>
+                  <Link
+                    to="/programs/new"
+                    className="btn btn-primary w-full text-xs justify-center"
+                  >
+                    <span className="material-symbols-outlined text-sm mr-1">add</span>
+                    <span>Create New Program</span>
+                  </Link>
+                </div>
+              </div>
 
-              {logSuccess && (
-                <div className="p-2 text-xs rounded bg-green-950/40 border border-green-900 text-green-300">
-                  Metric synced to health core!
+              {/* Client Roster Snapshot Card */}
+              {trainerClients.length > 0 ? (
+                <div className="card space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-lime-500/10 dark:bg-[#D4FF00]/10 text-lime-700 dark:text-[#D4FF00] flex items-center justify-center">
+                        <span className="material-symbols-outlined text-lg">person</span>
+                      </div>
+                      <h4 className="headline-md font-bold text-slate-900 dark:text-white text-sm m-0">
+                        Recent Clients
+                      </h4>
+                    </div>
+                    <Link
+                      to="/clients"
+                      className="text-xs font-bold text-cyan-700 dark:text-[#00F0FF] hover:underline"
+                    >
+                      View All
+                    </Link>
+                  </div>
+
+                  <div className="divide-y divide-slate-100 dark:divide-white/5 pt-1">
+                    {trainerClients.slice(0, 3).map((rel) => (
+                      <div
+                        key={rel.id}
+                        className="py-2.5 flex items-center justify-between text-xs"
+                      >
+                        <div className="min-w-0 pr-2">
+                          <p className="font-bold text-slate-900 dark:text-white truncate m-0">
+                            {rel.client.name}
+                          </p>
+                          <p className="text-[10px] text-slate-500 dark:text-zinc-400 truncate m-0">
+                            {rel.client.email}
+                          </p>
+                        </div>
+                        <span
+                          className={`chip text-[9px] uppercase font-bold ${
+                            rel.status === 'active'
+                              ? 'chip-cyan'
+                              : 'bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-zinc-300'
+                          }`}
+                        >
+                          {rel.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="card p-5 space-y-3 border-dashed border-slate-200 dark:border-white/10 text-center">
+                  <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-700 dark:text-[#00F0FF] dark:bg-[#00F0FF]/10 flex items-center justify-center mx-auto">
+                    <span className="material-symbols-outlined text-xl">person_add</span>
+                  </div>
+                  <h4 className="headline-md font-bold text-slate-900 dark:text-white text-sm m-0">
+                    Invite Your First Athlete
+                  </h4>
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 m-0 leading-relaxed">
+                    Send email invites to start building programs and tracking client workouts.
+                  </p>
+                  <Link to="/clients" className="btn btn-secondary w-full text-xs">
+                    Send Client Invite
+                  </Link>
                 </div>
               )}
 
-              <form onSubmit={handleQuickWeightLog} className="space-y-4">
-                <div className="input-group">
-                  <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                    Body Weight (kg)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
-                    placeholder="e.g. 78.5"
-                    className="input-field py-1.5"
-                  />
+              {/* Coaching Guidance Card */}
+              <div className="card space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-lime-500/10 dark:bg-[#D4FF00]/10 text-lime-700 dark:text-[#D4FF00] flex items-center justify-center">
+                    <span className="material-symbols-outlined text-base">tips_and_updates</span>
+                  </div>
+                  <h4 className="headline-md font-bold text-slate-900 dark:text-white text-sm m-0">
+                    Coaching Guidance
+                  </h4>
                 </div>
-                <div className="input-group">
-                  <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                    Notes (optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="e.g. Post-workout"
-                    className="input-field py-1.5"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={logging}
-                  className={`btn btn-primary w-full py-2 text-xs ${logging ? 'btn-disabled' : ''}`}
-                >
-                  {logging ? 'Syncing...' : 'Sync Biometrics'}
-                </button>
-              </form>
-            </div>
-          ) : (
-            /* Coaching Desk shortcuts for Trainers */
-            <div className="card space-y-4">
-              <h3 className="headline-md text-lg font-bold flex items-center gap-2">
-                <span className="material-symbols-outlined text-[var(--secondary-container)]">
-                  support_agent
-                </span>
-                Client Administration
-              </h3>
-              <p className="body-md text-[var(--on-surface-variant)] text-xs">
-                Invite individuals, log workout schedules, and review dynamic logs.
-              </p>
-              <div className="space-y-2 pt-2">
-                <Link to="/clients" className="btn btn-primary w-full text-xs py-2">
-                  <span className="material-symbols-outlined text-sm mr-1">group</span>
-                  View Client Registry
-                </Link>
+                <p className="body-md text-slate-600 dark:text-zinc-400 text-xs leading-relaxed m-0">
+                  Review client workout completion logs and health trends weekly to calibrate
+                  exercise loads and prevent burnout.
+                </p>
               </div>
-            </div>
-          )}
+            </>
+          ) : (
+            <>
+              {/* Quick Weight Log Widget for Individuals */}
+              <div className="card space-y-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-cyan-500/10 dark:bg-[#00F0FF]/10 text-cyan-700 dark:text-[#00F0FF] flex items-center justify-center">
+                    <span className="material-symbols-outlined text-lg">scale</span>
+                  </div>
+                  <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white m-0">
+                    Quick Weight Log
+                  </h3>
+                </div>
+                <p className="body-md text-slate-600 dark:text-zinc-400 text-xs m-0">
+                  Log your weight to keep your progress charts and trends up to date.
+                </p>
 
-          {/* Quick tips card */}
-          <div className="card bg-white/[0.01] border-white/5">
-            <span className="material-symbols-outlined text-[var(--primary-container)] text-2xl mb-2">
-              tips_and_updates
-            </span>
-            <h4 className="headline-md font-bold text-white text-sm m-0">Performance Insights</h4>
-            <p className="body-md text-[var(--on-surface-variant)] text-xs mt-2 leading-relaxed">
-              Consistently logging weight at the same time daily creates a cleaner, highly accurate
-              rolling weight trendline. Make sure to log post-waking!
-            </p>
-          </div>
+                {logSuccess && (
+                  <div className="p-2 text-xs rounded bg-green-950/40 border border-green-900 text-green-300">
+                    Weight saved!
+                  </div>
+                )}
+
+                <form onSubmit={handleQuickWeightLog} className="space-y-4">
+                  <div className="input-group">
+                    <label className="label-md text-xs text-slate-600 dark:text-zinc-400">
+                      Body Weight (kg)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      required
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
+                      placeholder="e.g. 78.5"
+                      className="input-field py-1.5"
+                    />
+                  </div>
+                  <div className="input-group">
+                    <label className="label-md text-xs text-slate-600 dark:text-zinc-400">
+                      Notes (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="e.g. Morning, fasted"
+                      className="input-field py-1.5"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={logging}
+                    className={`btn btn-primary w-full py-2 text-xs ${logging ? 'btn-disabled' : ''}`}
+                  >
+                    {logging ? 'Saving...' : 'Save Weight'}
+                  </button>
+                </form>
+              </div>
+
+              {/* Quick tips card */}
+              <div className="card space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-lg bg-lime-500/10 dark:bg-[#D4FF00]/10 text-lime-700 dark:text-[#D4FF00] flex items-center justify-center">
+                    <span className="material-symbols-outlined text-base">tips_and_updates</span>
+                  </div>
+                  <h4 className="headline-md font-bold text-slate-900 dark:text-white text-sm m-0">
+                    Training Tip
+                  </h4>
+                </div>
+                <p className="body-md text-slate-600 dark:text-zinc-400 text-xs leading-relaxed m-0">
+                  Weigh yourself at the same time each day—ideally right after waking up—for the
+                  most consistent trendline.
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

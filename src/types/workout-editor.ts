@@ -17,7 +17,7 @@ export interface ExerciseInput {
   category: ExerciseCategory
   defaultUnit: string
   notes: string
-  blockName: string
+  blockName?: string
   orderIndex: number
   sets: SetInput[]
 }

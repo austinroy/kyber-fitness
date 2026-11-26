@@ -281,18 +281,16 @@ function ProgramBuilderPage() {
       navigate({ to: '/programs' })
     } catch (err: unknown) {
       console.error(err)
-      setError(err instanceof Error ? err.message : 'Failed to save workout program template.')
+      setError(err instanceof Error ? err.message : 'Could not save program.')
       setSaving(false)
     }
   }
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col items-center justify-center min-h-[50vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary-container)]"></div>
-        <p className="body-md text-[var(--on-surface-variant)] mt-4">
-          Streaming program telemetry console...
-        </p>
+        <p className="body-md text-[var(--on-surface-variant)] mt-4">Loading program builder...</p>
       </div>
     )
   }
@@ -304,25 +302,28 @@ function ProgramBuilderPage() {
   )
 
   return (
-    <div className="space-y-6 py-2 max-w-5xl mx-auto">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 py-2">
       {/* Header */}
-      <div className="flex flex-wrap justify-between items-center gap-4 border-b border-white/5 pb-4">
+      <div className="flex flex-wrap justify-between items-center gap-4 border-b border-slate-200 dark:border-white/5 pb-4">
         <div>
-          <div className="chip chip-cyan mb-1">STITCH KINETIC ROUTINE BUILDER</div>
-          <h1 className="headline-lg font-black text-white m-0 uppercase">
-            {programId ? 'Edit Program Template' : 'Design Routine Template'}
+          <div className="chip chip-cyan mb-1">WORKOUT PLANS</div>
+          <h1 className="headline-lg font-black text-slate-900 dark:text-white m-0 uppercase">
+            {programId ? 'Edit Program' : 'New Program'}
           </h1>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => navigate({ to: '/programs' })} className="btn btn-secondary py-2">
+          <button
+            onClick={() => navigate({ to: '/programs' })}
+            className="btn btn-secondary text-xs py-2 px-4"
+          >
             Cancel
           </button>
           <button
             onClick={handleSaveProgram}
             disabled={saving}
-            className={`btn btn-primary py-2 ${saving ? 'btn-disabled' : ''}`}
+            className={`btn btn-primary text-xs py-2 px-4 ${saving ? 'btn-disabled' : ''}`}
           >
-            {saving ? 'Saving Template...' : 'Save Template'}
+            {saving ? 'Saving...' : 'Save Program'}
           </button>
         </div>
       </div>
@@ -338,11 +339,11 @@ function ProgramBuilderPage() {
         {/* Left column: Catalog search & Custom register */}
         <div className="lg:col-span-1 space-y-6">
           <div className="card space-y-4">
-            <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+            <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--primary-container)]">
                 search
               </span>
-              Exercise Catalog
+              Exercises
             </h3>
 
             <div className="input-group">
@@ -351,7 +352,7 @@ function ProgramBuilderPage() {
                 placeholder="Search exercises..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
+                className="input-field w-full"
               />
             </div>
 
@@ -359,10 +360,12 @@ function ProgramBuilderPage() {
               {filteredExercises.map((ex) => (
                 <div
                   key={ex.id}
-                  className="flex justify-between items-center p-3 rounded-md bg-white/5 hover:bg-white/10 transition-colors border border-white/5"
+                  className="flex justify-between items-center p-3 rounded-md bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors border border-slate-200 dark:border-white/5"
                 >
                   <div>
-                    <p className="body-md font-bold text-white text-sm m-0">{ex.name}</p>
+                    <p className="body-md font-bold text-slate-900 dark:text-white text-sm m-0">
+                      {ex.name}
+                    </p>
                     <span className="text-[10px] text-[var(--on-surface-variant)] capitalize">
                       {ex.category} • Default {ex.defaultUnit || 'kg'}
                     </span>
@@ -382,13 +385,13 @@ function ProgramBuilderPage() {
               )}
             </div>
 
-            <div className="border-t border-white/5 pt-4">
+            <div className="border-t border-slate-200 dark:border-white/5 pt-4">
               <button
                 onClick={() => setShowCustomModal(true)}
                 className="btn btn-secondary w-full py-2 flex items-center justify-center gap-2 text-xs"
               >
                 <span className="material-symbols-outlined text-sm">add_circle</span>
-                <span>Register Custom Exercise</span>
+                <span>Add Custom Exercise</span>
               </button>
             </div>
 
@@ -400,41 +403,39 @@ function ProgramBuilderPage() {
                 placeholder="e.g., Add 2.5kg weekly while RPE stays below 8, then deload after week 4."
                 value={progressionPlan}
                 onChange={(e) => setProgressionPlan(e.target.value)}
-                className="input-field bg-[var(--surface-container-lowest)] text-white w-full min-h-[110px] resize-none"
+                className="input-field w-full min-h-[110px] resize-none"
               />
             </div>
           </div>
 
           <div className="card space-y-4">
-            <h3 className="headline-md text-base font-bold text-white flex items-center gap-2">
+            <h3 className="headline-md text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--secondary-container)]">
                 info
               </span>
-              Template Attributes
+              Program Details
             </h3>
 
             <div className="input-group">
               <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                Template Title
+                Program Title
               </label>
               <input
                 type="text"
                 placeholder="e.g., Push Day Hypertrophy"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
+                className="input-field w-full"
               />
             </div>
 
             <div className="input-group">
-              <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                Coaching / Routine Notes
-              </label>
+              <label className="label-md text-xs text-[var(--on-surface-variant)]">Notes</label>
               <textarea
-                placeholder="Write overall guidelines, hydration, or warm-up notes here..."
+                placeholder="Write overall guidelines or warm-up instructions here..."
                 value={programNotes}
                 onChange={(e) => setProgramNotes(e.target.value)}
-                className="input-field bg-[var(--surface-container-lowest)] text-white w-full min-h-[120px] resize-none"
+                className="input-field w-full min-h-[120px] resize-none"
               />
             </div>
           </div>
@@ -443,24 +444,25 @@ function ProgramBuilderPage() {
         {/* Right column: Routine Constructor */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex justify-between items-center">
-            <h3 className="headline-md text-lg font-bold flex items-center gap-2">
+            <h3 className="headline-md text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <span className="material-symbols-outlined text-[var(--secondary-container)]">
                 assignment_turned_in
               </span>
-              Routine Constructor
+              Workout Plan
             </h3>
             <span className="chip chip-cyan">{addedExercises.length} exercises added</span>
           </div>
 
           {addedExercises.length === 0 ? (
-            <div className="card text-center py-16 border-dashed border-white/10 bg-white/[0.01]">
+            <div className="card text-center py-16 border-dashed border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.01]">
               <span className="material-symbols-outlined text-[var(--secondary-container)] text-5xl mb-3 animate-pulse">
                 playlist_add
               </span>
-              <h4 className="headline-md font-bold text-white/70 text-lg">Your canvas is empty</h4>
+              <h4 className="headline-md font-bold text-slate-700 dark:text-white/70 text-lg">
+                No exercises added yet
+              </h4>
               <p className="body-md text-[var(--on-surface-variant)] text-sm max-w-sm mx-auto">
-                Add exercises from the catalog on the left to structure your premium routine
-                template.
+                Add exercises from the list on the left to build your workout program.
               </p>
             </div>
           ) : (
@@ -476,10 +478,10 @@ function ProgramBuilderPage() {
                   <div className="flex justify-between items-start gap-4 mb-4">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="chip py-0.5 px-2 text-[10px] bg-white/10 text-white font-bold">
+                        <span className="chip py-0.5 px-2 text-[10px] bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-white font-bold">
                           {exIdx + 1}
                         </span>
-                        <h4 className="headline-md text-white font-black text-lg m-0 uppercase tracking-tight">
+                        <h4 className="headline-md text-slate-900 dark:text-white font-black text-lg m-0 uppercase tracking-tight">
                           {ex.name}
                         </h4>
                         <span className="chip chip-cyan py-0.5 px-2 text-[9px] uppercase font-semibold">
@@ -497,14 +499,14 @@ function ProgramBuilderPage() {
                       <button
                         onClick={() => handleMoveExercise(exIdx, 'up')}
                         disabled={exIdx === 0}
-                        className="btn py-1 px-2 text-xs bg-white/5 hover:bg-white/10 text-white disabled:opacity-30 rounded-md"
+                        className="btn py-1 px-2 text-xs bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-800 dark:text-white disabled:opacity-30 rounded-md"
                       >
                         <span className="material-symbols-outlined text-sm">arrow_upward</span>
                       </button>
                       <button
                         onClick={() => handleMoveExercise(exIdx, 'down')}
                         disabled={exIdx === addedExercises.length - 1}
-                        className="btn py-1 px-2 text-xs bg-white/5 hover:bg-white/10 text-white disabled:opacity-30 rounded-md"
+                        className="btn py-1 px-2 text-xs bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-800 dark:text-white disabled:opacity-30 rounded-md"
                       >
                         <span className="material-symbols-outlined text-sm">arrow_downward</span>
                       </button>
@@ -521,7 +523,7 @@ function ProgramBuilderPage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse min-w-[500px]">
                       <thead>
-                        <tr className="border-b border-white/5 text-[10px] text-[var(--on-surface-variant)] uppercase tracking-wider">
+                        <tr className="border-b border-slate-200 dark:border-white/5 text-[10px] text-[var(--on-surface-variant)] uppercase tracking-wider">
                           <th className="py-2 pl-2 w-12 text-center">Set</th>
                           {ex.category !== 'cardio' && <th className="py-2 w-20">Reps</th>}
                           {ex.category !== 'cardio' && (
@@ -543,7 +545,7 @@ function ProgramBuilderPage() {
                         {ex.sets.map((set, setIdx) => (
                           <tr
                             key={setIdx}
-                            className="border-b border-white/5 text-sm align-middle hover:bg-white/[0.02]"
+                            className="border-b border-slate-200 dark:border-white/5 text-sm align-middle hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                           >
                             <td className="py-2 text-center font-bold text-[var(--secondary-container)] pl-2">
                               {set.setNumber}
@@ -557,7 +559,7 @@ function ProgramBuilderPage() {
                                   onChange={(e) =>
                                     handleSetChange(exIdx, setIdx, 'reps', e.target.value)
                                   }
-                                  className="w-16 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-center text-xs"
+                                  className="w-16 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white border border-slate-200 dark:border-white/5 rounded px-2 py-1 text-center text-xs"
                                   placeholder="10"
                                 />
                               </td>
@@ -571,7 +573,7 @@ function ProgramBuilderPage() {
                                   onChange={(e) =>
                                     handleSetChange(exIdx, setIdx, 'weight', e.target.value)
                                   }
-                                  className="w-20 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-center text-xs"
+                                  className="w-20 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white border border-slate-200 dark:border-white/5 rounded px-2 py-1 text-center text-xs"
                                   placeholder="60"
                                   step="any"
                                 />
@@ -591,7 +593,7 @@ function ProgramBuilderPage() {
                                       e.target.value,
                                     )
                                   }
-                                  className="w-20 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-center text-xs"
+                                  className="w-20 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white border border-slate-200 dark:border-white/5 rounded px-2 py-1 text-center text-xs"
                                   placeholder="600"
                                 />
                               </td>
@@ -605,7 +607,7 @@ function ProgramBuilderPage() {
                                   onChange={(e) =>
                                     handleSetChange(exIdx, setIdx, 'distance', e.target.value)
                                   }
-                                  className="w-20 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-center text-xs"
+                                  className="w-20 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white border border-slate-200 dark:border-white/5 rounded px-2 py-1 text-center text-xs"
                                   placeholder="1.5"
                                   step="any"
                                 />
@@ -619,7 +621,7 @@ function ProgramBuilderPage() {
                                 onChange={(e) =>
                                   handleSetChange(exIdx, setIdx, 'restSeconds', e.target.value)
                                 }
-                                className="w-16 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-center text-xs"
+                                className="w-16 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white border border-slate-200 dark:border-white/5 rounded px-2 py-1 text-center text-xs"
                                 placeholder="60"
                               />
                             </td>
@@ -631,7 +633,7 @@ function ProgramBuilderPage() {
                                 onChange={(e) =>
                                   handleSetChange(exIdx, setIdx, 'intensity', e.target.value)
                                 }
-                                className="w-20 bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-left text-xs"
+                                className="w-20 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white border border-slate-200 dark:border-white/5 rounded px-2 py-1 text-left text-xs"
                                 placeholder={ex.category === 'cardio' ? 'Pace' : 'RPE 8'}
                               />
                             </td>
@@ -643,7 +645,7 @@ function ProgramBuilderPage() {
                                 onChange={(e) =>
                                   handleSetChange(exIdx, setIdx, 'notes', e.target.value)
                                 }
-                                className="w-full bg-white/5 text-white border border-white/5 rounded px-2 py-1 text-left text-xs"
+                                className="w-full bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white border border-slate-200 dark:border-white/5 rounded px-2 py-1 text-left text-xs"
                                 placeholder="e.g. Slow negative pace"
                               />
                             </td>
@@ -665,29 +667,29 @@ function ProgramBuilderPage() {
                   </div>
 
                   {/* Add set and specific exercise guidelines */}
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mt-4 pt-3 border-t border-white/5">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mt-4 pt-3 border-t border-slate-200 dark:border-white/5">
                     <button
                       onClick={() => handleAddSet(exIdx)}
-                      className="btn py-1 px-3 bg-white/5 hover:bg-white/10 text-white rounded-md text-xs flex items-center gap-1.5"
+                      className="btn py-1 px-3 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-900 dark:text-white rounded-md text-xs flex items-center gap-1.5"
                     >
                       <span className="material-symbols-outlined text-xs">add</span>
-                      <span>Add Target Set</span>
+                      <span>Add Set</span>
                     </button>
 
                     <div className="w-full md:max-w-xl grid grid-cols-1 md:grid-cols-2 gap-3">
                       <input
                         type="text"
-                        placeholder="Reusable block, e.g. Week 1 Push A"
+                        placeholder="Block name, e.g. Warmup, Superset A"
                         value={ex.blockName}
                         onChange={(e) => handleExerciseBlockChange(exIdx, e.target.value)}
-                        className="bg-transparent text-white placeholder-white/20 border-b border-white/5 hover:border-white/15 focus:border-[var(--secondary-container)] w-full py-1 text-xs outline-none transition-colors"
+                        className="bg-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 border-b border-slate-200 dark:border-white/5 hover:border-slate-400 dark:hover:border-white/15 focus:border-[var(--secondary-container)] w-full py-1 text-xs outline-none transition-colors"
                       />
                       <input
                         type="text"
-                        placeholder="Exercise specific coaching instructions..."
+                        placeholder="Exercise notes or coaching cues..."
                         value={ex.notes}
                         onChange={(e) => handleExerciseNotesChange(exIdx, e.target.value)}
-                        className="bg-transparent text-white placeholder-white/20 border-b border-white/5 hover:border-white/15 focus:border-[var(--secondary-container)] w-full py-1 text-xs outline-none transition-colors"
+                        className="bg-transparent text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-white/20 border-b border-slate-200 dark:border-white/5 hover:border-slate-400 dark:hover:border-white/15 focus:border-[var(--secondary-container)] w-full py-1 text-xs outline-none transition-colors"
                       />
                     </div>
                   </div>
@@ -701,17 +703,17 @@ function ProgramBuilderPage() {
       {/* Modal: Custom Exercise Creator */}
       {showCustomModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="card w-full max-w-md space-y-6 relative border border-white/10 bg-[#121212] shadow-2xl">
-            <div className="flex justify-between items-center border-b border-white/5 pb-3">
-              <h3 className="headline-md text-lg font-bold text-white flex items-center gap-2">
+          <div className="card w-full max-w-md space-y-6 relative border border-slate-200 dark:border-white/10 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-slate-200 dark:border-white/5 pb-3">
+              <h3 className="headline-md text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <span className="material-symbols-outlined text-[var(--primary-container)]">
                   add_box
                 </span>
-                Register Custom Exercise
+                Create Custom Exercise
               </h3>
               <button
                 onClick={() => setShowCustomModal(false)}
-                className="text-[var(--on-surface-variant)] hover:text-white"
+                className="text-slate-500 dark:text-[var(--on-surface-variant)] hover:text-slate-900 dark:hover:text-white"
               >
                 <span className="material-symbols-outlined">close</span>
               </button>
@@ -727,35 +729,35 @@ function ProgramBuilderPage() {
                   placeholder="e.g., Barbell Zercher Squat"
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
-                  className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
+                  className="input-field w-full"
                   required
                 />
               </div>
 
               <div className="input-group">
                 <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                  Movement Category
+                  Category
                 </label>
                 <select
                   value={customCategory}
                   onChange={(e) => setCustomCategory(e.target.value)}
-                  className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
+                  className="input-field w-full"
                 >
-                  <option value="strength">Strength / Hypertrophy</option>
-                  <option value="cardio">Cardio / Endurance</option>
-                  <option value="bodyweight">Calisthenics / Bodyweight</option>
-                  <option value="mobility">Mobility / Flexibility</option>
+                  <option value="strength">Strength</option>
+                  <option value="cardio">Cardio</option>
+                  <option value="bodyweight">Bodyweight</option>
+                  <option value="mobility">Mobility</option>
                 </select>
               </div>
 
               <div className="input-group">
                 <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                  Default Metric Unit
+                  Default Unit
                 </label>
                 <select
                   value={customUnit}
                   onChange={(e) => setCustomUnit(e.target.value)}
-                  className="input-field bg-[var(--surface-container-lowest)] text-white w-full"
+                  className="input-field w-full"
                 >
                   <option value="kg">Kilograms (kg)</option>
                   <option value="lbs">Pounds (lbs)</option>
@@ -764,7 +766,7 @@ function ProgramBuilderPage() {
                 </select>
               </div>
 
-              <div className="flex gap-3 justify-end pt-2 border-t border-white/5">
+              <div className="flex gap-3 justify-end pt-2 border-t border-slate-200 dark:border-white/5">
                 <button
                   type="button"
                   onClick={() => setShowCustomModal(false)}
@@ -773,7 +775,7 @@ function ProgramBuilderPage() {
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary py-1.5 px-4 text-xs">
-                  Register and Add
+                  Create & Add
                 </button>
               </div>
             </form>
