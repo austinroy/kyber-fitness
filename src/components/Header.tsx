@@ -65,114 +65,54 @@ export default function Header({
 
   const isFloating = layout === 'floating'
 
-  const renderNavLinks = (compact = false) => (
-    <SignedIn>
-      <nav
-        className={`flex items-center gap-1 ${
-          compact
-            ? 'py-0.5'
-            : 'bg-slate-100/90 dark:bg-white/[0.03] p-1 rounded-xl border border-slate-200 dark:border-white/5'
-        } text-xs font-semibold whitespace-nowrap`}
-      >
-        <Link
-          to="/dashboard"
-          className="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
-          activeProps={{
-            className:
-              'px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#D4FF00] text-black font-extrabold shadow-sm',
-          }}
-        >
-          Dashboard
-        </Link>
-        <Link
-          to="/workouts"
-          className="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
-          activeProps={{
-            className:
-              'px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#D4FF00] text-black font-extrabold shadow-sm',
-          }}
-        >
-          Workouts
-        </Link>
-        <Link
-          to="/health"
-          className="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
-          activeProps={{
-            className:
-              'px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
-          }}
-        >
-          Health
-        </Link>
-        {dbUser?.role === 'trainer' ? (
-          <>
-            <Link
-              to="/clients"
-              className="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
-              activeProps={{
-                className:
-                  'px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
-              }}
-            >
-              Clients
-            </Link>
-            <Link
-              to="/programs"
-              className="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
-              activeProps={{
-                className:
-                  'px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
-              }}
-            >
-              Programs
-            </Link>
-          </>
-        ) : (
-          <>
-            <Link
-              to="/programs"
-              className="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
-              activeProps={{
-                className:
-                  'px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
-              }}
-            >
-              My Plans
-            </Link>
-            <Link
-              to="/my-trainers"
-              className="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
-              activeProps={{
-                className:
-                  'px-2.5 sm:px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
-              }}
-            >
-              Coaches
-            </Link>
-          </>
-        )}
-      </nav>
-    </SignedIn>
-  )
+  const renderActionItems = () => (
+    <>
+      <ThemeToggle />
 
-  const renderSignedOutLinks = (compact = false) => (
-    <SignedOut>
-      <nav
-        className={`flex items-center gap-4 sm:gap-6 text-xs font-semibold text-slate-600 dark:text-zinc-300 ${
-          compact ? 'py-1' : ''
-        } whitespace-nowrap`}
+      <SignedIn>
+        <Link
+          to="/notifications"
+          className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200/80 dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/5 text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white transition hover:-translate-y-0.5"
+          title="Notifications"
+          aria-label="Notifications"
+        >
+          <span className="material-symbols-outlined text-lg">notifications</span>
+          {receivedNotifications > 0 && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-cyan-500 dark:bg-[#00F0FF] text-white dark:text-black text-[9px] font-black flex items-center justify-center shadow-[0_0_8px_#00F0FF]">
+              {receivedNotifications}
+            </span>
+          )}
+        </Link>
+        <UserButton afterSignOutUrl="/" />
+      </SignedIn>
+
+      <SignedOut>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <Link
+            to="/sign-in"
+            className="text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white px-2.5 py-1.5 rounded-lg transition"
+          >
+            Sign In
+          </Link>
+          <Link
+            to="/sign-up"
+            className="btn btn-primary text-xs !py-1.5 px-3 sm:px-4 shadow-sm dark:shadow-[0_0_16px_rgba(212,255,0,0.3)]"
+          >
+            Sign Up
+          </Link>
+        </div>
+      </SignedOut>
+
+      {/* Mobile Hamburger Toggle Button */}
+      <button
+        type="button"
+        onClick={() => setMobileOpen((prev) => !prev)}
+        aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+        className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200/80 dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/5 text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white transition hover:-translate-y-0.5"
       >
-        <a href="#features" className="hover:text-lime-700 dark:hover:text-[#D4FF00] transition">
-          Features
-        </a>
-        <a href="#coaching" className="hover:text-cyan-700 dark:hover:text-[#00F0FF] transition">
-          Coaching
-        </a>
-        <a href="#telemetry" className="hover:text-lime-700 dark:hover:text-[#D4FF00] transition">
-          Progress
-        </a>
-      </nav>
-    </SignedOut>
+        <span className="material-symbols-outlined text-xl">{mobileOpen ? 'close' : 'menu'}</span>
+      </button>
+    </>
   )
 
   return (
@@ -186,13 +126,12 @@ export default function Header({
       <header
         className={
           isFloating
-            ? 'max-w-6xl mx-auto px-3.5 sm:px-6 py-2 sm:py-2.5 rounded-2xl bg-white/85 dark:bg-[#0D1018]/90 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col transition-all duration-300'
-            : 'w-full px-4 sm:px-8 py-2.5 sm:py-3 bg-white/90 dark:bg-[#0A0D14]/90 backdrop-blur-md border-b border-slate-200 dark:border-white/10 shadow-sm dark:shadow-md flex flex-col transition-all duration-300'
+            ? 'max-w-6xl mx-auto px-4 sm:px-6 py-2.5 rounded-2xl bg-white/85 dark:bg-[#0D1018]/90 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex flex-col sm:flex-row sm:items-center sm:justify-between transition-all duration-300 gap-y-2 sm:gap-y-0'
+            : 'w-full px-4 sm:px-8 py-3 bg-white/90 dark:bg-[#0A0D14]/90 backdrop-blur-md border-b border-slate-200 dark:border-white/10 shadow-sm dark:shadow-md flex flex-col sm:flex-row sm:items-center sm:justify-between transition-all duration-300 gap-y-2 sm:gap-y-0'
         }
       >
-        {/* Row 1: Brand, Desktop Center Links, Right Actions */}
-        <div className="flex items-center justify-between w-full gap-2">
-          {/* Brand Logo */}
+        {/* Row 1 on smaller screens / Left side on sm+: Brand Logo */}
+        <div className="flex items-center justify-between w-full sm:w-auto">
           <Link to="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-lime-500 to-cyan-500 dark:from-[#D4FF00] dark:to-[#00F0FF] p-[2px] shadow-[0_0_15px_rgba(212,255,0,0.35)] transition-transform group-hover:scale-105">
               <div className="w-full h-full bg-slate-900 dark:bg-[#0A0D14] rounded-[10px] flex items-center justify-center font-black text-xs text-[#D4FF00]">
@@ -200,77 +139,113 @@ export default function Header({
               </div>
             </div>
             <div className="flex items-center">
-              <span className="font-display font-black text-base sm:text-lg tracking-tight text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-zinc-100 transition">
+              <span className="font-display font-black text-lg tracking-tight text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-zinc-100 transition">
                 KYBER
               </span>
-              <span className="text-lime-600 dark:text-[#D4FF00] font-black text-base sm:text-lg">
-                .FIT
-              </span>
+              <span className="text-lime-600 dark:text-[#D4FF00] font-black text-lg">.FIT</span>
             </div>
           </Link>
-
-          {/* Center Links (Large Screens >= 1024px) */}
-          <div className="hidden lg:flex items-center justify-center">
-            {renderNavLinks(false)}
-            {renderSignedOutLinks(false)}
-          </div>
-
-          {/* Right Actions */}
-          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-            <ThemeToggle />
-
-            <SignedIn>
-              <Link
-                to="/notifications"
-                className="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200/80 dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/5 text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white transition hover:-translate-y-0.5"
-                title="Notifications"
-                aria-label="Notifications"
-              >
-                <span className="material-symbols-outlined text-lg">notifications</span>
-                {receivedNotifications > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-cyan-500 dark:bg-[#00F0FF] text-white dark:text-black text-[9px] font-black flex items-center justify-center shadow-[0_0_8px_#00F0FF]">
-                    {receivedNotifications}
-                  </span>
-                )}
-              </Link>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
-
-            <SignedOut>
-              <div className="hidden sm:flex items-center gap-2">
-                <Link
-                  to="/sign-in"
-                  className="text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white px-2.5 py-1.5 rounded-lg transition"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/sign-up"
-                  className="btn btn-primary text-xs !py-1.5 px-3 sm:px-4 shadow-sm dark:shadow-[0_0_16px_rgba(212,255,0,0.3)]"
-                >
-                  Sign Up
-                </Link>
-              </div>
-            </SignedOut>
-
-            {/* Mobile/Tablet Hamburger Toggle Button */}
-            <button
-              type="button"
-              onClick={() => setMobileOpen((prev) => !prev)}
-              aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              className="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 dark:bg-white/[0.04] hover:bg-slate-200/80 dark:hover:bg-white/[0.08] border border-slate-200 dark:border-white/5 text-slate-600 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white transition hover:-translate-y-0.5"
-            >
-              <span className="material-symbols-outlined text-xl">
-                {mobileOpen ? 'close' : 'menu'}
-              </span>
-            </button>
-          </div>
         </div>
 
-        {/* Row 2: Menu items on a separate line for smaller screens (< 1024px) */}
-        <div className="lg:hidden w-full pt-2 mt-1.5 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-start sm:justify-center overflow-x-auto no-scrollbar">
-          {renderNavLinks(true)}
-          {renderSignedOutLinks(true)}
+        {/* Center Links (Signed In) - visible on md+ */}
+        <SignedIn>
+          <nav className="hidden md:flex items-center gap-1 bg-slate-100/90 dark:bg-white/[0.03] p-1 rounded-xl border border-slate-200 dark:border-white/5 text-xs font-semibold">
+            <Link
+              to="/dashboard"
+              className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
+              activeProps={{
+                className:
+                  'px-3 py-1.5 rounded-lg bg-[#D4FF00] text-black font-extrabold shadow-sm',
+              }}
+            >
+              Dashboard
+            </Link>
+            <Link
+              to="/workouts"
+              className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
+              activeProps={{
+                className:
+                  'px-3 py-1.5 rounded-lg bg-[#D4FF00] text-black font-extrabold shadow-sm',
+              }}
+            >
+              Workouts
+            </Link>
+            <Link
+              to="/health"
+              className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
+              activeProps={{
+                className:
+                  'px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
+              }}
+            >
+              Health
+            </Link>
+            {dbUser?.role === 'trainer' ? (
+              <>
+                <Link
+                  to="/clients"
+                  className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
+                  activeProps={{
+                    className:
+                      'px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
+                  }}
+                >
+                  Clients
+                </Link>
+                <Link
+                  to="/programs"
+                  className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
+                  activeProps={{
+                    className:
+                      'px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
+                  }}
+                >
+                  Programs
+                </Link>
+              </>
+            ) : (
+              <Link
+                to="/programs"
+                className="px-3 py-1.5 rounded-lg text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/5 transition"
+                activeProps={{
+                  className:
+                    'px-3 py-1.5 rounded-lg bg-[#00F0FF] text-black font-extrabold shadow-sm',
+                }}
+              >
+                My Plans
+              </Link>
+            )}
+          </nav>
+        </SignedIn>
+
+        {/* Center Links (Signed Out / Public) - visible on md+ */}
+        <SignedOut>
+          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600 dark:text-zinc-300">
+            <a
+              href="#features"
+              className="hover:text-lime-700 dark:hover:text-[#D4FF00] transition"
+            >
+              Features
+            </a>
+            <a
+              href="#coaching"
+              className="hover:text-cyan-700 dark:hover:text-[#00F0FF] transition"
+            >
+              Coaching
+            </a>
+            <a
+              href="#telemetry"
+              className="hover:text-lime-700 dark:hover:text-[#D4FF00] transition"
+            >
+              Progress
+            </a>
+          </nav>
+        </SignedOut>
+
+        {/* Action Controls: Profile, Lightmode, Notifications, Hamburger */}
+        {/* On smaller screens (< sm), moved to a clean separate line inside the capsule */}
+        <div className="flex items-center justify-end gap-2 sm:gap-2.5 pt-2 sm:pt-0 mt-1 sm:mt-0 border-t border-slate-200/60 dark:border-white/5 sm:border-0 w-full sm:w-auto">
+          {renderActionItems()}
         </div>
       </header>
 
