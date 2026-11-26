@@ -415,23 +415,22 @@ function LogWorkoutPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="input-group">
-                <label className="label-md text-xs text-[var(--on-surface-variant)]">Date</label>
-                <DatePicker value={sessionDate} onChange={setSessionDate} />
-              </div>
-              <div className="input-group">
-                <label className="label-md text-xs text-[var(--on-surface-variant)]">
-                  Duration (min)
-                </label>
-                <input
-                  type="number"
-                  value={durationMinutes}
-                  onChange={(e) => setDurationMinutes(e.target.value)}
-                  className="input-field"
-                  placeholder="e.g. 60"
-                />
-              </div>
+            <div className="input-group">
+              <label className="label-md text-xs text-[var(--on-surface-variant)]">Date</label>
+              <DatePicker value={sessionDate} onChange={setSessionDate} />
+            </div>
+
+            <div className="input-group">
+              <label className="label-md text-xs text-[var(--on-surface-variant)]">
+                Duration (min)
+              </label>
+              <input
+                type="number"
+                value={durationMinutes}
+                onChange={(e) => setDurationMinutes(e.target.value)}
+                className="input-field"
+                placeholder="e.g. 60"
+              />
             </div>
 
             <div className="input-group">

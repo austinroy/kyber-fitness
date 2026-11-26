@@ -69,25 +69,29 @@ export default function Header({
     <div
       className={
         isFloating
-          ? 'sticky top-3 z-50 px-4 mb-6 transition-all duration-300'
+          ? 'sticky top-3 z-50 px-3 sm:px-4 mb-6 transition-all duration-300'
           : 'sticky top-0 z-50 w-full mb-6 transition-all duration-300'
       }
     >
       <header
         className={
           isFloating
-            ? 'max-w-6xl mx-auto px-4 sm:px-6 py-2.5 rounded-2xl bg-white/80 dark:bg-[#0D1018]/85 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex items-center justify-between transition-all duration-300'
+            ? 'max-w-6xl mx-auto px-3.5 sm:px-6 py-2.5 rounded-2xl bg-white/85 dark:bg-[#0D1018]/90 backdrop-blur-xl border border-slate-200/80 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_12px_40px_rgba(0,0,0,0.5)] flex items-center justify-between transition-all duration-300'
             : 'w-full px-4 sm:px-8 py-3 bg-white/90 dark:bg-[#0A0D14]/90 backdrop-blur-md border-b border-slate-200 dark:border-white/10 shadow-sm dark:shadow-md flex items-center justify-between transition-all duration-300'
         }
       >
-        {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group">
+        {/* Brand Logo - text is hidden on smaller screens (< sm) so all action controls fit cleanly on one line */}
+        <Link
+          to="/"
+          className="flex items-center gap-2.5 group shrink-0"
+          title="Kyber Fitness Home"
+        >
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-lime-500 to-cyan-500 dark:from-[#D4FF00] dark:to-[#00F0FF] p-[2px] shadow-[0_0_15px_rgba(212,255,0,0.35)] transition-transform group-hover:scale-105">
             <div className="w-full h-full bg-slate-900 dark:bg-[#0A0D14] rounded-[10px] flex items-center justify-center font-black text-xs text-[#D4FF00]">
               ⚡
             </div>
           </div>
-          <div className="flex items-center">
+          <div className="hidden sm:flex items-center">
             <span className="font-display font-black text-lg tracking-tight text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-zinc-100 transition">
               KYBER
             </span>
@@ -95,7 +99,7 @@ export default function Header({
           </div>
         </Link>
 
-        {/* Center Links (Signed In) */}
+        {/* Center Links (Signed In) - visible on md+ */}
         <SignedIn>
           <nav className="hidden md:flex items-center gap-1 bg-slate-100/90 dark:bg-white/[0.03] p-1 rounded-xl border border-slate-200 dark:border-white/5 text-xs font-semibold">
             <Link
@@ -166,7 +170,7 @@ export default function Header({
           </nav>
         </SignedIn>
 
-        {/* Center Links (Signed Out / Public) */}
+        {/* Center Links (Signed Out / Public) - visible on md+ */}
         <SignedOut>
           <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-slate-600 dark:text-zinc-300">
             <a
@@ -190,8 +194,8 @@ export default function Header({
           </nav>
         </SignedOut>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Right Actions: Profile, Lightmode, Notifications, Hamburger */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           <ThemeToggle />
 
           <SignedIn>
@@ -215,13 +219,13 @@ export default function Header({
             <div className="hidden sm:flex items-center gap-2">
               <Link
                 to="/sign-in"
-                className="text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white px-3 py-1.5 rounded-lg transition"
+                className="text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white px-2.5 py-1.5 rounded-lg transition"
               >
                 Sign In
               </Link>
               <Link
                 to="/sign-up"
-                className="btn btn-primary text-xs !py-2 px-4 shadow-sm dark:shadow-[0_0_16px_rgba(212,255,0,0.3)]"
+                className="btn btn-primary text-xs !py-1.5 px-3 sm:px-4 shadow-sm dark:shadow-[0_0_16px_rgba(212,255,0,0.3)]"
               >
                 Sign Up
               </Link>
